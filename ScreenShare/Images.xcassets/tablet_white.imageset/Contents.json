@@ -2,7 +2,7 @@
   "images" : [
     {
       "idiom" : "universal",
-      "filename" : "ipadPortrait.png",
+      "filename" : "tabletPortrait.png",
       "scale" : "1x"
     },
     {
