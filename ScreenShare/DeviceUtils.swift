@@ -1,9 +1,5 @@
 //
 //  DeviceUtils.swift
-//  Screenshare
-//
-//  Created by Gareth on 6/30/16.
-//  Copyright © 2016 GPJ. All rights reserved.
 //
 
 import Foundation
