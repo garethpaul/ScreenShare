@@ -41,6 +41,6 @@
     </objects>
     <resources>
         <image name="resize-handle" width="12" height="12"/>
-        <image name="tablet_white" width="1013" height="1500"/>
+        <image name="tablet_white" width="1009" height="1489"/>
     </resources>
 </document>
