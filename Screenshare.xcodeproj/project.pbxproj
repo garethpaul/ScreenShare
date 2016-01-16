@@ -17,7 +17,7 @@
 		A240AE011AA11EAB00A19D30 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A240AE001AA11EAB00A19D30 /* AVFoundation.framework */; };
 		A240AE0B1AA2504200A19D30 /* CoreMediaIO.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A240AE0A1AA2504200A19D30 /* CoreMediaIO.framework */; };
 		A240AE0D1AA304B200A19D30 /* DeviceUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = A240AE0C1AA304B200A19D30 /* DeviceUtils.swift */; };
-		A25AC01B1ABB74BD00DC1AB4 /* Skin_iPad.xib in Resources */ = {isa = PBXBuildFile; fileRef = A25AC01A1ABB74BD00DC1AB4 /* Skin_iPad.xib */; };
+		A25AC01B1ABB74BD00DC1AB4 /* Skin_tablet.xib in Resources */ = {isa = PBXBuildFile; fileRef = A25AC01A1ABB74BD00DC1AB4 /* Skin_tablet.xib */; };
 		A2820E691AAE538000393CAA /* Skin.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2820E681AAE538000393CAA /* Skin.swift */; };
 		A2AF97921AC7E65A0052CB76 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2AF97911AC7E65A0052CB76 /* Extensions.swift */; };
 		A2BEAB7D1AAAEB1F00FDFC72 /* NotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2BEAB7C1AAAEB1F00FDFC72 /* NotificationManager.swift */; };
@@ -57,7 +57,7 @@
 		A240AE001AA11EAB00A19D30 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		A240AE0A1AA2504200A19D30 /* CoreMediaIO.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMediaIO.framework; path = System/Library/Frameworks/CoreMediaIO.framework; sourceTree = SDKROOT; };
 		A240AE0C1AA304B200A19D30 /* DeviceUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeviceUtils.swift; sourceTree = "<group>"; };
-		A25AC01A1ABB74BD00DC1AB4 /* Skin_iPad.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = Skin_iPad.xib; sourceTree = "<group>"; };
+		A25AC01A1ABB74BD00DC1AB4 /* Skin_tablet.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = Skin_tablet.xib; sourceTree = "<group>"; };
 		A2820E681AAE538000393CAA /* Skin.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Skin.swift; sourceTree = "<group>"; };
 		A2AF97911AC7E65A0052CB76 /* Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		A2BEAB7C1AAAEB1F00FDFC72 /* NotificationManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NotificationManager.swift; sourceTree = "<group>"; };
@@ -107,7 +107,7 @@
 			children = (
 				A240ADE91AA11D9D00A19D30 /* MainMenu.xib */,
 				A2BEAB801AAD0A9900FDFC72 /* Skin.xib */,
-				A25AC01A1ABB74BD00DC1AB4 /* Skin_iPad.xib */,
+				A25AC01A1ABB74BD00DC1AB4 /* Skin_tablet.xib */,
 				A2820E681AAE538000393CAA /* Skin.swift */,
 			);
 			name = Views;
@@ -312,7 +312,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A25AC01B1ABB74BD00DC1AB4 /* Skin_iPad.xib in Resources */,
+				A25AC01B1ABB74BD00DC1AB4 /* Skin_tablet.xib in Resources */,
 				A2BEAB811AAD0A9900FDFC72 /* Skin.xib in Resources */,
 				A240ADE81AA11D9D00A19D30 /* Images.xcassets in Resources */,
 				A240ADEB1AA11D9D00A19D30 /* MainMenu.xib in Resources */,
@@ -440,7 +440,7 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_IDENTITY = "Mac Developer";
 				COPY_PHASE_STRIP = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
@@ -483,7 +483,7 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_IDENTITY = "Mac Developer";
 				COPY_PHASE_STRIP = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
