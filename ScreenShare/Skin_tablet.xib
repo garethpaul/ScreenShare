@@ -21,7 +21,7 @@
             <subviews>
                 <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Vqy-CN-NNN">
                     <rect key="frame" x="0.0" y="0.0" width="435" height="646"/>
-                    <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyUpOrDown" image="iPad_White" id="pQD-qN-Pr5"/>
+                    <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyUpOrDown" image="tablet_white" id="pQD-qN-Pr5"/>
                 </imageView>
                 <customView autoresizesSubviews="NO" wantsLayer="YES" canDrawConcurrently="YES" focusRingType="none" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="XdJ-Cc-xK7">
                     <rect key="frame" x="25" y="66" width="384" height="512"/>
@@ -40,7 +40,7 @@
         <userDefaultsController representsSharedInstance="YES" id="nmt-Kz-kBN"/>
     </objects>
     <resources>
-        <image name="iPad_White" width="1013" height="1500"/>
         <image name="resize-handle" width="12" height="12"/>
+        <image name="tablet_white" width="1013" height="1500"/>
     </resources>
 </document>
