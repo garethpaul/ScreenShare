@@ -2,9 +2,6 @@
 //  AppDelegate.swift
 //  Screenshare
 //
-//  Created by Gareth on 6/30/16.
-//  Copyright © 2016 GPJ. All rights reserved.
-//
 
 import Cocoa
 
@@ -35,14 +32,11 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         
         self.progressIndicator.startAnimation(self)
         
-        // Opt-in for getting visibility on connected screen capture devices (iphone/ipad)
+        // Opt-in for getting visibility on connected screen capture devices
         DeviceUtils.registerForScreenCaptureDevices()
         
         self.loadObservers()
         self.refreshDevices()
-        
-        
-       
     }
     
     func loadDeviceSettings() {
@@ -162,8 +156,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             if device.modelID == "iOS Device" {
                 if (!self.deviceSessions.keys.contains(device)) {
         
-                    
-                    
                     // support only one session for now, until multiple devices videos start working
                     if(self.deviceSessions.count > 0) {
                         print("Only one session supported.")
