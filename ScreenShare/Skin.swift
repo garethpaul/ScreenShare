@@ -21,7 +21,7 @@ class Skin: NSView {
     
     @IBOutlet weak var resizeHandle: NSImageView!
     
-    var session : AVCaptureSession!     // Provided by the parent window/controller
+    var session : AVCaptureSession!
     var input   : AVCaptureDeviceInput?
     var device = DeviceUtils(deviceType: .Phone)
     var deviceSettings : Device?
