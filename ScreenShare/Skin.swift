@@ -23,7 +23,7 @@ class Skin: NSView {
     
     var session : AVCaptureSession!     // Provided by the parent window/controller
     var input   : AVCaptureDeviceInput?
-    var device = DeviceUtils(deviceType: .iPhone)
+    var device = DeviceUtils(deviceType: .Phone)
     var deviceSettings : Device?
     
     var deviceDimensionsObtained = false

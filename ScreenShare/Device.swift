@@ -1,9 +1,5 @@
 //
 //  Device.swift
-//  PresentIO
-//
-//  Created by Gonçalo Borrêga on 29/01/16.
-//  Copyright © 2016 Borrega. All rights reserved.
 //
 
 import Foundation
@@ -25,8 +21,8 @@ class Device: NSObject, NSCoding {
     }
     
     enum DeviceType {
-        case iPhone
-        case iPad
+        case Phone
+        case Tablet
     }
     enum DeviceOrientation {
         case Portrait

@@ -30,10 +30,10 @@ class DeviceUtils {
         self.type = deviceType
         self.skinSize = getSkinSize()
         switch deviceType {
-        case .iPhone:
+        case .Phone:
             skin = "Skin"
-        case .iPad:
-            skin = "Skin_iPad"
+        case .Tablet:
+            skin = "Skin_tablet"
         }
     }
     
@@ -46,9 +46,9 @@ class DeviceUtils {
             || (dimensions.width == 1200 && dimensions.height == 900)
             || (dimensions.width == 1200 && dimensions.height == 1600)
             || (dimensions.width == 1600 && dimensions.height == 1200)) {
-            device = DeviceUtils(deviceType: .iPad)
+            device = DeviceUtils(deviceType: .Tablet)
         } else {
-            device = DeviceUtils(deviceType: .iPhone)
+            device = DeviceUtils(deviceType: .Phone)
         }
         
         device.videDimensions = dimensions
@@ -58,17 +58,17 @@ class DeviceUtils {
 
     func getSkinDeviceImage() -> String {
         let imgLandscape = self.orientation == .Landscape ? "_landscape" : ""
-        let imgtype = self.type == .iPad ? "ipad" : "iphone6"
+        let imgtype = self.type == .Tablet ? "tablet" : "phone"
         return "\(imgtype)_white\(imgLandscape)"
     }
 
     func getSkinSize() -> NSSize {
         var size : NSSize
         switch self.type {
-        case .iPhone:
-            size = NSSize(width: 350,height: 700) //640x1136 (iPhone5)
-        case .iPad:
-            size = NSSize(width: 435,height: 646) // 768x1024 (ipad mini)
+        case .Phone:
+            size = NSSize(width: 350,height: 700)
+        case .Tablet:
+            size = NSSize(width: 435,height: 646)
         }
         return self.orientation == .Portrait ?
             NSSize(width: size.width, height: size.height) :

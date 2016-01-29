@@ -116,7 +116,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     
     func startNewSession(device:AVCaptureDevice) -> Skin {
         
-        let size = DeviceUtils(deviceType: .iPhone).skinSize
+        let size = DeviceUtils(deviceType: .Phone).skinSize
         let frame = DeviceUtils.getCenteredRect(size, screenFrame: NSScreen.mainScreen()!.frame)
         
         let window = NSWindow(contentRect: frame,
