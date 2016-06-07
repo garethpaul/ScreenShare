@@ -8,8 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		7F4CF5F51D276BDF00D58750 /* ScreenshareUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F4CF5F41D276BDF00D58750 /* ScreenshareUITests.swift */; };
-		7F4CF5FC1D276DBD00D58750 /* Info.plist in Sources */ = {isa = PBXBuildFile; fileRef = A240ADF51AA11D9D00A19D30 /* Info.plist */; };
-		7F4CF5FD1D276E3900D58750 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = A240ADF51AA11D9D00A19D30 /* Info.plist */; };
 		A240ADE11AA11D9D00A19D30 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A240ADE01AA11D9D00A19D30 /* AppDelegate.swift */; };
 		A240ADE81AA11D9D00A19D30 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A240ADE71AA11D9D00A19D30 /* Images.xcassets */; };
 		A240ADEB1AA11D9D00A19D30 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = A240ADE91AA11D9D00A19D30 /* MainMenu.xib */; };
@@ -304,7 +302,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7F4CF5FD1D276E3900D58750 /* Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -354,7 +351,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7F4CF5FC1D276DBD00D58750 /* Info.plist in Sources */,
 				A240ADF71AA11D9D00A19D30 /* ScreenShareTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -390,8 +386,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ANALYZER_NONNULL = YES;
-				CODE_SIGN_IDENTITY = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				CODE_SIGN_IDENTITY = "Mac Developer: Gareth Jones (7BETCC4S6S)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Mac Developer: Gareth Jones (7BETCC4S6S)";
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				GCC_NO_COMMON_BLOCKS = YES;
 				INFOPLIST_FILE = ScreenshareUITests/Info.plist;
@@ -408,7 +404,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ANALYZER_NONNULL = YES;
-				CODE_SIGN_IDENTITY = "";
+				CODE_SIGN_IDENTITY = "Mac Developer: Gareth Jones (7BETCC4S6S)";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				COPY_PHASE_STRIP = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -444,6 +440,7 @@
 				COPY_PHASE_STRIP = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/**";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -488,6 +485,7 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/**";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
@@ -508,6 +506,7 @@
 				CODE_SIGN_ENTITLEMENTS = "$(PROJECT_DIR)/ScreenShare/Screenshare.entitlements";
 				CODE_SIGN_IDENTITY = "Mac Developer";
 				COMBINE_HIDPI_IMAGES = YES;
+				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/**";
 				INFOPLIST_FILE = "$(SRCROOT)/ScreenShare/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.9;
@@ -523,6 +522,7 @@
 				CODE_SIGN_ENTITLEMENTS = "$(PROJECT_DIR)/ScreenShare/Screenshare.entitlements";
 				CODE_SIGN_IDENTITY = "Mac Developer";
 				COMBINE_HIDPI_IMAGES = YES;
+				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/**";
 				INFOPLIST_FILE = "$(SRCROOT)/ScreenShare/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.9;
@@ -535,10 +535,14 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_IDENTITY = "";
 				COMBINE_HIDPI_IMAGES = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(DEVELOPER_FRAMEWORKS_DIR)",
 					"$(inherited)",
+					"${TARGET_BUILD_DIR}/CoreMediaIO.framework",
+					"$(SRCROOT)/**",
+					"${TARGET_BUILD_DIR}",
 				);
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
@@ -556,10 +560,14 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_IDENTITY = "";
 				COMBINE_HIDPI_IMAGES = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(DEVELOPER_FRAMEWORKS_DIR)",
 					"$(inherited)",
+					"$(SRCROOT)/**",
+					"${TARGET_BUILD_DIR}",
+					"${TARGET_BUILD_DIR}/CoreMediaIO.framework",
 				);
 				INFOPLIST_FILE = "$(PROJECT_DIR)/ScreenShareTests/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
