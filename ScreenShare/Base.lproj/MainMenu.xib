@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="10117" systemVersion="16A201w" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+    <dependencies>
+        <deployment identifier="macosx"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="10117"/>
+    </dependencies>
+    <objects>
+        <customObject id="-2" userLabel="File's Owner" customClass="NSApplication">
+            <connections>
+                <outlet property="delegate" destination="Voe-Tx-rLC" id="GzC-gU-4Uq"/>
+            </connections>
+        </customObject>
+        <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
+        <customObject id="-3" userLabel="Application" customClass="NSObject"/>
+        <customObject id="Voe-Tx-rLC" customClass="AppDelegate" customModule="Screenshare" customModuleProvider="target">
+            <connections>
+                <outlet property="menuDevice" destination="bib-Uj-vzu" id="hqE-Q0-dgY"/>
+                <outlet property="menuItemDevice" destination="dMs-cI-mzQ" id="z6k-WA-dju"/>
+                <outlet property="menuItemFit" destination="DVo-aG-piG" id="qNb-mW-P6o"/>
+                <outlet property="progressIndicator" destination="9xQ-1M-2nQ" id="3LW-C9-znQ"/>
+                <outlet property="window" destination="bMR-WN-gwi" id="3NW-W0-8pn"/>
+            </connections>
+        </customObject>
+        <customObject id="YLy-65-1bz" customClass="NSFontManager"/>
+        <menu title="Main Menu" systemMenu="main" id="AYu-sK-qS6">
+            <items>
+                <menuItem title="Screenshare" id="1Xt-HY-uBw">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <menu key="submenu" title="Screenshare" systemMenu="apple" id="uQy-DD-JDr">
+                        <items>
+                            <menuItem title="About Screenshare" id="5kV-Vb-QxS">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <connections>
+                                    <action selector="orderFrontStandardAboutPanel:" target="-1" id="Exp-CZ-Vem"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="VOq-y0-SEH"/>
+                            <menuItem title="Preferences…" keyEquivalent="," id="BOF-NM-1cW"/>
+                            <menuItem isSeparatorItem="YES" id="wFC-TO-SCJ"/>
+                            <menuItem title="Services" id="NMo-om-nkz">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <menu key="submenu" title="Services" systemMenu="services" id="hz9-B4-Xy5"/>
+                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="4je-JR-u6R"/>
+                            <menuItem title="Hide Screenshare" keyEquivalent="h" id="Olw-nP-bQN">
+                                <connections>
+                                    <action selector="hide:" target="-1" id="PnN-Uc-m68"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Hide Others" keyEquivalent="h" id="Vdr-fp-XzO">
+                                <modifierMask key="keyEquivalentModifierMask" option="YES" command="YES"/>
+                                <connections>
+                                    <action selector="hideOtherApplications:" target="-1" id="VT4-aY-XCT"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Show All" id="Kd2-mp-pUS">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <connections>
+                                    <action selector="unhideAllApplications:" target="-1" id="Dhg-Le-xox"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="kCx-OE-vgT"/>
+                            <menuItem title="Quit Screenshare" keyEquivalent="q" id="4sb-4s-VLi">
+                                <connections>
+                                    <action selector="terminate:" target="-1" id="Te7-pn-YzF"/>
+                                </connections>
+                            </menuItem>
+                        </items>
+                    </menu>
+                </menuItem>
+                <menuItem title="Device" id="dMs-cI-mzQ">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <menu key="submenu" title="Device" id="bib-Uj-vzu">
+                        <items>
+                            <menuItem title="Fit to screen" keyEquivalent="f" id="DVo-aG-piG">
+                                <connections>
+                                    <action selector="fitToScreen:" target="Voe-Tx-rLC" id="hnS-y6-7qS"/>
+                                </connections>
+                            </menuItem>
+                        </items>
+                    </menu>
+                </menuItem>
+                <menuItem title="Window" id="aUF-d1-5bR">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <menu key="submenu" title="Window" systemMenu="window" id="Td7-aD-5lo">
+                        <items>
+                            <menuItem title="Minimize" keyEquivalent="m" id="OY7-WF-poV">
+                                <connections>
+                                    <action selector="performMiniaturize:" target="-1" id="VwT-WD-YPe"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Zoom" id="R4o-n2-Eq4">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <connections>
+                                    <action selector="performZoom:" target="-1" id="DIl-cC-cCs"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="eu3-7i-yIM"/>
+                            <menuItem title="Bring All to Front" id="LE2-aR-0XJ">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <connections>
+                                    <action selector="arrangeInFront:" target="-1" id="DRN-fu-gQh"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="OPi-oL-O2t"/>
+                            <menuItem title="Enter Full Screen" keyEquivalent="f" id="vUK-pY-2HM">
+                                <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
+                                <connections>
+                                    <action selector="toggleFullScreen:" target="-1" id="htT-JS-a7G"/>
+                                </connections>
+                            </menuItem>
+                        </items>
+                    </menu>
+                </menuItem>
+            </items>
+        </menu>
+        <window title="ScreenShare" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" oneShot="NO" releasedWhenClosed="NO" showsToolbarButton="NO" animationBehavior="default" id="bMR-WN-gwi">
+            <windowStyleMask key="styleMask" titled="YES"/>
+            <rect key="contentRect" x="0.0" y="199" width="232" height="239"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1920" height="1178"/>
+            <value key="minSize" type="size" width="232" height="239"/>
+            <view key="contentView" id="Kgw-gr-rpU">
+                <rect key="frame" x="0.0" y="-5" width="232" height="239"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="I3J-Ee-YGQ">
+                        <rect key="frame" x="28" y="87" width="176" height="17"/>
+                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="center" title="Searching for iOS devices..." id="ARA-JJ-HKJ">
+                            <font key="font" metaFont="system"/>
+                            <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                            <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                        </textFieldCell>
+                    </textField>
+                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" setsMaxLayoutWidthAtFirstLayout="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ocB-AK-1IQ">
+                        <rect key="frame" x="26" y="10" width="181" height="30"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="30" id="zCd-Lg-bhq"/>
+                        </constraints>
+                        <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="center" title="Connect your iOS device to your laptop cable. " id="NPN-FD-fEo">
+                            <font key="font" metaFont="smallSystem"/>
+                            <color key="textColor" name="knobColor" catalog="System" colorSpace="catalog"/>
+                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                        </textFieldCell>
+                    </textField>
+                    <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="jP1-DB-3cT">
+                        <rect key="frame" x="46" y="112" width="140" height="127"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="127" id="VdF-wr-agT"/>
+                            <constraint firstAttribute="width" constant="140" id="WF5-lB-rey"/>
+                        </constraints>
+                        <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyUpOrDown" image="ScreenShare-icon" id="LJX-Wl-N3i"/>
+                    </imageView>
+                    <progressIndicator wantsLayer="YES" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" maxValue="100" bezeled="NO" indeterminate="YES" controlSize="small" style="spinning" translatesAutoresizingMaskIntoConstraints="NO" id="9xQ-1M-2nQ">
+                        <rect key="frame" x="108" y="167" width="16" height="16"/>
+                    </progressIndicator>
+                </subviews>
+                <constraints>
+                    <constraint firstAttribute="centerX" secondItem="jP1-DB-3cT" secondAttribute="centerX" id="1XU-ql-A2c"/>
+                    <constraint firstItem="jP1-DB-3cT" firstAttribute="top" secondItem="Kgw-gr-rpU" secondAttribute="top" id="2sq-2j-fWO"/>
+                    <constraint firstAttribute="centerX" secondItem="I3J-Ee-YGQ" secondAttribute="centerX" id="5Rh-iN-Yb8"/>
+                    <constraint firstAttribute="centerX" secondItem="ocB-AK-1IQ" secondAttribute="centerX" id="GtL-eF-b0c"/>
+                    <constraint firstAttribute="bottom" secondItem="I3J-Ee-YGQ" secondAttribute="bottom" constant="87" id="Juv-sI-JJK"/>
+                    <constraint firstAttribute="bottom" secondItem="ocB-AK-1IQ" secondAttribute="bottom" constant="10" id="ygL-kP-T4l"/>
+                </constraints>
+            </view>
+            <point key="canvasLocation" x="601" y="713.5"/>
+        </window>
+    </objects>
+    <resources>
+        <image name="ScreenShare-icon" width="1024" height="1024"/>
+    </resources>
+</document>
