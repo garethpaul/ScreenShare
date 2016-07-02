@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		7F4CF5F51D276BDF00D58750 /* ScreenshareUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F4CF5F41D276BDF00D58750 /* ScreenshareUITests.swift */; };
+		7F4CF5FC1D276DBD00D58750 /* Info.plist in Sources */ = {isa = PBXBuildFile; fileRef = A240ADF51AA11D9D00A19D30 /* Info.plist */; };
+		7F4CF5FD1D276E3900D58750 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = A240ADF51AA11D9D00A19D30 /* Info.plist */; };
 		A240ADE11AA11D9D00A19D30 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A240ADE01AA11D9D00A19D30 /* AppDelegate.swift */; };
 		A240ADE81AA11D9D00A19D30 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A240ADE71AA11D9D00A19D30 /* Images.xcassets */; };
 		A240ADEB1AA11D9D00A19D30 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = A240ADE91AA11D9D00A19D30 /* MainMenu.xib */; };
@@ -23,6 +26,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		7F4CF5FA1D276BE800D58750 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A240ADD31AA11D9D00A19D30 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A240ADDA1AA11D9D00A19D30;
+			remoteInfo = Screenshare;
+		};
 		A240ADF11AA11D9D00A19D30 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = A240ADD31AA11D9D00A19D30 /* Project object */;
@@ -33,6 +43,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		7F4CF5F21D276BDF00D58750 /* ScreenshareUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ScreenshareUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		7F4CF5F41D276BDF00D58750 /* ScreenshareUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenshareUITests.swift; sourceTree = "<group>"; };
+		7F4CF5F61D276BDF00D58750 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A240ADDB1AA11D9D00A19D30 /* Screenshare.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Screenshare.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A240ADDF1AA11D9D00A19D30 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A240ADE01AA11D9D00A19D30 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -54,6 +67,13 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		7F4CF5EF1D276BDF00D58750 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		A240ADD81AA11D9D00A19D30 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -73,6 +93,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		7F4CF5F31D276BDF00D58750 /* ScreenshareUITests */ = {
+			isa = PBXGroup;
+			children = (
+				7F4CF5F41D276BDF00D58750 /* ScreenshareUITests.swift */,
+				7F4CF5F61D276BDF00D58750 /* Info.plist */,
+			);
+			path = ScreenshareUITests;
+			sourceTree = "<group>";
+		};
 		7F644D0E1D25FDC2002F01D3 /* Views */ = {
 			isa = PBXGroup;
 			children = (
@@ -109,6 +138,7 @@
 				A240AE001AA11EAB00A19D30 /* AVFoundation.framework */,
 				A240ADDD1AA11D9D00A19D30 /* Screenshare */,
 				A240ADF31AA11D9D00A19D30 /* ScreenShareTests */,
+				7F4CF5F31D276BDF00D58750 /* ScreenshareUITests */,
 				A240ADDC1AA11D9D00A19D30 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -118,6 +148,7 @@
 			children = (
 				A240ADDB1AA11D9D00A19D30 /* Screenshare.app */,
 				A240ADF01AA11D9D00A19D30 /* Screenshare.xctest */,
+				7F4CF5F21D276BDF00D58750 /* ScreenshareUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -149,6 +180,7 @@
 			isa = PBXGroup;
 			children = (
 				A240ADF61AA11D9D00A19D30 /* ScreenShareTests.swift */,
+				A240ADF51AA11D9D00A19D30 /* Info.plist */,
 				A240ADF41AA11D9D00A19D30 /* Supporting Files */,
 			);
 			path = ScreenShareTests;
@@ -157,7 +189,6 @@
 		A240ADF41AA11D9D00A19D30 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
-				A240ADF51AA11D9D00A19D30 /* Info.plist */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -165,6 +196,24 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		7F4CF5F11D276BDF00D58750 /* ScreenshareUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 7F4CF5F91D276BDF00D58750 /* Build configuration list for PBXNativeTarget "ScreenshareUITests" */;
+			buildPhases = (
+				7F4CF5EE1D276BDF00D58750 /* Sources */,
+				7F4CF5EF1D276BDF00D58750 /* Frameworks */,
+				7F4CF5F01D276BDF00D58750 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				7F4CF5FB1D276BE800D58750 /* PBXTargetDependency */,
+			);
+			name = ScreenshareUITests;
+			productName = ScreenshareUITests;
+			productReference = 7F4CF5F21D276BDF00D58750 /* ScreenshareUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
 		A240ADDA1AA11D9D00A19D30 /* Screenshare */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = A240ADFA1AA11D9D00A19D30 /* Build configuration list for PBXNativeTarget "Screenshare" */;
@@ -182,9 +231,9 @@
 			productReference = A240ADDB1AA11D9D00A19D30 /* Screenshare.app */;
 			productType = "com.apple.product-type.application";
 		};
-		A240ADEF1AA11D9D00A19D30 /* ScreenshareTests */ = {
+		A240ADEF1AA11D9D00A19D30 /* ScreenshareUnitTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = A240ADFD1AA11D9D00A19D30 /* Build configuration list for PBXNativeTarget "ScreenshareTests" */;
+			buildConfigurationList = A240ADFD1AA11D9D00A19D30 /* Build configuration list for PBXNativeTarget "ScreenshareUnitTests" */;
 			buildPhases = (
 				A240ADEC1AA11D9D00A19D30 /* Sources */,
 				A240ADED1AA11D9D00A19D30 /* Frameworks */,
@@ -195,7 +244,7 @@
 			dependencies = (
 				A240ADF21AA11D9D00A19D30 /* PBXTargetDependency */,
 			);
-			name = ScreenshareTests;
+			name = ScreenshareUnitTests;
 			productName = PresentIOTests;
 			productReference = A240ADF01AA11D9D00A19D30 /* Screenshare.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
@@ -207,10 +256,14 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftMigration = 0720;
-				LastSwiftUpdateCheck = 0720;
+				LastSwiftUpdateCheck = 0730;
 				LastUpgradeCheck = 0720;
 				ORGANIZATIONNAME = GPJ;
 				TargetAttributes = {
+					7F4CF5F11D276BDF00D58750 = {
+						CreatedOnToolsVersion = 7.3.1;
+						TestTargetID = A240ADDA1AA11D9D00A19D30;
+					};
 					A240ADDA1AA11D9D00A19D30 = {
 						CreatedOnToolsVersion = 6.1.1;
 						DevelopmentTeam = 53AF9EMAN4;
@@ -240,12 +293,21 @@
 			projectRoot = "";
 			targets = (
 				A240ADDA1AA11D9D00A19D30 /* Screenshare */,
-				A240ADEF1AA11D9D00A19D30 /* ScreenshareTests */,
+				A240ADEF1AA11D9D00A19D30 /* ScreenshareUnitTests */,
+				7F4CF5F11D276BDF00D58750 /* ScreenshareUITests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		7F4CF5F01D276BDF00D58750 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7F4CF5FD1D276E3900D58750 /* Info.plist in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		A240ADD91AA11D9D00A19D30 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -267,6 +329,14 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		7F4CF5EE1D276BDF00D58750 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7F4CF5F51D276BDF00D58750 /* ScreenshareUITests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		A240ADD71AA11D9D00A19D30 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -284,6 +354,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7F4CF5FC1D276DBD00D58750 /* Info.plist in Sources */,
 				A240ADF71AA11D9D00A19D30 /* ScreenShareTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -291,6 +362,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		7F4CF5FB1D276BE800D58750 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A240ADDA1AA11D9D00A19D30 /* Screenshare */;
+			targetProxy = 7F4CF5FA1D276BE800D58750 /* PBXContainerItemProxy */;
+		};
 		A240ADF21AA11D9D00A19D30 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = A240ADDA1AA11D9D00A19D30 /* Screenshare */;
@@ -310,6 +386,43 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		7F4CF5F71D276BDF00D58750 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ANALYZER_NONNULL = YES;
+				CODE_SIGN_IDENTITY = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				GCC_NO_COMMON_BLOCKS = YES;
+				INFOPLIST_FILE = ScreenshareUITests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.gpj.ScreenshareUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				TEST_TARGET_NAME = Screenshare;
+			};
+			name = Debug;
+		};
+		7F4CF5F81D276BDF00D58750 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ANALYZER_NONNULL = YES;
+				CODE_SIGN_IDENTITY = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				COPY_PHASE_STRIP = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				INFOPLIST_FILE = ScreenshareUITests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.gpj.ScreenshareUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				TEST_TARGET_NAME = Screenshare;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 		A240ADF81AA11D9D00A19D30 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -431,7 +544,7 @@
 					"DEBUG=1",
 					"$(inherited)",
 				);
-				INFOPLIST_FILE = "$(SOURCE_DIR)/ScreenShare/Info.plist";
+				INFOPLIST_FILE = "$(PROJECT_DIR)/ScreenShareTests/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.gpj.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = Screenshare;
@@ -448,7 +561,7 @@
 					"$(DEVELOPER_FRAMEWORKS_DIR)",
 					"$(inherited)",
 				);
-				INFOPLIST_FILE = "$(SOURCE_DIR)/ScreenShare/Info.plist";
+				INFOPLIST_FILE = "$(PROJECT_DIR)/ScreenShareTests/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.gpj.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = Screenshare;
@@ -459,6 +572,14 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		7F4CF5F91D276BDF00D58750 /* Build configuration list for PBXNativeTarget "ScreenshareUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				7F4CF5F71D276BDF00D58750 /* Debug */,
+				7F4CF5F81D276BDF00D58750 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
 		A240ADD61AA11D9D00A19D30 /* Build configuration list for PBXProject "Screenshare" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -477,7 +598,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		A240ADFD1AA11D9D00A19D30 /* Build configuration list for PBXNativeTarget "ScreenshareTests" */ = {
+		A240ADFD1AA11D9D00A19D30 /* Build configuration list for PBXNativeTarget "ScreenshareUnitTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				A240ADFE1AA11D9D00A19D30 /* Debug */,

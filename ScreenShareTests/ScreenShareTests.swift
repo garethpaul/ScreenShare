@@ -9,7 +9,7 @@
 import Cocoa
 import XCTest
 
-class PresentIOTests: XCTestCase {
+class ScreenShareTests: XCTestCase {
     
     override func setUp() {
         super.setUp()
