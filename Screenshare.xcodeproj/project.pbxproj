@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		7F4CF5F51D276BDF00D58750 /* ScreenshareUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F4CF5F41D276BDF00D58750 /* ScreenshareUITests.swift */; };
-		7F4CF5FC1D276DBD00D58750 /* Info.plist in Sources */ = {isa = PBXBuildFile; fileRef = A240ADF51AA11D9D00A19D30 /* Info.plist */; };
 		7F4CF5FD1D276E3900D58750 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = A240ADF51AA11D9D00A19D30 /* Info.plist */; };
 		A240ADE11AA11D9D00A19D30 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A240ADE01AA11D9D00A19D30 /* AppDelegate.swift */; };
 		A240ADE81AA11D9D00A19D30 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A240ADE71AA11D9D00A19D30 /* Images.xcassets */; };
@@ -257,7 +256,7 @@
 			attributes = {
 				LastSwiftMigration = 0720;
 				LastSwiftUpdateCheck = 0730;
-				LastUpgradeCheck = 0720;
+				LastUpgradeCheck = 0800;
 				ORGANIZATIONNAME = GPJ;
 				TargetAttributes = {
 					7F4CF5F11D276BDF00D58750 = {
@@ -267,6 +266,7 @@
 					A240ADDA1AA11D9D00A19D30 = {
 						CreatedOnToolsVersion = 6.1.1;
 						DevelopmentTeam = 53AF9EMAN4;
+						LastSwiftMigration = 0800;
 						SystemCapabilities = {
 							com.apple.Sandbox = {
 								enabled = 1;
@@ -275,6 +275,7 @@
 					};
 					A240ADEF1AA11D9D00A19D30 = {
 						CreatedOnToolsVersion = 6.1.1;
+						LastSwiftMigration = 0800;
 						TestTargetID = A240ADDA1AA11D9D00A19D30;
 					};
 				};
@@ -354,7 +355,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7F4CF5FC1D276DBD00D58750 /* Info.plist in Sources */,
 				A240ADF71AA11D9D00A19D30 /* ScreenShareTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -436,8 +436,10 @@
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_IDENTITY = "Mac Developer";
@@ -446,6 +448,7 @@
 				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
@@ -479,8 +482,10 @@
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_IDENTITY = "Mac Developer";
@@ -489,6 +494,7 @@
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
@@ -498,6 +504,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = macosx;
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 			};
 			name = Release;
 		};
@@ -513,6 +520,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				PRODUCT_BUNDLE_IDENTIFIER = com.gpj.Screenshare;
 				PRODUCT_NAME = Screenshare;
+				SWIFT_VERSION = 2.3;
 			};
 			name = Debug;
 		};
@@ -528,6 +536,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				PRODUCT_BUNDLE_IDENTIFIER = com.gpj.Screenshare;
 				PRODUCT_NAME = Screenshare;
+				SWIFT_VERSION = 2.3;
 			};
 			name = Release;
 		};
@@ -548,6 +557,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.gpj.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = Screenshare;
+				SWIFT_VERSION = 2.3;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Screenshare.app/Contents/MacOS/Screenshare";
 			};
 			name = Debug;
@@ -565,6 +575,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.gpj.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = Screenshare;
+				SWIFT_VERSION = 2.3;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Screenshare.app/Contents/MacOS/Screenshare";
 			};
 			name = Release;

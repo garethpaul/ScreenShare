@@ -114,7 +114,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         let frame = DeviceUtils.getCenteredRect(size, screenFrame: NSScreen.mainScreen()!.frame)
         
         let window = NSWindow(contentRect: frame,
-            styleMask: NSBorderlessWindowMask | NSResizableWindowMask,
+            styleMask: NSBorderlessWindowMask,
             backing: NSBackingStoreType.Buffered, defer: false)
         
         window.movableByWindowBackground = true
