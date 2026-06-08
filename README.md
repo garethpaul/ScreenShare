@@ -79,4 +79,4 @@ Keep changes small and tied to the project that is already present in this repos
 
 Prior README summary:
 
-> ScreenShare <!-- README-OVERVIEW-IMAGE --> ScreenShare is a great demo tool that allows you to mirror your iOS devices to your screen. This is great for: - Creating extremely clean demos. - When you have a demo and want it to look amazing! - When you don't have a Wi-Fi network available, or your customer won't let you on theirs. - Doing a demo of your app's offline capabilities
+> ScreenShare ScreenShare is a great demo tool that allows you to mirror your iOS devices to your screen. This is great for: - Creating extremely clean demos. - When you have a demo and want it to look amazing! - When you don't have a Wi-Fi network available, or your customer won't let you on theirs. - Doing a demo of your app's offline capabilities
