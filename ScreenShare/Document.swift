@@ -169,8 +169,11 @@ class Document: NSDocument {
     func loadObservers() {
         
         notifications.registerObserver(AVCaptureSessionRuntimeErrorNotification, forObject: session, dispatchAsyncToMainQueue: true, block: {note in
-            let err = note.userInfo![AVCaptureSessionErrorKey] as NSError
-            self.presentError( err )
+            if let err = note.userInfo?[AVCaptureSessionErrorKey] as? NSError {
+                self.presentError(err)
+            } else {
+                NSLog("Capture session runtime error notification missing NSError metadata")
+            }
         })
         
         
@@ -226,4 +229,3 @@ class Document: NSDocument {
     
     
 }
-

@@ -16,6 +16,7 @@ Priority:
 
 - Preserve the connected-device mirroring flow
 - Keep single-device limitations visible
+- Handle capture runtime errors without crashing on malformed notifications
 - Maintain custom skin and screenshot context
 - Avoid recording, uploading, or storing mirrored content by default
 

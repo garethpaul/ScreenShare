@@ -81,9 +81,12 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     func loadObservers() {
         
         notifications.registerObserver(AVCaptureSessionRuntimeErrorNotification, forObject: session, dispatchAsyncToMainQueue: true, block: {note in
-            let err = note.userInfo![AVCaptureSessionErrorKey] as! NSError
-            //self.window.presentError( err )
-            NSLog(err.description)
+            if let err = note.userInfo?[AVCaptureSessionErrorKey] as? NSError {
+                //self.window.presentError( err )
+                NSLog(err.description)
+            } else {
+                NSLog("Capture session runtime error notification missing NSError metadata")
+            }
         })
         
         
@@ -182,4 +185,3 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         
     }
 }
-

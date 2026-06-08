@@ -28,6 +28,7 @@ def require_paths():
         "ScreenShare/Info.plist",
         "ScreenShare/Screenshare.entitlements",
         "ScreenShare/AppDelegate.swift",
+        "ScreenShare/Document.swift",
         "ScreenShare/Skin.swift",
     ):
         if not (ROOT / relative_path).exists():
@@ -68,6 +69,7 @@ def behavior_checks():
         return errors
 
     app_delegate = read_text("ScreenShare/AppDelegate.swift")
+    document = read_text("ScreenShare/Document.swift")
     skin = read_text("ScreenShare/Skin.swift")
     if "AVCaptureDevice" not in app_delegate + skin:
         errors.append("app must keep AVFoundation device capture code visible")
@@ -82,6 +84,17 @@ def behavior_checks():
         errors.append("Info.plist must explain camera access with NSCameraUsageDescription")
     elif "connected iOS devices" not in camera_reason:
         errors.append("NSCameraUsageDescription must mention connected iOS devices")
+
+    runtime_sources = app_delegate + document
+    if "userInfo!" in runtime_sources:
+        errors.append("runtime-error observers must not force unwrap notification userInfo")
+    if "AVCaptureSessionErrorKey] as! NSError" in runtime_sources:
+        errors.append("runtime-error observers must not force cast capture errors")
+    safe_error_extractions = runtime_sources.count("note.userInfo?[AVCaptureSessionErrorKey] as? NSError")
+    if safe_error_extractions < 2:
+        errors.append("both runtime-error observers must optional-bind AVCaptureSessionErrorKey as NSError")
+    if runtime_sources.count("Capture session runtime error notification missing NSError metadata") < 2:
+        errors.append("runtime-error observers must log malformed capture error notifications")
 
     return errors
 
