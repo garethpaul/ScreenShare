@@ -28,6 +28,8 @@
 	<string>Copyright © 2016 GPJ. All rights reserved.</string>
 	<key>NSMainNibFile</key>
 	<string>MainMenu</string>
+	<key>NSCameraUsageDescription</key>
+	<string>ScreenShare uses camera access to display connected iOS devices as demo capture sources.</string>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
 </dict>
