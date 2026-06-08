@@ -17,6 +17,7 @@ Priority:
 - Preserve the connected-device mirroring flow
 - Keep single-device limitations visible
 - Handle capture runtime errors without crashing on malformed notifications
+- Decode local device settings without force-cast launch crashes
 - Maintain custom skin and screenshot context
 - Keep completed maintenance plans under `docs/plans`
 - Avoid recording, uploading, or storing mirrored content by default

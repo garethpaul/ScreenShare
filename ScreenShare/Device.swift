@@ -75,10 +75,15 @@ class Device: NSObject, NSCoding {
     }
     
     required convenience init?(coder aDecoder: NSCoder) {
-        let name = aDecoder.decodeObjectForKey(PropertyKey.nameKey) as! String
-        let uid = aDecoder.decodeObjectForKey(PropertyKey.uidKey) as! String
-        let pRect = NSRectFromString(aDecoder.decodeObjectForKey(PropertyKey.portraitRectKey) as! String)
-        let lRect = NSRectFromString(aDecoder.decodeObjectForKey(PropertyKey.landscapeRectKey) as! String)
+        guard let name = aDecoder.decodeObjectForKey(PropertyKey.nameKey) as? String,
+            let uid = aDecoder.decodeObjectForKey(PropertyKey.uidKey) as? String,
+            let portraitRect = aDecoder.decodeObjectForKey(PropertyKey.portraitRectKey) as? String,
+            let landscapeRect = aDecoder.decodeObjectForKey(PropertyKey.landscapeRectKey) as? String else {
+                return nil
+        }
+
+        let pRect = NSRectFromString(portraitRect)
+        let lRect = NSRectFromString(landscapeRect)
         
         // Must call designated initializer.
         self.init(name: name, uid: uid, portraitRect:pRect, landscapeRect:lRect)

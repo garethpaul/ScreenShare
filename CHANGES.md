@@ -2,6 +2,8 @@
 
 ## 2026-06-08
 
+- Made device settings archive decoding fail closed instead of force-casting
+  saved fields, with static checker coverage.
 - Added `make check` as the shared repository verification alias.
 - Guarded capture runtime-error observers against malformed notifications
   instead of force-unwrapping `userInfo` and `NSError` metadata.

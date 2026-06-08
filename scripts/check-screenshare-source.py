@@ -31,6 +31,7 @@ def require_paths():
         "ScreenShare/Screenshare.entitlements",
         "ScreenShare/AppDelegate.swift",
         "ScreenShare/Document.swift",
+        "ScreenShare/Device.swift",
         "ScreenShare/Skin.swift",
     ):
         if not (ROOT / relative_path).exists():
@@ -89,6 +90,7 @@ def behavior_checks():
 
     app_delegate = read_text("ScreenShare/AppDelegate.swift")
     document = read_text("ScreenShare/Document.swift")
+    device = read_text("ScreenShare/Device.swift")
     skin = read_text("ScreenShare/Skin.swift")
     if "AVCaptureDevice" not in app_delegate + skin:
         errors.append("app must keep AVFoundation device capture code visible")
@@ -114,6 +116,10 @@ def behavior_checks():
         errors.append("both runtime-error observers must optional-bind AVCaptureSessionErrorKey as NSError")
     if runtime_sources.count("Capture session runtime error notification missing NSError metadata") < 2:
         errors.append("runtime-error observers must log malformed capture error notifications")
+    if "decodeObjectForKey(PropertyKey.nameKey) as! String" in device:
+        errors.append("Device archive decoding must not force-cast saved settings")
+    if "guard let name = aDecoder.decodeObjectForKey(PropertyKey.nameKey) as? String" not in device:
+        errors.append("Device archive decoding must optional-bind saved settings fields")
 
     return errors
 
