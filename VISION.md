@@ -45,3 +45,6 @@ and permissions obvious during demos.
 - Multi-device support without clear UI state
 - Silent storage of mirrored frames
 - Permission-bypass behavior
+
+This list is a roadmap guardrail, not a permanent rule.
+Strong user demand and strong technical rationale can change it.
