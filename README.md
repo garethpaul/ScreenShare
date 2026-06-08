@@ -74,9 +74,3 @@ When the required SDK or runtime is unavailable, use static checks and source re
 ## Contributing
 
 Keep changes small and tied to the project that is already present in this repository. For code changes, document the toolchain used, avoid committing generated dependency directories or local configuration, and update this README when setup or verification steps change.
-
-## Existing Project Notes
-
-Prior README summary:
-
-> ScreenShare ScreenShare is a great demo tool that allows you to mirror your iOS devices to your screen. This is great for: - Creating extremely clean demos. - When you have a demo and want it to look amazing! - When you don't have a Wi-Fi network available, or your customer won't let you on theirs. - Doing a demo of your app's offline capabilities
