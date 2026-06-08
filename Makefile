@@ -1,4 +1,4 @@
-.PHONY: lint test build verify
+.PHONY: build check lint test verify
 
 PYTHON ?= python3
 XCODEBUILD ?= xcodebuild
@@ -18,3 +18,5 @@ build: lint
 	fi
 
 verify: lint test build
+
+check: verify

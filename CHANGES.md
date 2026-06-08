@@ -2,6 +2,7 @@
 
 ## 2026-06-08
 
+- Added `make check` as the shared repository verification alias.
 - Guarded capture runtime-error observers against malformed notifications
   instead of force-unwrapping `userInfo` and `NSError` metadata.
 - Extended the source checker to require safe runtime-error extraction and

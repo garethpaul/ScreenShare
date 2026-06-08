@@ -51,7 +51,7 @@ The setup commands above are derived from repository files. Legacy mobile, Pytho
 
 ## Testing and Verification
 
-- `make verify` runs shell syntax checks, static Xcode project checks, and
+- `make check` runs shell syntax checks, static Xcode project checks, and
   capture permission/runtime-error metadata checks. When `xcodebuild` is
   installed, the `build` target also builds the shared app scheme with code
   signing disabled.
