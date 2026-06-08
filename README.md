@@ -1,4 +1,8 @@
 # ScreenShare
+
+<!-- README-OVERVIEW-IMAGE -->
+![Project overview](docs/readme-overview.svg)
+
 ScreenShare is a great demo tool that allows you to mirror your iOS devices to your screen.
 
 ### This is great for:
