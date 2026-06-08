@@ -18,6 +18,7 @@ Priority:
 - Keep single-device limitations visible
 - Handle capture runtime errors without crashing on malformed notifications
 - Maintain custom skin and screenshot context
+- Keep completed maintenance plans under `docs/plans`
 - Avoid recording, uploading, or storing mirrored content by default
 
 Next priorities:

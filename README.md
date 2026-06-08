@@ -13,6 +13,11 @@ This README is based on the checked-in source, manifests, scripts, and repositor
 
 - `README.md` - project overview and local usage notes
 - `build.sh`
+- `CHANGES.md` - maintenance history for build and privacy checks
+- `Makefile` - local verification entry points
+- `docs/plans` - completed maintenance plans for the current baseline
+- `plans` - historical implementation notes
+- `scripts` - static project and behavior validators
 - `ScreenShare` - source or example code
 - `Screenshare.xcodeproj` - Xcode project file
 - `ScreenShareTests` - source or example code
@@ -55,6 +60,7 @@ The setup commands above are derived from repository files. Legacy mobile, Pytho
   capture permission/runtime-error metadata checks. When `xcodebuild` is
   installed, the `build` target also builds the shared app scheme with code
   signing disabled.
+- Static project checks also require completed canonical plans under `docs/plans`.
 - Xcode's test action or `xcodebuild test` with the appropriate scheme and
   destination can be used on macOS for deeper verification.
 
@@ -76,6 +82,8 @@ When the required SDK or runtime is unavailable, use static checks and source re
 - This looks like an Apple platform project or sample. Xcode, Swift, CocoaPods, and deployment target versions may need to match the original project era.
 - See `SECURITY.md` for vulnerability reporting and safe research guidance.
 - See `VISION.md` for project direction and contribution guardrails.
+- See `docs/plans/2026-06-08-screenshare-baseline.md` for the canonical
+  mirroring privacy and runtime-error baseline.
 
 ## Contributing
 

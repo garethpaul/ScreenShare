@@ -7,6 +7,8 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
+DOCS_PLANS = ROOT / "docs" / "plans"
+CANONICAL_PLAN = DOCS_PLANS / "2026-06-08-screenshare-baseline.md"
 
 
 def read_text(relative_path):
@@ -36,8 +38,25 @@ def require_paths():
     return errors
 
 
+def docs_plan_checks():
+    errors = []
+    if not CANONICAL_PLAN.exists():
+        errors.append("docs/plans/2026-06-08-screenshare-baseline.md is missing")
+
+    plans = sorted(DOCS_PLANS.glob("*.md")) if DOCS_PLANS.exists() else []
+    if not plans:
+        errors.append("docs/plans must contain at least one completed plan")
+
+    for plan_path in plans:
+        plan = plan_path.read_text(encoding="utf-8")
+        if "Status: Completed" not in plan or "make check" not in plan:
+            errors.append(f"{plan_path.relative_to(ROOT)} must record completed status and make check verification")
+
+    return errors
+
+
 def project_checks():
-    errors = require_paths()
+    errors = docs_plan_checks() + require_paths()
     if errors:
         return errors
 

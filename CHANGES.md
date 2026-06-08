@@ -13,3 +13,5 @@
 - Added a camera usage description for connected-device mirroring permission
   prompts.
 - Documented the local verification workflow.
+- Added canonical `docs/plans` coverage and made project checks require
+  completed plans.
