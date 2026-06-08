@@ -39,7 +39,7 @@ Mirrored devices may show private apps, notifications, and customer data. The
 tool should avoid hidden recording or uploads and should make capture windows
 and permissions obvious during demos.
 
-## What We Will Not Merge For Now
+## What We Will Not Merge (For Now)
 
 - Hidden recording or streaming
 - Multi-device support without clear UI state
