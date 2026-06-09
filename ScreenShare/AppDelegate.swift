@@ -91,20 +91,14 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         
         
         notifications.registerObserver(AVCaptureSessionDidStartRunningNotification, forObject: session, block: {note in
-            print("Did start running")
             self.refreshDevices()
-        })
-        notifications.registerObserver(AVCaptureSessionDidStopRunningNotification, forObject: session, block: {note in
-            print("Did stop running")
         })
 
                 
         notifications.registerObserver(AVCaptureDeviceWasConnectedNotification, forObject: nil, dispatchAsyncToMainQueue: true, block: {note in
-            print("Device connected")
             self.refreshDevices()
         })
         notifications.registerObserver(AVCaptureDeviceWasDisconnectedNotification, forObject: nil, dispatchAsyncToMainQueue: true, block: {note in
-            print("Device disconnected")
             self.refreshDevices()
         })
         
@@ -161,7 +155,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         
                     // support only one session for now, until multiple devices videos start working
                     if(self.deviceSessions.count > 0) {
-                        print("Only one session supported.")
                         let alert = NSAlert()
                         alert.messageText = "Only one device supported"
                         alert.addButtonWithTitle("OK")

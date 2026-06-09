@@ -145,7 +145,6 @@ class Document: NSDocument {
                         //window!.aspectRatio = NSSize(width: CGFloat(dimensions.width), height: CGFloat(dimensions.height))
                         
                         lblResolution?.stringValue = "w:\(dimensions.width), h:\(dimensions.height)"
-                        println("w:\(dimensions.width), h:\(dimensions.height)")
                         
                     
                 }
@@ -177,19 +176,10 @@ class Document: NSDocument {
         })
         
         
-        notifications.registerObserver(AVCaptureSessionDidStartRunningNotification, forObject: session, block: {note in
-            println("Did start running")
-        })
-        notifications.registerObserver(AVCaptureSessionDidStopRunningNotification, forObject: session, block: {note in
-            println("Did stop running")
-        })
-        
         notifications.registerObserver(AVCaptureDeviceWasConnectedNotification, forObject: nil, block: {note in
-            println("Device connected")
             self.refreshDevices()
         })
         notifications.registerObserver(AVCaptureDeviceWasDisconnectedNotification, forObject: nil, block: {note in
-            println("Device disconnected")
             self.refreshDevices()
         })
         

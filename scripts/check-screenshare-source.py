@@ -122,6 +122,16 @@ def behavior_checks():
         errors.append("Device archive decoding must optional-bind saved settings fields")
     if re.search(r'print\("Using (Portrait|Landscape) settings', device):
         errors.append("Device saved settings must not log device names or saved window rectangles")
+    if "NSLog(self.device.skin)" in skin:
+        errors.append("Skin loading must not log selected skin names")
+
+    for swift_path in sorted((ROOT / "ScreenShare").glob("*.swift")):
+        for line_number, line in enumerate(swift_path.read_text(encoding="utf-8").splitlines(), 1):
+            stripped = line.strip()
+            if stripped.startswith("//") or stripped.startswith("/*") or stripped.startswith("*"):
+                continue
+            if re.search(r"\bprint(?:ln)?\s*\(", stripped):
+                errors.append(f"{swift_path.relative_to(ROOT)}:{line_number} must not use print/println for app logging")
 
     return errors
 

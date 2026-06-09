@@ -68,7 +68,6 @@ class Skin: NSView {
         let newDev = DeviceUtils.initWithDimensions(self.device.videDimensions)
         if( self.device.type != newDev.type || self.view == nil ) {
             self.device = newDev
-            NSLog(self.device.skin)
             loadSkinFromNib(self.device.skin)
             
             let size = newDev.getWindowSize()

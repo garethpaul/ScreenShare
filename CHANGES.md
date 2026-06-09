@@ -1,5 +1,12 @@
 # Changes
 
+## 2026-06-09
+
+- Removed ad hoc `print`/`println` lifecycle logging from capture session and
+  device connection observers.
+- Removed skin-name debug logging and extended static behavior checks to reject
+  active stdout app logging.
+
 ## 2026-06-08
 
 - Removed local device-settings debug logging and added static validation to

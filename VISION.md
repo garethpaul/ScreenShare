@@ -19,6 +19,7 @@ Priority:
 - Handle capture runtime errors without crashing on malformed notifications
 - Decode local device settings without force-cast launch crashes
 - Avoid logging local device names or saved window rectangles
+- Avoid ad hoc stdout logging from app Swift sources
 - Maintain custom skin and screenshot context
 - Keep completed maintenance plans under `docs/plans`
 - Avoid recording, uploading, or storing mirrored content by default
@@ -53,6 +54,7 @@ and permissions obvious during demos.
 - Multi-device support without clear UI state
 - Silent storage of mirrored frames
 - Permission-bypass behavior
+- Ad hoc stdout logging for capture lifecycle or device events
 
 This list is a roadmap guardrail, not a permanent rule.
 Strong user demand and strong technical rationale can change it.
