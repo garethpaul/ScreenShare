@@ -64,6 +64,8 @@ The setup commands above are derived from repository files. Legacy mobile, Pytho
   against force-cast crashes.
 - Static behavior checks also reject debug logging of device names and saved
   window rectangles from local settings.
+- Static behavior checks also keep missing local settings from clearing the
+  active capture-device list.
 - Static behavior checks also reject ad hoc `print`/`println` logging in app
   Swift sources while preserving explicit runtime-error diagnostics.
 - Static behavior checks also ensure preview aspect updates compare both video
@@ -100,6 +102,8 @@ When the required SDK or runtime is unavailable, use static checks and source re
   logging guard.
 - See `docs/plans/2026-06-09-video-height-change-detection.md` for the preview
   video height-change guard.
+- See `docs/plans/2026-06-09-missing-settings-device-list.md` for the
+  missing-settings device-list guard.
 
 ## Contributing
 

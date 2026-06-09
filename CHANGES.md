@@ -2,6 +2,8 @@
 
 ## 2026-06-09
 
+- Fixed the missing-settings fallback so it clears saved settings rather than
+  the active capture-device list.
 - Fixed `Document.updateAspect()` so video height changes are compared against
   the stored video height instead of being ignored by a self-comparison.
 - Removed ad hoc `print`/`println` lifecycle logging from capture session and

@@ -18,6 +18,7 @@ Priority:
 - Keep single-device limitations visible
 - Handle capture runtime errors without crashing on malformed notifications
 - Decode local device settings without force-cast launch crashes
+- Keep saved device settings separate from active capture-device discovery
 - Avoid logging local device names or saved window rectangles
 - Avoid ad hoc stdout logging from app Swift sources
 - Keep preview aspect updates responsive to width and height changes

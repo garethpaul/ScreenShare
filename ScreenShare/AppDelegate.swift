@@ -44,7 +44,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         if loaded != nil {
             self.deviceSettings = loaded!
         } else {
-            self.devices = []
+            self.deviceSettings = []
         }
         deviceSettingsLoaded = true
     }

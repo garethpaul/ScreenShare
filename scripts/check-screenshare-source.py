@@ -116,6 +116,10 @@ def behavior_checks():
         errors.append("both runtime-error observers must optional-bind AVCaptureSessionErrorKey as NSError")
     if runtime_sources.count("Capture session runtime error notification missing NSError metadata") < 2:
         errors.append("runtime-error observers must log malformed capture error notifications")
+    if "self.devices = []" in app_delegate:
+        errors.append("AppDelegate.loadDeviceSettings must not clear active capture devices when settings are missing")
+    if "self.deviceSettings = []" not in app_delegate:
+        errors.append("AppDelegate.loadDeviceSettings must reset saved device settings when no archive exists")
     if "decodeObjectForKey(PropertyKey.nameKey) as! String" in device:
         errors.append("Device archive decoding must not force-cast saved settings")
     if "guard let name = aDecoder.decodeObjectForKey(PropertyKey.nameKey) as? String" not in device:
