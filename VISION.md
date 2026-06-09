@@ -25,6 +25,7 @@ Priority:
 - Keep preview aspect updates responsive to width and height changes
 - Keep document preview and aspect setup tolerant of missing nib or capture state
 - Keep session window setup tolerant of missing screen or content-view state
+- Keep device refreshes tolerant of missing main window outlet state
 - Maintain custom skin and screenshot context
 - Keep completed maintenance plans under `docs/plans`
 - Avoid recording, uploading, or storing mirrored content by default

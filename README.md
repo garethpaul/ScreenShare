@@ -76,6 +76,8 @@ The setup commands above are derived from repository files. Legacy mobile, Pytho
   to optional-bind outlets, backing layers, input ports, and windows.
 - Static behavior checks also require session window setup to avoid
   force-unwrapping the main screen or content view.
+- Static behavior checks also require device refreshes to guard the main
+  device-list window before hiding or showing it.
 - Static project checks also require completed canonical plans under `docs/plans`.
 - Xcode's test action or `xcodebuild test` with the appropriate scheme and
   destination can be used on macOS for deeper verification.
@@ -116,6 +118,8 @@ When the required SDK or runtime is unavailable, use static checks and source re
   preview and aspect optional-binding guard.
 - See `docs/plans/2026-06-09-session-window-setup-guard.md` for the session
   window setup guard.
+- See `docs/plans/2026-06-09-main-window-refresh-guard.md` for the main
+  device-list window refresh guard.
 
 ## Contributing
 

@@ -174,10 +174,15 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         }
         }
 
+        guard let window = self.window else {
+            NSLog("Main device list window outlet is missing.")
+            return
+        }
+
         if self.deviceSessions.count > 0 {
-           self.window!.close()
+           window.close()
         } else {
-           self.window!.makeKeyAndOrderFront(NSApp)
+           window.makeKeyAndOrderFront(NSApp)
         }
 
         

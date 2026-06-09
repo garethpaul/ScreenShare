@@ -167,6 +167,12 @@ def behavior_checks():
         errors.append("AppDelegate.startNewSession must not force unwrap the session window content view")
     if "guard let contentView = window.contentView else" not in app_delegate or "contentView.addSubview(skin)" not in app_delegate:
         errors.append("AppDelegate.startNewSession must guard the session window content view before adding the skin")
+    if "self.window!.close()" in app_delegate or "self.window!.makeKeyAndOrderFront(NSApp)" in app_delegate:
+        errors.append("AppDelegate.refreshDevices must not force unwrap the main device-list window")
+    if "guard let window = self.window else" not in app_delegate:
+        errors.append("AppDelegate.refreshDevices must guard the main device-list window outlet")
+    if 'NSLog("Main device list window outlet is missing.")' not in app_delegate:
+        errors.append("AppDelegate.refreshDevices must log a missing main window outlet")
 
     for swift_path in sorted((ROOT / "ScreenShare").glob("*.swift")):
         for line_number, line in enumerate(swift_path.read_text(encoding="utf-8").splitlines(), 1):

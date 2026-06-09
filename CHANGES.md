@@ -2,6 +2,8 @@
 
 ## 2026-06-09
 
+- Guarded device refreshes against missing main window outlet state before
+  hiding or showing the device-list window.
 - Guarded session window setup against missing main-screen and content-view
   state before adding the device skin.
 - Guarded document preview setup and aspect updates against missing outlets,
