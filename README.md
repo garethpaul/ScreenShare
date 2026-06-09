@@ -3,6 +3,11 @@
 <!-- README-OVERVIEW-IMAGE -->
 ![Project overview](docs/readme-overview.svg)
 
+## Device Preview
+
+<!-- DEVICE-PREVIEW-IMAGE -->
+![Device preview](docs/device-preview.svg)
+
 ## Overview
 
 `garethpaul/ScreenShare` is an Apple platform application or Swift sample. ScreenShare is a great demo tool that allows you to mirror your iOS devices to your screen to create the perfect demo.
