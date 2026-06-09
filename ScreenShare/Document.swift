@@ -159,9 +159,12 @@ class Document: NSDocument {
     }
     
     func displayError(error: NSError?) {
+        guard let error = error else {
+            NSLog("Capture device input failed without NSError metadata")
+            return
+        }
         dispatch_async(dispatch_get_main_queue(), {
-            let err = error as NSError!
-            self.presentError(err)
+            self.presentError(error)
         })
     }
     

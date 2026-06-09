@@ -2,6 +2,8 @@
 
 ## 2026-06-09
 
+- Guarded capture input error presentation against missing `NSError` metadata
+  and added static validation for the non-crashing path.
 - Fixed the missing-settings fallback so it clears saved settings rather than
   the active capture-device list.
 - Fixed `Document.updateAspect()` so video height changes are compared against

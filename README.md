@@ -70,6 +70,8 @@ The setup commands above are derived from repository files. Legacy mobile, Pytho
   Swift sources while preserving explicit runtime-error diagnostics.
 - Static behavior checks also ensure preview aspect updates compare both video
   width and height against the stored dimensions.
+- Static behavior checks also require capture input setup failures to handle
+  missing `NSError` metadata without force unwrapping.
 - Static project checks also require completed canonical plans under `docs/plans`.
 - Xcode's test action or `xcodebuild test` with the appropriate scheme and
   destination can be used on macOS for deeper verification.
@@ -104,6 +106,8 @@ When the required SDK or runtime is unavailable, use static checks and source re
   video height-change guard.
 - See `docs/plans/2026-06-09-missing-settings-device-list.md` for the
   missing-settings device-list guard.
+- See `docs/plans/2026-06-09-capture-input-error-guard.md` for the capture
+  input error metadata guard.
 
 ## Contributing
 

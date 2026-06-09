@@ -21,6 +21,7 @@ Priority:
 - Keep saved device settings separate from active capture-device discovery
 - Avoid logging local device names or saved window rectangles
 - Avoid ad hoc stdout logging from app Swift sources
+- Handle capture input setup failures without force-unwrapping error metadata
 - Keep preview aspect updates responsive to width and height changes
 - Maintain custom skin and screenshot context
 - Keep completed maintenance plans under `docs/plans`

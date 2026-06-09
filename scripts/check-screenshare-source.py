@@ -128,6 +128,12 @@ def behavior_checks():
         errors.append("Document.updateAspect must not compare dimensions.height to itself")
     if "dimensions.height != self.videoDimensions.height" not in document:
         errors.append("Document.updateAspect must compare new height to the stored video height")
+    if "let err = error as NSError!" in document:
+        errors.append("Document.displayError must not force unwrap optional NSError values")
+    if "guard let error = error else" not in document:
+        errors.append("Document.displayError must handle missing NSError metadata explicitly")
+    if "Capture device input failed without NSError metadata" not in document:
+        errors.append("Document.displayError must log missing capture input NSError metadata")
     if re.search(r'print\("Using (Portrait|Landscape) settings', device):
         errors.append("Device saved settings must not log device names or saved window rectangles")
     if "NSLog(self.device.skin)" in skin:
