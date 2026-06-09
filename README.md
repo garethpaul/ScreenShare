@@ -62,6 +62,8 @@ The setup commands above are derived from repository files. Legacy mobile, Pytho
   signing disabled.
 - Static behavior checks also guard local device-settings archive decoding
   against force-cast crashes.
+- Static behavior checks also reject debug logging of device names and saved
+  window rectangles from local settings.
 - Static project checks also require completed canonical plans under `docs/plans`.
 - Xcode's test action or `xcodebuild test` with the appropriate scheme and
   destination can be used on macOS for deeper verification.
@@ -88,6 +90,8 @@ When the required SDK or runtime is unavailable, use static checks and source re
   mirroring privacy and runtime-error baseline.
 - See `docs/plans/2026-06-08-device-archive-decoding.md` for the local
   device-settings archive guard.
+- See `docs/plans/2026-06-08-device-settings-log-privacy.md` for the local
+  device-settings logging guard.
 
 ## Contributing
 

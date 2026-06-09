@@ -2,6 +2,8 @@
 
 ## 2026-06-08
 
+- Removed local device-settings debug logging and added static validation to
+  keep device names and saved window rectangles out of logs.
 - Made device settings archive decoding fail closed instead of force-casting
   saved fields, with static checker coverage.
 - Added `make check` as the shared repository verification alias.

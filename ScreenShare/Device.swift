@@ -55,10 +55,8 @@ class Device: NSObject, NSCoding {
     }
     func savedSettingForOrientation(forOrientation: DeviceOrientation) -> NSRect {
         if forOrientation == DeviceOrientation.Portrait {
-            print("Using Portrait settings for \(name): \(portraitRect)")
             return portraitRect
         } else {
-            print("Using Landscape settings for \(name): \(portraitRect)")
             return landscapeRect
         }
     }

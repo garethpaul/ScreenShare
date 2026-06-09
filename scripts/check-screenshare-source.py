@@ -120,6 +120,8 @@ def behavior_checks():
         errors.append("Device archive decoding must not force-cast saved settings")
     if "guard let name = aDecoder.decodeObjectForKey(PropertyKey.nameKey) as? String" not in device:
         errors.append("Device archive decoding must optional-bind saved settings fields")
+    if re.search(r'print\("Using (Portrait|Landscape) settings', device):
+        errors.append("Device saved settings must not log device names or saved window rectangles")
 
     return errors
 
