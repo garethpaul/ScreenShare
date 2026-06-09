@@ -159,6 +159,14 @@ def behavior_checks():
         errors.append("Device saved settings must not log device names or saved window rectangles")
     if "NSLog(self.device.skin)" in skin:
         errors.append("Skin loading must not log selected skin names")
+    if "NSScreen.mainScreen()!.frame" in app_delegate:
+        errors.append("AppDelegate.startNewSession must not force unwrap the main screen")
+    if "let screenFrame = NSScreen.mainScreen()?.frame ?? NSMakeRect" not in app_delegate:
+        errors.append("AppDelegate.startNewSession must fall back when no main screen is available")
+    if "window.contentView!" in app_delegate:
+        errors.append("AppDelegate.startNewSession must not force unwrap the session window content view")
+    if "guard let contentView = window.contentView else" not in app_delegate or "contentView.addSubview(skin)" not in app_delegate:
+        errors.append("AppDelegate.startNewSession must guard the session window content view before adding the skin")
 
     for swift_path in sorted((ROOT / "ScreenShare").glob("*.swift")):
         for line_number, line in enumerate(swift_path.read_text(encoding="utf-8").splitlines(), 1):

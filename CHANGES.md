@@ -2,6 +2,8 @@
 
 ## 2026-06-09
 
+- Guarded session window setup against missing main-screen and content-view
+  state before adding the device skin.
 - Guarded document preview setup and aspect updates against missing outlets,
   backing layers, input ports, and windows.
 - Guarded capture input error presentation against missing `NSError` metadata

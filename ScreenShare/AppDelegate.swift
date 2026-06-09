@@ -108,7 +108,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     func startNewSession(device:AVCaptureDevice) -> Skin {
         
         let size = DeviceUtils(deviceType: .Phone).skinSize
-        let frame = DeviceUtils.getCenteredRect(size, screenFrame: NSScreen.mainScreen()!.frame)
+        let screenFrame = NSScreen.mainScreen()?.frame ?? NSMakeRect(0, 0, size.width, size.height)
+        let frame = DeviceUtils.getCenteredRect(size, screenFrame: screenFrame)
         
         let window = NSWindow(contentRect: frame,
             styleMask: NSBorderlessWindowMask,
@@ -120,7 +121,11 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         let skin = Skin(frame: frameView)
         skin.initWithDevice(device)
         skin.ownerWindow = window
-        window.contentView!.addSubview(skin)
+        guard let contentView = window.contentView else {
+            NSLog("Device session window content view is missing.")
+            return skin
+        }
+        contentView.addSubview(skin)
         
         skin.registerNotifications()
         skin.updateAspect()

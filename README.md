@@ -74,6 +74,8 @@ The setup commands above are derived from repository files. Legacy mobile, Pytho
   missing `NSError` metadata without force unwrapping.
 - Static behavior checks also require document preview setup and aspect updates
   to optional-bind outlets, backing layers, input ports, and windows.
+- Static behavior checks also require session window setup to avoid
+  force-unwrapping the main screen or content view.
 - Static project checks also require completed canonical plans under `docs/plans`.
 - Xcode's test action or `xcodebuild test` with the appropriate scheme and
   destination can be used on macOS for deeper verification.
@@ -112,6 +114,8 @@ When the required SDK or runtime is unavailable, use static checks and source re
   input error metadata guard.
 - See `docs/plans/2026-06-09-document-preview-guard.md` for the document
   preview and aspect optional-binding guard.
+- See `docs/plans/2026-06-09-session-window-setup-guard.md` for the session
+  window setup guard.
 
 ## Contributing
 
