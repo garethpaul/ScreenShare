@@ -53,15 +53,22 @@ class Document: NSDocument {
         
         
         // Custom view set to render concurrently in order to have its own layer
-        let previewViewLayer = self.previewView.layer
-        previewViewLayer!.backgroundColor = CGColorGetConstantColor(kCGColorBlack)
+        guard let previewView = self.previewView else {
+            NSLog("Document preview view outlet is missing.")
+            return
+        }
+        guard let previewViewLayer = previewView.layer else {
+            NSLog("Document preview view is missing a backing layer.")
+            return
+        }
+        previewViewLayer.backgroundColor = CGColorGetConstantColor(kCGColorBlack)
         
         let newPreviewLayer = AVCaptureVideoPreviewLayer(session: self.session)
-        newPreviewLayer.frame = previewViewLayer!.bounds
+        newPreviewLayer.frame = previewViewLayer.bounds
         newPreviewLayer.autoresizingMask = CAAutoresizingMask.LayerWidthSizable | CAAutoresizingMask.LayerHeightSizable
         newPreviewLayer.videoGravity = AVLayerVideoGravityResizeAspect
         
-        previewViewLayer?.addSublayer(newPreviewLayer)
+        previewViewLayer.addSublayer(newPreviewLayer)
         
         self.session.startRunning()
 
@@ -126,36 +133,36 @@ class Document: NSDocument {
     
     func updateAspect() {
         
-        let port = self.input?.ports.first as AVCaptureInputPort?
-        let window = self.windowForSheet
-        
-        if (port != nil && window != nil) {
-            if let description = port!.formatDescription {
-                let dimensions = CMVideoFormatDescriptionGetDimensions(description)
-                if( dimensions.width != 0 && dimensions.height != 0
-                    && (dimensions.width != self.videoDimensions.width || dimensions.height != self.videoDimensions.height) ) {
-                        
-                        self.videoDimensions = dimensions
-                        self.aspectXonY = CGFloat(dimensions.width) / CGFloat(dimensions.height)
-                        
-                        let windowFrame = window!.frame
-                        let newFrame = CGRectMake(windowFrame.origin.x, windowFrame.origin.y, windowFrame.size.width, windowFrame.size.width / self.aspectXonY)
-                        
-                        //window!.setFrame(newFrame, display: true, animate: true)
-                        //window!.aspectRatio = NSSize(width: CGFloat(dimensions.width), height: CGFloat(dimensions.height))
-                        
-                        lblResolution?.stringValue = "w:\(dimensions.width), h:\(dimensions.height)"
-                        
-                    
-                }
+        guard let port = self.input?.ports.first as? AVCaptureInputPort,
+            let window = self.windowForSheet,
+            let description = port.formatDescription else {
+                resetResolutionStatus()
                 return
-            }
         }
-        
-        // If unable to calculate, reset ratio & try again
+
+        let dimensions = CMVideoFormatDescriptionGetDimensions(description)
+        if( dimensions.width != 0 && dimensions.height != 0
+            && (dimensions.width != self.videoDimensions.width || dimensions.height != self.videoDimensions.height) ) {
+
+                self.videoDimensions = dimensions
+                self.aspectXonY = CGFloat(dimensions.width) / CGFloat(dimensions.height)
+
+                let windowFrame = window.frame
+                let newFrame = CGRectMake(windowFrame.origin.x, windowFrame.origin.y, windowFrame.size.width, windowFrame.size.width / self.aspectXonY)
+
+                //window!.setFrame(newFrame, display: true, animate: true)
+                //window!.aspectRatio = NSSize(width: CGFloat(dimensions.width), height: CGFloat(dimensions.height))
+
+                lblResolution?.stringValue = "w:\(dimensions.width), h:\(dimensions.height)"
+
+        }
+
+    }
+
+    private func resetResolutionStatus() {
         self.windowForSheet?.resizeIncrements = CGSize(width:1.0,height:1.0)
         lblResolution?.stringValue = "Calculating resolution"
-        
+
     }
     
     func displayError(error: NSError?) {

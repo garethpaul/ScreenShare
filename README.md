@@ -72,6 +72,8 @@ The setup commands above are derived from repository files. Legacy mobile, Pytho
   width and height against the stored dimensions.
 - Static behavior checks also require capture input setup failures to handle
   missing `NSError` metadata without force unwrapping.
+- Static behavior checks also require document preview setup and aspect updates
+  to optional-bind outlets, backing layers, input ports, and windows.
 - Static project checks also require completed canonical plans under `docs/plans`.
 - Xcode's test action or `xcodebuild test` with the appropriate scheme and
   destination can be used on macOS for deeper verification.
@@ -108,6 +110,8 @@ When the required SDK or runtime is unavailable, use static checks and source re
   missing-settings device-list guard.
 - See `docs/plans/2026-06-09-capture-input-error-guard.md` for the capture
   input error metadata guard.
+- See `docs/plans/2026-06-09-document-preview-guard.md` for the document
+  preview and aspect optional-binding guard.
 
 ## Contributing
 

@@ -9,6 +9,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 DOCS_PLANS = ROOT / "docs" / "plans"
 CANONICAL_PLAN = DOCS_PLANS / "2026-06-08-screenshare-baseline.md"
+DOCUMENT_PREVIEW_PLAN = DOCS_PLANS / "2026-06-09-document-preview-guard.md"
 
 
 def read_text(relative_path):
@@ -43,6 +44,8 @@ def docs_plan_checks():
     errors = []
     if not CANONICAL_PLAN.exists():
         errors.append("docs/plans/2026-06-08-screenshare-baseline.md is missing")
+    if not DOCUMENT_PREVIEW_PLAN.exists():
+        errors.append("docs/plans/2026-06-09-document-preview-guard.md is missing")
 
     plans = sorted(DOCS_PLANS.glob("*.md")) if DOCS_PLANS.exists() else []
     if not plans:
@@ -134,6 +137,24 @@ def behavior_checks():
         errors.append("Document.displayError must handle missing NSError metadata explicitly")
     if "Capture device input failed without NSError metadata" not in document:
         errors.append("Document.displayError must log missing capture input NSError metadata")
+    if "previewViewLayer!" in document:
+        errors.append("Document preview setup must not force unwrap the preview backing layer")
+    if "guard let previewView = self.previewView" not in document:
+        errors.append("Document preview setup must guard the preview outlet")
+    if "guard let previewViewLayer = previewView.layer" not in document:
+        errors.append("Document preview setup must guard the backing layer")
+    if "let port = self.input?.ports.first as AVCaptureInputPort?" in document:
+        errors.append("Document.updateAspect must not rely on a forced optional input-port cast")
+    if "port!.formatDescription" in document:
+        errors.append("Document.updateAspect must not force unwrap the input port")
+    if "let windowFrame = window!.frame" in document:
+        errors.append("Document.updateAspect must not force unwrap the document window")
+    if "guard let port = self.input?.ports.first as? AVCaptureInputPort" not in document:
+        errors.append("Document.updateAspect must optional-bind the capture input port")
+    if "let window = self.windowForSheet" not in document:
+        errors.append("Document.updateAspect must optional-bind the document window")
+    if "private func resetResolutionStatus()" not in document:
+        errors.append("Document.updateAspect must centralize resolution fallback state")
     if re.search(r'print\("Using (Portrait|Landscape) settings', device):
         errors.append("Device saved settings must not log device names or saved window rectangles")
     if "NSLog(self.device.skin)" in skin:

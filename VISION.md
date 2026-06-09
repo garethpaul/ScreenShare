@@ -23,6 +23,7 @@ Priority:
 - Avoid ad hoc stdout logging from app Swift sources
 - Handle capture input setup failures without force-unwrapping error metadata
 - Keep preview aspect updates responsive to width and height changes
+- Keep document preview and aspect setup tolerant of missing nib or capture state
 - Maintain custom skin and screenshot context
 - Keep completed maintenance plans under `docs/plans`
 - Avoid recording, uploading, or storing mirrored content by default
@@ -32,6 +33,7 @@ Next priorities:
 - Add setup notes for macOS, Xcode, and connected iOS devices
 - Document permissions and device registration behavior
 - Add manual verification notes for connect/disconnect handling
+- Continue reducing legacy force unwraps in skin/window sizing paths
 - Modernize Swift and project settings in a dedicated pass
 
 Contribution rules:
