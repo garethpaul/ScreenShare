@@ -120,6 +120,10 @@ def behavior_checks():
         errors.append("Device archive decoding must not force-cast saved settings")
     if "guard let name = aDecoder.decodeObjectForKey(PropertyKey.nameKey) as? String" not in device:
         errors.append("Device archive decoding must optional-bind saved settings fields")
+    if "dimensions.height != dimensions.height" in document:
+        errors.append("Document.updateAspect must not compare dimensions.height to itself")
+    if "dimensions.height != self.videoDimensions.height" not in document:
+        errors.append("Document.updateAspect must compare new height to the stored video height")
     if re.search(r'print\("Using (Portrait|Landscape) settings', device):
         errors.append("Device saved settings must not log device names or saved window rectangles")
     if "NSLog(self.device.skin)" in skin:

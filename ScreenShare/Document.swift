@@ -133,7 +133,7 @@ class Document: NSDocument {
             if let description = port!.formatDescription {
                 let dimensions = CMVideoFormatDescriptionGetDimensions(description)
                 if( dimensions.width != 0 && dimensions.height != 0
-                    && (dimensions.width != self.videoDimensions.width || dimensions.height != dimensions.height) ) {
+                    && (dimensions.width != self.videoDimensions.width || dimensions.height != self.videoDimensions.height) ) {
                         
                         self.videoDimensions = dimensions
                         self.aspectXonY = CGFloat(dimensions.width) / CGFloat(dimensions.height)

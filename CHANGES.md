@@ -2,6 +2,8 @@
 
 ## 2026-06-09
 
+- Fixed `Document.updateAspect()` so video height changes are compared against
+  the stored video height instead of being ignored by a self-comparison.
 - Removed ad hoc `print`/`println` lifecycle logging from capture session and
   device connection observers.
 - Removed skin-name debug logging and extended static behavior checks to reject

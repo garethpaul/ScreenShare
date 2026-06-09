@@ -66,6 +66,8 @@ The setup commands above are derived from repository files. Legacy mobile, Pytho
   window rectangles from local settings.
 - Static behavior checks also reject ad hoc `print`/`println` logging in app
   Swift sources while preserving explicit runtime-error diagnostics.
+- Static behavior checks also ensure preview aspect updates compare both video
+  width and height against the stored dimensions.
 - Static project checks also require completed canonical plans under `docs/plans`.
 - Xcode's test action or `xcodebuild test` with the appropriate scheme and
   destination can be used on macOS for deeper verification.
@@ -96,6 +98,8 @@ When the required SDK or runtime is unavailable, use static checks and source re
   device-settings logging guard.
 - See `docs/plans/2026-06-09-stdout-logging-guard.md` for the app stdout
   logging guard.
+- See `docs/plans/2026-06-09-video-height-change-detection.md` for the preview
+  video height-change guard.
 
 ## Contributing
 
