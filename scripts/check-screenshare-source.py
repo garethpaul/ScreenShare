@@ -119,7 +119,8 @@ def project_checks():
         "ScreenShareTests",
         "ScreenshareUITests",
         'CODE_SIGN_ENTITLEMENTS = "$(PROJECT_DIR)/ScreenShare/Screenshare.entitlements";',
-        "MACOSX_DEPLOYMENT_TARGET = 10.9;",
+        "MACOSX_DEPLOYMENT_TARGET = 10.13;",
+        "SWIFT_VERSION = 5.0;",
     ):
         if fragment not in project:
             errors.append(f"project is missing expected setting: {fragment}")

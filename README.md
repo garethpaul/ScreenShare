@@ -82,6 +82,8 @@ The setup commands above are derived from repository files. Legacy mobile, Pytho
 - GitHub Actions runs the static `make check` baseline on Ubuntu 24.04 and an
   unsigned app build on macOS 15, with pinned Node 24-compatible actions,
   read-only permissions, fixed runner images, and bounded timeouts.
+- The shared Xcode project uses Swift 5 language mode and targets macOS 10.13
+  or newer so current Xcode releases can compile it.
 - Xcode's test action or `xcodebuild test` with the appropriate scheme and
   destination can be used on macOS for deeper verification.
 

@@ -14,6 +14,8 @@ hosted toolchain less predictable.
 - Fixed the portable contract job to Ubuntu 24.04.
 - Added a bounded macOS 15 job that builds the shared app scheme with code
   signing disabled.
+- Updated unsupported Swift 2.3 and macOS 10.9 project settings to Swift 5 and
+  macOS 10.13 so Xcode 16 can evaluate the source.
 - Added workflow concurrency cancellation so superseded branch runs stop.
 - Made Makefile paths resolve from the repository root even when invoked from
   another working directory.
