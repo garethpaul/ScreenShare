@@ -12,7 +12,7 @@ import AVFoundation
 class DeviceUtils {
     
     var type: Device.DeviceType
-    var skinSize: NSSize!
+    var skinSize = NSSize.zero
     var skin = "Skin"
     var orientation = Device.DeviceOrientation.Portrait
     
@@ -105,7 +105,7 @@ class DeviceUtils {
             &prop,
             0,
             nil,
-            UInt32(sizeofValue(allow)),
+            UInt32(MemoryLayout.size(ofValue: allow)),
             &allow)
         
     }

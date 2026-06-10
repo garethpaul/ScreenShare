@@ -18,6 +18,8 @@ hosted toolchain less predictable.
   macOS 10.13 so Xcode 16 can evaluate the source.
 - Migrated the first compiler-blocking Swift 2 APIs for notifications, coding,
   application access, retry counters, and mouse event overrides.
+- Migrated keyed archives, AVFoundation and AppKit names, formatting helpers,
+  and CoreMediaIO size calculation exposed by the next compiler pass.
 - Added workflow concurrency cancellation so superseded branch runs stop.
 - Made Makefile paths resolve from the repository root even when invoked from
   another working directory.
