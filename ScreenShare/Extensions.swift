@@ -27,8 +27,7 @@ extension CGFloat {
 
 extension NSSize {
     init(fromCGSize size:CGSize) {
-        self.width = size.width
-        self.height = size.height
+        self.init(width: size.width, height: size.height)
     }
     func rotated() -> NSSize {
         return NSSize(width: self.height, height: self.width)

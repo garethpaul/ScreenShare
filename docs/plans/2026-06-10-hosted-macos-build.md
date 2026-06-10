@@ -20,6 +20,8 @@ hosted toolchain less predictable.
   application access, retry counters, and mouse event overrides.
 - Migrated keyed archives, AVFoundation and AppKit names, formatting helpers,
   and CoreMediaIO size calculation exposed by the next compiler pass.
+- Corrected Swift 5 external labels and delegated the `NSSize` convenience
+  initializer through its designated initializer.
 - Added workflow concurrency cancellation so superseded branch runs stop.
 - Made Makefile paths resolve from the repository root even when invoked from
   another working directory.

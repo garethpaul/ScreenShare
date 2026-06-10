@@ -10,6 +10,8 @@
   retry counting, and mouse event overrides to Swift 5 syntax.
 - Migrated keyed archives, AVFoundation identifiers, AppKit window APIs,
   numeric formatting, and CoreMediaIO buffer sizing to current SDK names.
+- Fixed Swift 5 call labels and value-type initializer delegation exposed by
+  the hosted Xcode type checker.
 - Made Makefile verification and build targets independent of the caller's
   working directory.
 - Added a least-privilege GitHub Actions workflow that installs Python 3.12 and

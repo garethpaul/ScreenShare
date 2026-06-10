@@ -119,7 +119,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         let frameView = NSMakeRect(0, 0,size.width, size.height)
         
         let skin = Skin(frame: frameView)
-        skin.initWithDevice(device)
+        skin.initWithDevice(device: device)
         skin.ownerWindow = window
         guard let contentView = window.contentView else {
             NSLog("Device session window content view is missing.")
