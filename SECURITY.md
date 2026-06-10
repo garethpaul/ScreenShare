@@ -30,9 +30,9 @@ Helpful reports include:
 - Review found mobile permission or privacy-sensitive data handling; changes in those areas should receive security-focused review before merge.
 - Review found file, document, data, or media parsing flows; changes in those areas should receive security-focused review before merge.
 - No primary dependency manifest was detected in the repository root. If dependencies are added later, include a manifest and prefer reproducible installation instructions.
-- GitHub Actions runs the static `make check` baseline with Python 3.12; keep
-  that hosted path focused on metadata and privacy checks rather than capture
-  recordings.
+- GitHub Actions runs static checks on Ubuntu 24.04 and an unsigned compile on
+  macOS 15; neither hosted path should connect to devices or capture, persist,
+  or upload mirrored content.
 - CI actions stay pinned by commit and run with read-only repository contents
   permission.
 

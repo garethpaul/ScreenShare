@@ -82,14 +82,33 @@ def project_checks():
         "actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10",
         "actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405",
         'python-version: "3.12"',
+        "concurrency:",
+        "cancel-in-progress: true",
         "permissions:",
         "contents: read",
+        "contract:",
+        "runs-on: ubuntu-24.04",
+        "build:",
+        "runs-on: macos-15",
         "timeout-minutes: 5",
+        "timeout-minutes: 15",
         "workflow_dispatch:",
         "run: make check",
+        "run: make build",
     ):
         if fragment not in workflow:
             errors.append(f"GitHub Actions workflow is missing expected fragment: {fragment}")
+
+    makefile = read_text("Makefile")
+    for fragment in (
+        "ROOT := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))",
+        '"$(ROOT)/build.sh"',
+        '"$(ROOT)/scripts/check-screenshare-source.py"',
+        '"$(ROOT)/Screenshare.xcodeproj"',
+        "CODE_SIGNING_ALLOWED=NO",
+    ):
+        if fragment not in makefile:
+            errors.append(f"Makefile is missing root-independent fragment: {fragment}")
 
     for doc_path in ("README.md", "VISION.md", "SECURITY.md", "CHANGES.md"):
         if "GitHub Actions" not in read_text(doc_path):
