@@ -26,6 +26,7 @@ class Document: NSDocument {
     dynamic var devices : [AVCaptureDevice] = []
     
     let notifications = NotificationManager()
+    private var aspectTimer: Timer?
     
     override init() {
         super.init()
@@ -74,7 +75,8 @@ class Document: NSDocument {
 
         // Update Aspect will run recurrently to account for changes in orientation we cannot catch
         // TODO: Optimize to only do this for ios devices and listening for changes to the formatDescription of the video AVCaptureInputPort associated with the device.
-        Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(updateAspect), userInfo: nil, repeats: true)
+        aspectTimer?.invalidate()
+        aspectTimer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(updateAspect), userInfo: nil, repeats: true)
         
     }
     
@@ -195,6 +197,8 @@ class Document: NSDocument {
     }
     
     func windowWillClose(_ notification: Notification) {
+        aspectTimer?.invalidate()
+        aspectTimer = nil
         self.session.stopRunning()
         self.notifications.deregisterAll()
     }

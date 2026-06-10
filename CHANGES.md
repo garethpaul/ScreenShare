@@ -2,6 +2,8 @@
 
 ## 2026-06-10
 
+- Retained, replaced, and invalidated document aspect timers across preview and
+  window teardown lifecycle events.
 - Added a fixed macOS 15 GitHub Actions job that compiles the unsigned app and
   fixed the portable contract job to Ubuntu 24.04.
 - Updated the Xcode project from unsupported Swift 2.3 language mode and macOS

@@ -197,6 +197,12 @@ def behavior_checks():
         errors.append("Document.updateAspect must optional-bind the document window")
     if "private func resetResolutionStatus()" not in document:
         errors.append("Document.updateAspect must centralize resolution fallback state")
+    if "private var aspectTimer: Timer?" not in document:
+        errors.append("Document must retain its repeating aspect timer for teardown")
+    if "aspectTimer?.invalidate()\n        aspectTimer = Timer.scheduledTimer" not in document:
+        errors.append("Document preview setup must replace any existing aspect timer")
+    if "aspectTimer?.invalidate()\n        aspectTimer = nil\n        self.session.stopRunning()" not in document:
+        errors.append("Document window teardown must invalidate and release the aspect timer")
     if re.search(r'print\("Using (Portrait|Landscape) settings', device):
         errors.append("Device saved settings must not log device names or saved window rectangles")
     if "NSLog(self.device.skin)" in skin:

@@ -35,6 +35,8 @@ Helpful reports include:
   or upload mirrored content.
 - CI actions stay pinned by commit and run with read-only repository contents
   permission.
+- Closing a document must invalidate its repeating preview timer so retired
+  capture UI is not retained or updated after teardown.
 
 ## Mobile Privacy Notes
 

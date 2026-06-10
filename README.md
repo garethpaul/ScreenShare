@@ -78,6 +78,8 @@ The setup commands above are derived from repository files. Legacy mobile, Pytho
   force-unwrapping the main screen or content view.
 - Static behavior checks also require device refreshes to guard the main
   device-list window before hiding or showing it.
+- Static behavior checks also require document aspect timers to be replaced and
+  invalidated when their windows close.
 - Static project checks also require completed canonical plans under `docs/plans`.
 - GitHub Actions runs the static `make check` baseline on Ubuntu 24.04 and an
   unsigned app build on macOS 15, with pinned Node 24-compatible actions,
@@ -129,6 +131,8 @@ When the required SDK or runtime is unavailable, use static checks and source re
   baseline.
 - See `docs/plans/2026-06-10-hosted-macos-build.md` for the hosted unsigned
   macOS build gate.
+- See `docs/plans/2026-06-10-document-aspect-timer-teardown.md` for repeating
+  preview timer lifecycle cleanup.
 
 ## Contributing
 
