@@ -16,6 +16,8 @@ hosted toolchain less predictable.
   signing disabled.
 - Updated unsupported Swift 2.3 and macOS 10.9 project settings to Swift 5 and
   macOS 10.13 so Xcode 16 can evaluate the source.
+- Migrated the first compiler-blocking Swift 2 APIs for notifications, coding,
+  application access, retry counters, and mouse event overrides.
 - Added workflow concurrency cancellation so superseded branch runs stop.
 - Made Makefile paths resolve from the repository root even when invoked from
   another working directory.

@@ -42,7 +42,7 @@ class Skin: NSView {
     var trackingArea : NSTrackingArea?
     
     let ResizeHandleSize : CGFloat = 30
-    let appDelegate = NSApplication.sharedApplication().delegate as! AppDelegate
+    let appDelegate = NSApplication.shared.delegate as! AppDelegate
     
     
     override init(frame frameRect: NSRect) {
@@ -322,7 +322,8 @@ class Skin: NSView {
                 return
             }
             
-            if ++self.deviceInitializationRetries < self.deviceInitializationMaxRetries {
+            self.deviceInitializationRetries += 1
+            if self.deviceInitializationRetries < self.deviceInitializationMaxRetries {
                 if( self.input != nil) {
                     NSLog("Port is empty. Screen may be blank. Reinitializing device")
                     self.session.stopRunning()
@@ -364,14 +365,14 @@ class Skin: NSView {
     
     
     //MARK: Dragging & Resizing
-    override func mouseEntered(theEvent: NSEvent) {
+    override func mouseEntered(with theEvent: NSEvent) {
         self.resizeHandle.hidden = false
     }
-    override func mouseExited(theEvent: NSEvent) {
+    override func mouseExited(with theEvent: NSEvent) {
         self.resizeHandle.hidden = true
         self.window?.invalidateShadow()
     }
-    override func mouseDown(theEvent: NSEvent) {
+    override func mouseDown(with theEvent: NSEvent) {
         initialLocation = NSEvent.mouseLocation()
         
         initialLocation?.x -= self.window!.frame.origin.x
@@ -384,7 +385,7 @@ class Skin: NSView {
         
     }
     
-    override func mouseDragged(theEvent: NSEvent) {
+    override func mouseDragged(with theEvent: NSEvent) {
         
         if !isResize {
             

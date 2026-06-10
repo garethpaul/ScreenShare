@@ -6,6 +6,8 @@
   fixed the portable contract job to Ubuntu 24.04.
 - Updated the Xcode project from unsupported Swift 2.3 language mode and macOS
   10.9 deployment metadata to Swift 5 and macOS 10.13.
+- Migrated notification observation, device archive coding, application access,
+  retry counting, and mouse event overrides to Swift 5 syntax.
 - Made Makefile verification and build targets independent of the caller's
   working directory.
 - Added a least-privilege GitHub Actions workflow that installs Python 3.12 and

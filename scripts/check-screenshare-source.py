@@ -165,9 +165,9 @@ def behavior_checks():
         errors.append("AppDelegate.loadDeviceSettings must not clear active capture devices when settings are missing")
     if "self.deviceSettings = []" not in app_delegate:
         errors.append("AppDelegate.loadDeviceSettings must reset saved device settings when no archive exists")
-    if "decodeObjectForKey(PropertyKey.nameKey) as! String" in device:
+    if re.search(r"decodeObject(?:ForKey|\(forKey:)\s*\(?PropertyKey\.nameKey\)?\s+as!\s+String", device):
         errors.append("Device archive decoding must not force-cast saved settings")
-    if "guard let name = aDecoder.decodeObjectForKey(PropertyKey.nameKey) as? String" not in device:
+    if "guard let name = aDecoder.decodeObject(forKey: PropertyKey.nameKey) as? String" not in device:
         errors.append("Device archive decoding must optional-bind saved settings fields")
     if "dimensions.height != dimensions.height" in document:
         errors.append("Document.updateAspect must not compare dimensions.height to itself")
