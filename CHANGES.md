@@ -1,5 +1,10 @@
 # Changes
 
+## 2026-06-10
+
+- Added a least-privilege GitHub Actions workflow that installs Python 3.12 and
+  runs the static `make check` baseline with pinned Node 24-compatible actions.
+
 ## 2026-06-09
 
 - Guarded device refreshes against missing main window outlet state before
