@@ -35,21 +35,21 @@ class Document: NSDocument {
         self.refreshDevices()
         
         // Select devices if any exist
-        let videoDevice = AVCaptureDevice.defaultDeviceWithMediaType(AVMediaTypeMuxed)
+        let videoDevice = AVCaptureDevice.default(for: .muxed)
         if( videoDevice != nil ) {
             self.selectedDevice = videoDevice
         } else {
-            self.selectedDevice = AVCaptureDevice.defaultDeviceWithMediaType(AVMediaTypeVideo)
+            self.selectedDevice = AVCaptureDevice.default(for: .video)
         }
         
     }
     
 
-    override func windowControllerDidLoadNib(aController: NSWindowController) {
-        super.windowControllerDidLoadNib(aController)
+    override func windowControllerDidLoadNib(_ windowController: NSWindowController) {
+        super.windowControllerDidLoadNib(windowController)
         // Add any code here that needs to be executed once the windowController has loaded the document's window.
         
-        self.windowForSheet?.movableByWindowBackground = true
+        self.windowForSheet?.isMovableByWindowBackground = true
         
         
         // Custom view set to render concurrently in order to have its own layer
@@ -61,12 +61,12 @@ class Document: NSDocument {
             NSLog("Document preview view is missing a backing layer.")
             return
         }
-        previewViewLayer.backgroundColor = CGColorGetConstantColor(kCGColorBlack)
+        previewViewLayer.backgroundColor = CGColor.black
         
         let newPreviewLayer = AVCaptureVideoPreviewLayer(session: self.session)
         newPreviewLayer.frame = previewViewLayer.bounds
-        newPreviewLayer.autoresizingMask = CAAutoresizingMask.LayerWidthSizable | CAAutoresizingMask.LayerHeightSizable
-        newPreviewLayer.videoGravity = AVLayerVideoGravityResizeAspect
+        newPreviewLayer.autoresizingMask = [.layerWidthSizable, .layerHeightSizable]
+        newPreviewLayer.videoGravity = .resizeAspect
         
         previewViewLayer.addSublayer(newPreviewLayer)
         
@@ -74,7 +74,7 @@ class Document: NSDocument {
 
         // Update Aspect will run recurrently to account for changes in orientation we cannot catch
         // TODO: Optimize to only do this for ios devices and listening for changes to the formatDescription of the video AVCaptureInputPort associated with the device.
-        NSTimer.scheduledTimerWithTimeInterval(1, target: self, selector: Selector("updateAspect"), userInfo: nil, repeats: true)
+        Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(updateAspect), userInfo: nil, repeats: true)
         
     }
     
@@ -86,12 +86,12 @@ class Document: NSDocument {
     
     func refreshDevices() {
         
-        self.devices = AVCaptureDevice.devicesWithMediaType(AVMediaTypeVideo)
-            +  AVCaptureDevice.devicesWithMediaType(AVMediaTypeMuxed) as [AVCaptureDevice]
+        self.devices = AVCaptureDevice.devices(for: .video)
+            + AVCaptureDevice.devices(for: .muxed)
         
         self.session.beginConfiguration()
         
-        if( self.selectedDevice != nil && !contains(self.devices, self.selectedDevice!)) {
+        if let selectedDevice = self.selectedDevice, !self.devices.contains(selectedDevice) {
             self.selectedDevice = nil
         }
         
@@ -106,21 +106,19 @@ class Document: NSDocument {
         set {
             self.session.beginConfiguration()
             
-            if(input != nil) {
-                session.removeInput(self.input)
+            if let input = self.input {
+                session.removeInput(input)
                 self.input = nil
             }
             
-            if newValue != nil {
-                var error: NSError?
-                let newDeviceInput = AVCaptureDeviceInput.deviceInputWithDevice(newValue, error: &error) as AVCaptureDeviceInput?
-                
-                if (newDeviceInput == nil) {
-                    self.displayError(error)
-                } else {
-                    self.session.sessionPreset = AVCaptureSessionPresetHigh
+            if let newDevice = newValue {
+                do {
+                    let newDeviceInput = try AVCaptureDeviceInput(device: newDevice)
+                    self.session.sessionPreset = .high
                     self.session.addInput(newDeviceInput)
                     self.input = newDeviceInput
+                } catch let error as NSError {
+                    self.displayError(error: error)
                 }
                 
             }
@@ -131,9 +129,9 @@ class Document: NSDocument {
         }
     }
     
-    func updateAspect() {
+    @objc func updateAspect() {
         
-        guard let port = self.input?.ports.first as? AVCaptureInputPort,
+        guard let port = self.input?.ports.first,
             let window = self.windowForSheet,
             let description = port.formatDescription else {
                 resetResolutionStatus()
@@ -170,14 +168,14 @@ class Document: NSDocument {
             NSLog("Capture device input failed without NSError metadata")
             return
         }
-        dispatch_async(dispatch_get_main_queue(), {
+        DispatchQueue.main.async {
             self.presentError(error)
-        })
+        }
     }
     
     func loadObservers() {
         
-        notifications.registerObserver(AVCaptureSessionRuntimeErrorNotification, forObject: session, dispatchAsyncToMainQueue: true, block: {note in
+        notifications.registerObserver(AVCaptureSession.runtimeErrorNotification, forObject: session, dispatchAsyncToMainQueue: true, block: {note in
             if let err = note.userInfo?[AVCaptureSessionErrorKey] as? NSError {
                 self.presentError(err)
             } else {
@@ -186,17 +184,17 @@ class Document: NSDocument {
         })
         
         
-        notifications.registerObserver(AVCaptureDeviceWasConnectedNotification, forObject: nil, block: {note in
+        notifications.registerObserver(AVCaptureDevice.wasConnectedNotification, forObject: nil, block: {note in
             self.refreshDevices()
         })
-        notifications.registerObserver(AVCaptureDeviceWasDisconnectedNotification, forObject: nil, block: {note in
+        notifications.registerObserver(AVCaptureDevice.wasDisconnectedNotification, forObject: nil, block: {note in
             self.refreshDevices()
         })
         
         
     }
     
-    func windowWillClose(notification: NSNotification) {
+    func windowWillClose(_ notification: Notification) {
         self.session.stopRunning()
         self.notifications.deregisterAll()
     }

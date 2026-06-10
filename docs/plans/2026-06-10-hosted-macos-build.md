@@ -22,6 +22,10 @@ hosted toolchain less predictable.
   and CoreMediaIO size calculation exposed by the next compiler pass.
 - Corrected Swift 5 external labels and delegated the `NSSize` convenience
   initializer through its designated initializer.
+- Migrated the capture skin's framework constants, event properties, dispatch
+  calls, labels, and optional input handling to current Swift APIs.
+- Migrated the parallel document capture path to current AVFoundation, AppKit,
+  timer, dispatch, and input-construction APIs.
 - Added workflow concurrency cancellation so superseded branch runs stop.
 - Made Makefile paths resolve from the repository root even when invoked from
   another working directory.

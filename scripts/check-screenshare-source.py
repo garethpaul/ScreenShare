@@ -191,7 +191,7 @@ def behavior_checks():
         errors.append("Document.updateAspect must not force unwrap the input port")
     if "let windowFrame = window!.frame" in document:
         errors.append("Document.updateAspect must not force unwrap the document window")
-    if "guard let port = self.input?.ports.first as? AVCaptureInputPort" not in document:
+    if "guard let port = self.input?.ports.first" not in document:
         errors.append("Document.updateAspect must optional-bind the capture input port")
     if "let window = self.windowForSheet" not in document:
         errors.append("Document.updateAspect must optional-bind the document window")

@@ -12,6 +12,10 @@
   numeric formatting, and CoreMediaIO buffer sizing to current SDK names.
 - Fixed Swift 5 call labels and value-type initializer delegation exposed by
   the hosted Xcode type checker.
+- Migrated the capture skin's AppKit, AVFoundation, Core Animation, dispatch,
+  notification, and input APIs to their Swift 5 forms.
+- Migrated the document capture path to modern device discovery, input errors,
+  timers, notifications, AppKit properties, and Core Animation constants.
 - Made Makefile verification and build targets independent of the caller's
   working directory.
 - Added a least-privilege GitHub Actions workflow that installs Python 3.12 and
