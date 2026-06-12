@@ -40,7 +40,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     }
     
     func loadDeviceSettings() {
-        let loaded = NSKeyedUnarchiver.unarchiveObjectWithFile(Device.ArchivePath) as? [Device]
+        let loaded = NSKeyedUnarchiver.unarchiveObject(withFile: Device.ArchivePath) as? [Device]
         if loaded != nil {
             self.deviceSettings = loaded!
         } else {
@@ -73,14 +73,14 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     }
     
 
-    func applicationWillTerminate(aNotification: NSNotification) {
+    func applicationWillTerminate(_ notification: Notification) {
         
         self.notifications.deregisterAll()
     }
 
     func loadObservers() {
         
-        notifications.registerObserver(AVCaptureSessionRuntimeErrorNotification, forObject: session, dispatchAsyncToMainQueue: true, block: {note in
+        notifications.registerObserver(AVCaptureSession.runtimeErrorNotification, forObject: session, dispatchAsyncToMainQueue: true, block: {note in
             if let err = note.userInfo?[AVCaptureSessionErrorKey] as? NSError {
                 //self.window.presentError( err )
                 NSLog(err.description)
@@ -90,15 +90,15 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         })
         
         
-        notifications.registerObserver(AVCaptureSessionDidStartRunningNotification, forObject: session, block: {note in
+        notifications.registerObserver(AVCaptureSession.didStartRunningNotification, forObject: session, block: {note in
             self.refreshDevices()
         })
 
                 
-        notifications.registerObserver(AVCaptureDeviceWasConnectedNotification, forObject: nil, dispatchAsyncToMainQueue: true, block: {note in
+        notifications.registerObserver(AVCaptureDevice.wasConnectedNotification, forObject: nil, dispatchAsyncToMainQueue: true, block: {note in
             self.refreshDevices()
         })
-        notifications.registerObserver(AVCaptureDeviceWasDisconnectedNotification, forObject: nil, dispatchAsyncToMainQueue: true, block: {note in
+        notifications.registerObserver(AVCaptureDevice.wasDisconnectedNotification, forObject: nil, dispatchAsyncToMainQueue: true, block: {note in
             self.refreshDevices()
         })
         
@@ -108,18 +108,18 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     func startNewSession(device:AVCaptureDevice) -> Skin {
         
         let size = DeviceUtils(deviceType: .Phone).skinSize
-        let screenFrame = NSScreen.mainScreen()?.frame ?? NSMakeRect(0, 0, size.width, size.height)
-        let frame = DeviceUtils.getCenteredRect(size, screenFrame: screenFrame)
+        let screenFrame = NSScreen.main?.frame ?? NSMakeRect(0, 0, size.width, size.height)
+        let frame = DeviceUtils.getCenteredRect(windowSize: size, screenFrame: screenFrame)
         
         let window = NSWindow(contentRect: frame,
-            styleMask: NSBorderlessWindowMask,
-            backing: NSBackingStoreType.Buffered, defer: false)
+            styleMask: .borderless,
+            backing: .buffered, defer: false)
         
-        window.movableByWindowBackground = true
+        window.isMovableByWindowBackground = true
         let frameView = NSMakeRect(0, 0,size.width, size.height)
         
         let skin = Skin(frame: frameView)
-        skin.initWithDevice(device)
+        skin.initWithDevice(device: device)
         skin.ownerWindow = window
         guard let contentView = window.contentView else {
             NSLog("Device session window content view is missing.")
@@ -130,8 +130,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         skin.registerNotifications()
         skin.updateAspect()
         
-        window.backgroundColor = NSColor.clearColor()
-        window.opaque = false
+        window.backgroundColor = NSColor.clear
+        window.isOpaque = false
         
         window.makeKeyAndOrderFront(NSApp)
 
@@ -140,8 +140,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
 
     func refreshDevices() {
         
-        self.devices = AVCaptureDevice.devicesWithMediaType(AVMediaTypeMuxed)
-            +  AVCaptureDevice.devicesWithMediaType(AVMediaTypeVideo) as! [AVCaptureDevice]
+        self.devices = AVCaptureDevice.devices(for: .muxed)
+            + AVCaptureDevice.devices(for: .video)
         
         // A running device was disconnected?
         for(device, deviceView) in deviceSessions {
@@ -162,13 +162,13 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
                     if(self.deviceSessions.count > 0) {
                         let alert = NSAlert()
                         alert.messageText = "Only one device supported"
-                        alert.addButtonWithTitle("OK")
+                        alert.addButton(withTitle: "OK")
                         alert.informativeText = "You can only display one device at a time. Please disconnect your other device."
                         alert.runModal()
 
                         break;
                     } else {
-                        self.deviceSessions[device] = startNewSession(device)
+                        self.deviceSessions[device] = startNewSession(device: device)
                     }
             }
         }

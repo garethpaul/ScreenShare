@@ -24,11 +24,12 @@ Priority:
 - Handle capture input setup failures without force-unwrapping error metadata
 - Keep preview aspect updates responsive to width and height changes
 - Keep document preview and aspect setup tolerant of missing nib or capture state
+- Release repeating preview timers when document windows close
 - Keep session window setup tolerant of missing screen or content-view state
 - Keep device refreshes tolerant of missing main window outlet state
 - Maintain custom skin and screenshot context
 - Keep completed maintenance plans under `docs/plans`
-- Keep GitHub Actions running the static `make check` baseline
+- Keep GitHub Actions running static checks and an unsigned macOS app build
 - Avoid recording, uploading, or storing mirrored content by default
 
 Next priorities:

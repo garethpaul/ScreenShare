@@ -2,8 +2,27 @@
 
 ## 2026-06-10
 
-- Added a GitHub Actions workflow that installs Python 3.12 and runs the static
-  `make check` baseline for pushes and pull requests.
+- Retained, replaced, and invalidated document aspect timers across preview and
+  window teardown lifecycle events.
+- Added a fixed macOS 15 GitHub Actions job that compiles the unsigned app and
+  fixed the portable contract job to Ubuntu 24.04.
+- Updated the Xcode project from unsupported Swift 2.3 language mode and macOS
+  10.9 deployment metadata to Swift 5 and macOS 10.13.
+- Migrated notification observation, device archive coding, application access,
+  retry counting, and mouse event overrides to Swift 5 syntax.
+- Migrated keyed archives, AVFoundation identifiers, AppKit window APIs,
+  numeric formatting, and CoreMediaIO buffer sizing to current SDK names.
+- Fixed Swift 5 call labels and value-type initializer delegation exposed by
+  the hosted Xcode type checker.
+- Migrated the capture skin's AppKit, AVFoundation, Core Animation, dispatch,
+  notification, and input APIs to their Swift 5 forms.
+- Migrated the document capture path to modern device discovery, input errors,
+  timers, notifications, AppKit properties, and Core Animation constants.
+- Made Makefile verification and build targets independent of the caller's
+  working directory.
+- Added a least-privilege GitHub Actions workflow that installs Python 3.12 and
+  runs the static `make check` baseline with pinned Node 24-compatible actions
+  and disabled checkout credential persistence.
 
 ## 2026-06-09
 

@@ -5,16 +5,16 @@
 import Foundation
 
 struct NotificationGroup {
-    let entries: [String]
+    let entries: [Notification.Name]
     
-    init(_ newEntries: String...) {
+    init(_ newEntries: Notification.Name...) {
         entries = newEntries
     }
     
 }
 
 class NotificationManager {
-    private var observerTokens: [AnyObject] = []
+    private var observerTokens: [NSObjectProtocol] = []
     
     deinit {
         deregisterAll()
@@ -22,25 +22,25 @@ class NotificationManager {
     
     func deregisterAll() {
         for token in observerTokens {
-            NSNotificationCenter.defaultCenter().removeObserver(token)
+            NotificationCenter.default.removeObserver(token)
         }
         
         observerTokens = []
     }
     
-    func registerObserver(name: String!, block: (NSNotification! -> Void)) {
-        let newToken = NSNotificationCenter.defaultCenter().addObserverForName(name, object: nil, queue: nil, usingBlock: {note in
+    func registerObserver(_ name: Notification.Name, block: @escaping (Notification) -> Void) {
+        let newToken = NotificationCenter.default.addObserver(forName: name, object: nil, queue: nil, using: { note in
             block(note)
         })
         
         observerTokens.append(newToken)
     }
-    func registerObserver(name: String!, dispatchAsyncToMainQueue: Bool, block: (NSNotification! -> Void)) {
-        let newToken = NSNotificationCenter.defaultCenter().addObserverForName(name, object: nil, queue: nil, usingBlock: {note in
+    func registerObserver(_ name: Notification.Name, dispatchAsyncToMainQueue: Bool, block: @escaping (Notification) -> Void) {
+        let newToken = NotificationCenter.default.addObserver(forName: name, object: nil, queue: nil, using: { note in
             if dispatchAsyncToMainQueue {
-                dispatch_async(dispatch_get_main_queue(), {
+                DispatchQueue.main.async {
                     block(note)
-                })
+                }
             } else {
                 block(note)
             }
@@ -49,15 +49,15 @@ class NotificationManager {
         observerTokens.append(newToken)
     }
     
-    func registerObserver(name: String!, forObject object: AnyObject!, block: (NSNotification! -> Void)) {
+    func registerObserver(_ name: Notification.Name, forObject object: Any?, block: @escaping (Notification) -> Void) {
         self.registerObserver(name, forObject: object, dispatchAsyncToMainQueue: false, block: block)
     }
-    func registerObserver(name: String!, forObject object: AnyObject!, dispatchAsyncToMainQueue: Bool, block: (NSNotification! -> Void)) {
-        let newToken = NSNotificationCenter.defaultCenter().addObserverForName(name, object: object, queue: nil, usingBlock: {note in
+    func registerObserver(_ name: Notification.Name, forObject object: Any?, dispatchAsyncToMainQueue: Bool, block: @escaping (Notification) -> Void) {
+        let newToken = NotificationCenter.default.addObserver(forName: name, object: object, queue: nil, using: { note in
             if dispatchAsyncToMainQueue {
-                dispatch_async(dispatch_get_main_queue(), {
+                DispatchQueue.main.async {
                     block(note)
-                })
+                }
             } else {
                 block(note)
             }
@@ -68,7 +68,7 @@ class NotificationManager {
     
     
     
-    func registerGroupObserver(group: NotificationGroup, block: (NSNotification! -> Void)) {
+    func registerGroupObserver(_ group: NotificationGroup, block: @escaping (Notification) -> Void) {
         for name in group.entries {
             self.registerObserver(name, block: block)
         }

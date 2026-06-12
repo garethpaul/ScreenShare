@@ -11,6 +11,55 @@ DOCS_PLANS = ROOT / "docs" / "plans"
 CANONICAL_PLAN = DOCS_PLANS / "2026-06-08-screenshare-baseline.md"
 DOCUMENT_PREVIEW_PLAN = DOCS_PLANS / "2026-06-09-document-preview-guard.md"
 CI_PLAN = DOCS_PLANS / "2026-06-10-ci-baseline.md"
+EXPECTED_WORKFLOW = """name: Check
+
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: check-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        with:
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: "3.12"
+
+      - name: Run static contract
+        run: make check
+
+  build:
+    runs-on: macos-15
+    timeout-minutes: 15
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        with:
+          persist-credentials: false
+
+      - name: Show Xcode version
+        run: xcodebuild -version
+
+      - name: Build unsigned macOS app
+        run: make build
+"""
 
 
 def read_text(relative_path):
@@ -78,9 +127,19 @@ def project_checks():
             errors.append(f"build.sh is missing expected xcodebuild fragment: {fragment}")
 
     workflow = read_text(".github/workflows/check.yml")
-    for fragment in ("actions/setup-python@v5", 'python-version: "3.12"', "make check"):
-        if fragment not in workflow:
-            errors.append(f"GitHub Actions workflow is missing expected fragment: {fragment}")
+    if workflow != EXPECTED_WORKFLOW:
+        errors.append("GitHub Actions workflow must match the reviewed credential-free contract and macOS build baseline")
+
+    makefile = read_text("Makefile")
+    for fragment in (
+        "ROOT := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))",
+        '"$(ROOT)/build.sh"',
+        '"$(ROOT)/scripts/check-screenshare-source.py"',
+        '"$(ROOT)/Screenshare.xcodeproj"',
+        "CODE_SIGNING_ALLOWED=NO",
+    ):
+        if fragment not in makefile:
+            errors.append(f"Makefile is missing root-independent fragment: {fragment}")
 
     for doc_path in ("README.md", "VISION.md", "SECURITY.md", "CHANGES.md"):
         if "GitHub Actions" not in read_text(doc_path):
@@ -91,7 +150,8 @@ def project_checks():
         "ScreenShareTests",
         "ScreenshareUITests",
         'CODE_SIGN_ENTITLEMENTS = "$(PROJECT_DIR)/ScreenShare/Screenshare.entitlements";',
-        "MACOSX_DEPLOYMENT_TARGET = 10.9;",
+        "MACOSX_DEPLOYMENT_TARGET = 10.13;",
+        "SWIFT_VERSION = 5.0;",
     ):
         if fragment not in project:
             errors.append(f"project is missing expected setting: {fragment}")
@@ -136,9 +196,9 @@ def behavior_checks():
         errors.append("AppDelegate.loadDeviceSettings must not clear active capture devices when settings are missing")
     if "self.deviceSettings = []" not in app_delegate:
         errors.append("AppDelegate.loadDeviceSettings must reset saved device settings when no archive exists")
-    if "decodeObjectForKey(PropertyKey.nameKey) as! String" in device:
+    if re.search(r"decodeObject(?:ForKey|\(forKey:)\s*\(?PropertyKey\.nameKey\)?\s+as!\s+String", device):
         errors.append("Device archive decoding must not force-cast saved settings")
-    if "guard let name = aDecoder.decodeObjectForKey(PropertyKey.nameKey) as? String" not in device:
+    if "guard let name = aDecoder.decodeObject(forKey: PropertyKey.nameKey) as? String" not in device:
         errors.append("Device archive decoding must optional-bind saved settings fields")
     if "dimensions.height != dimensions.height" in document:
         errors.append("Document.updateAspect must not compare dimensions.height to itself")
@@ -162,19 +222,25 @@ def behavior_checks():
         errors.append("Document.updateAspect must not force unwrap the input port")
     if "let windowFrame = window!.frame" in document:
         errors.append("Document.updateAspect must not force unwrap the document window")
-    if "guard let port = self.input?.ports.first as? AVCaptureInputPort" not in document:
+    if "guard let port = self.input?.ports.first" not in document:
         errors.append("Document.updateAspect must optional-bind the capture input port")
     if "let window = self.windowForSheet" not in document:
         errors.append("Document.updateAspect must optional-bind the document window")
     if "private func resetResolutionStatus()" not in document:
         errors.append("Document.updateAspect must centralize resolution fallback state")
+    if "private var aspectTimer: Timer?" not in document:
+        errors.append("Document must retain its repeating aspect timer for teardown")
+    if "aspectTimer?.invalidate()\n        aspectTimer = Timer.scheduledTimer" not in document:
+        errors.append("Document preview setup must replace any existing aspect timer")
+    if "aspectTimer?.invalidate()\n        aspectTimer = nil\n        self.session.stopRunning()" not in document:
+        errors.append("Document window teardown must invalidate and release the aspect timer")
     if re.search(r'print\("Using (Portrait|Landscape) settings', device):
         errors.append("Device saved settings must not log device names or saved window rectangles")
     if "NSLog(self.device.skin)" in skin:
         errors.append("Skin loading must not log selected skin names")
-    if "NSScreen.mainScreen()!.frame" in app_delegate:
+    if "NSScreen.mainScreen()!.frame" in app_delegate or "NSScreen.main!.frame" in app_delegate:
         errors.append("AppDelegate.startNewSession must not force unwrap the main screen")
-    if "let screenFrame = NSScreen.mainScreen()?.frame ?? NSMakeRect" not in app_delegate:
+    if "let screenFrame = NSScreen.main?.frame ?? NSMakeRect" not in app_delegate:
         errors.append("AppDelegate.startNewSession must fall back when no main screen is available")
     if "window.contentView!" in app_delegate:
         errors.append("AppDelegate.startNewSession must not force unwrap the session window content view")
