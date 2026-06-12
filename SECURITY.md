@@ -37,6 +37,8 @@ Helpful reports include:
   permission, and disable checkout credential persistence.
 - Closing a document must invalidate its repeating preview timer so retired
   capture UI is not retained or updated after teardown.
+- Capture skins must conditionally resolve the application delegate so unusual
+  nib or application lifecycle state cannot trigger a force-cast crash.
 
 ## Mobile Privacy Notes
 

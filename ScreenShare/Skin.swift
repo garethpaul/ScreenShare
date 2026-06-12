@@ -42,7 +42,14 @@ class Skin: NSView {
     var trackingArea : NSTrackingArea?
     
     let ResizeHandleSize : CGFloat = 30
-    let appDelegate = NSApplication.shared.delegate as! AppDelegate
+
+    private var appDelegate: AppDelegate? {
+        guard let appDelegate = NSApplication.shared.delegate as? AppDelegate else {
+            NSLog("ScreenShare application delegate is unavailable.")
+            return nil
+        }
+        return appDelegate
+    }
     
     
     override init(frame frameRect: NSRect) {
@@ -356,7 +363,7 @@ class Skin: NSView {
     
     
     func endSession() {
-        appDelegate.selectedDevice = nil
+        appDelegate?.selectedDevice = nil
         notifications.deregisterAll()
         session.stopRunning()
         ownerWindow = nil
@@ -381,7 +388,7 @@ class Skin: NSView {
         isResize = (initialLocation!.x > self.deviceFrameImage!.bounds.size.width - ResizeHandleSize)
             && (initialLocation!.y < ResizeHandleSize)
         
-        appDelegate.selectedDevice = self
+        appDelegate?.selectedDevice = self
         
     }
     
@@ -423,13 +430,13 @@ class Skin: NSView {
         
     }
     func getDeviceSettings(device: AVCaptureDevice) {
-        self.deviceSettings = appDelegate.findDeviceSettings(device: device)
+        self.deviceSettings = appDelegate?.findDeviceSettings(device: device)
     }
     func saveDeviceSettins() {
-        appDelegate.saveDeviceSettings()
+        appDelegate?.saveDeviceSettings()
     }
     func setThisAsSelectedDevice() {
-        appDelegate.selectedDevice = self
+        appDelegate?.selectedDevice = self
     }
     
     

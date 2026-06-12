@@ -238,6 +238,22 @@ def behavior_checks():
         errors.append("Device saved settings must not log device names or saved window rectangles")
     if "NSLog(self.device.skin)" in skin:
         errors.append("Skin loading must not log selected skin names")
+    if "NSApplication.shared.delegate as! AppDelegate" in skin:
+        errors.append("Skin must not force-cast the application delegate")
+    if "private var appDelegate: AppDelegate?" not in skin:
+        errors.append("Skin must expose the application delegate as optional state")
+    if "NSApplication.shared.delegate as? AppDelegate" not in skin:
+        errors.append("Skin must conditionally cast the application delegate")
+    if 'NSLog("ScreenShare application delegate is unavailable.")' not in skin:
+        errors.append("Skin must log unavailable application delegate state")
+    for fragment in (
+        "appDelegate?.selectedDevice = nil",
+        "appDelegate?.selectedDevice = self",
+        "appDelegate?.findDeviceSettings(device: device)",
+        "appDelegate?.saveDeviceSettings()",
+    ):
+        if fragment not in skin:
+            errors.append(f"Skin delegate interactions must tolerate missing delegate state: {fragment}")
     if "NSScreen.mainScreen()!.frame" in app_delegate or "NSScreen.main!.frame" in app_delegate:
         errors.append("AppDelegate.startNewSession must not force unwrap the main screen")
     if "let screenFrame = NSScreen.main?.frame ?? NSMakeRect" not in app_delegate:

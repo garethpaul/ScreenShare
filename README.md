@@ -85,6 +85,8 @@ The setup commands above are derived from repository files. Legacy mobile, Pytho
   device-list window before hiding or showing it.
 - Static behavior checks also require document aspect timers to be replaced and
   invalidated when their windows close.
+- Static behavior checks also reject force-casting the application delegate and
+  require skin selection/settings coordination to tolerate unavailable state.
 - Static project checks also require completed canonical plans under `docs/plans`.
 - GitHub Actions runs the static `make check` baseline on Ubuntu 24.04 and an
   unsigned app build on macOS 15, with pinned Node 24-compatible actions,

@@ -27,6 +27,7 @@ Priority:
 - Release repeating preview timers when document windows close
 - Keep session window setup tolerant of missing screen or content-view state
 - Keep device refreshes tolerant of missing main window outlet state
+- Keep capture skins tolerant of unavailable application delegate state
 - Maintain custom skin and screenshot context
 - Keep completed maintenance plans under `docs/plans`
 - Keep GitHub Actions running static checks and an unsigned macOS app build

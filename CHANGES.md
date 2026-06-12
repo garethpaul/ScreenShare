@@ -1,5 +1,10 @@
 # Changes
 
+## 2026-06-12
+
+- Guarded `Skin` application-delegate lookup and made selection and settings
+  coordination tolerate unavailable delegate lifecycle state.
+
 ## 2026-06-10
 
 - Retained, replaced, and invalidated document aspect timers across preview and
