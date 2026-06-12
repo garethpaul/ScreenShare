@@ -1,5 +1,10 @@
 # Changes
 
+## 2026-06-10
+
+- Added a GitHub Actions workflow that installs Python 3.12 and runs the static
+  `make check` baseline for pushes and pull requests.
+
 ## 2026-06-09
 
 - Guarded device refreshes against missing main window outlet state before

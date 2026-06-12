@@ -84,6 +84,8 @@ The setup commands above are derived from repository files. Legacy mobile, Pytho
 - Static behavior checks also require device refreshes to guard the main
   device-list window before hiding or showing it.
 - Static project checks also require completed canonical plans under `docs/plans`.
+- GitHub Actions runs the same static `make check` baseline with Python 3.12
+  for pushes and pull requests.
 - Xcode's test action or `xcodebuild test` with the appropriate scheme and
   destination can be used on macOS for deeper verification.
 
@@ -125,6 +127,8 @@ When the required SDK or runtime is unavailable, use static checks and source re
   window setup guard.
 - See `docs/plans/2026-06-09-main-window-refresh-guard.md` for the main
   device-list window refresh guard.
+- See `docs/plans/2026-06-10-ci-baseline.md` for the GitHub Actions static
+  baseline.
 
 ## Contributing
 

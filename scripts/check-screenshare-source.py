@@ -10,6 +10,7 @@ ROOT = Path(__file__).resolve().parents[1]
 DOCS_PLANS = ROOT / "docs" / "plans"
 CANONICAL_PLAN = DOCS_PLANS / "2026-06-08-screenshare-baseline.md"
 DOCUMENT_PREVIEW_PLAN = DOCS_PLANS / "2026-06-09-document-preview-guard.md"
+CI_PLAN = DOCS_PLANS / "2026-06-10-ci-baseline.md"
 
 
 def read_text(relative_path):
@@ -24,6 +25,7 @@ def require_paths():
     errors = []
     for relative_path in (
         "build.sh",
+        ".github/workflows/check.yml",
         "Screenshare.xcodeproj/project.pbxproj",
         "Screenshare.xcodeproj/xcshareddata/xcschemes/Screenshare.xcscheme",
         "Screenshare.xcodeproj/xcshareddata/xcschemes/ScreenshareUnitTests.xcscheme",
@@ -46,6 +48,8 @@ def docs_plan_checks():
         errors.append("docs/plans/2026-06-08-screenshare-baseline.md is missing")
     if not DOCUMENT_PREVIEW_PLAN.exists():
         errors.append("docs/plans/2026-06-09-document-preview-guard.md is missing")
+    if not CI_PLAN.exists():
+        errors.append("docs/plans/2026-06-10-ci-baseline.md is missing")
 
     plans = sorted(DOCS_PLANS.glob("*.md")) if DOCS_PLANS.exists() else []
     if not plans:
@@ -72,6 +76,15 @@ def project_checks():
     for fragment in ("xcodebuild -project Screenshare.xcodeproj", '-scheme "Screenshare"', "test"):
         if fragment not in build_script:
             errors.append(f"build.sh is missing expected xcodebuild fragment: {fragment}")
+
+    workflow = read_text(".github/workflows/check.yml")
+    for fragment in ("actions/setup-python@v5", 'python-version: "3.12"', "make check"):
+        if fragment not in workflow:
+            errors.append(f"GitHub Actions workflow is missing expected fragment: {fragment}")
+
+    for doc_path in ("README.md", "VISION.md", "SECURITY.md", "CHANGES.md"):
+        if "GitHub Actions" not in read_text(doc_path):
+            errors.append(f"{doc_path} must document the GitHub Actions baseline")
 
     project = read_text("Screenshare.xcodeproj/project.pbxproj")
     for fragment in (

@@ -28,6 +28,7 @@ Priority:
 - Keep device refreshes tolerant of missing main window outlet state
 - Maintain custom skin and screenshot context
 - Keep completed maintenance plans under `docs/plans`
+- Keep GitHub Actions running the static `make check` baseline
 - Avoid recording, uploading, or storing mirrored content by default
 
 Next priorities:
