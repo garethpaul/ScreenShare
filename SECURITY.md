@@ -39,6 +39,8 @@ Helpful reports include:
   capture UI is not retained or updated after teardown.
 - Capture skins must conditionally resolve the application delegate so unusual
   nib or application lifecycle state cannot trigger a force-cast crash.
+- Newly discovered capture devices must create settings without a failable
+  initializer or forced result unwrap; malformed archives remain fail-closed.
 
 ## Mobile Privacy Notes
 

@@ -2,6 +2,8 @@
 
 ## 2026-06-12
 
+- Made live capture-device settings construction nonfailable and removed its
+  forced result unwrap while preserving failable archive decoding.
 - Guarded `Skin` application-delegate lookup and made selection and settings
   coordination tolerate unavailable delegate lifecycle state.
 

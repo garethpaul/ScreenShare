@@ -67,7 +67,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             }
         }
         
-        let newDevice = Device(fromDevice: device)!
+        let newDevice = Device(fromDevice: device)
         self.deviceSettings.append(newDevice)
         return newDevice
     }

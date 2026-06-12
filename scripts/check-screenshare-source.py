@@ -200,6 +200,16 @@ def behavior_checks():
         errors.append("Device archive decoding must not force-cast saved settings")
     if "guard let name = aDecoder.decodeObject(forKey: PropertyKey.nameKey) as? String" not in device:
         errors.append("Device archive decoding must optional-bind saved settings fields")
+    if "required convenience init?(coder aDecoder: NSCoder)" not in device:
+        errors.append("Device archive decoding must remain failable for malformed saved settings")
+    if "convenience init?(fromDevice device: AVCaptureDevice)" in device:
+        errors.append("Live capture-device settings construction must not be failable")
+    if "convenience init(fromDevice device: AVCaptureDevice)" not in device:
+        errors.append("Device must expose nonfailable live capture-device settings construction")
+    if "Device(fromDevice: device)!" in app_delegate:
+        errors.append("AppDelegate must not force unwrap live device-settings construction")
+    if "let newDevice = Device(fromDevice: device)\n        self.deviceSettings.append(newDevice)\n        return newDevice" not in app_delegate:
+        errors.append("AppDelegate must append and return newly constructed device settings")
     if "dimensions.height != dimensions.height" in document:
         errors.append("Document.updateAspect must not compare dimensions.height to itself")
     if "dimensions.height != self.videoDimensions.height" not in document:

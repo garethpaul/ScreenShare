@@ -67,6 +67,8 @@ The setup commands above are derived from repository files. Legacy mobile, Pytho
   signing disabled.
 - Static behavior checks also guard local device-settings archive decoding
   against force-cast crashes.
+- Static behavior checks require live capture-device settings construction to
+  be nonfailable and force-unwrap-free.
 - Static behavior checks also reject debug logging of device names and saved
   window rectangles from local settings.
 - Static behavior checks also keep missing local settings from clearing the

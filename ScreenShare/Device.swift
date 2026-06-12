@@ -32,7 +32,7 @@ class Device: NSObject, NSCoding {
     
     static let ArchivePath = NSHomeDirectory().appending("/devices")
 
-    convenience init?(fromDevice device: AVCaptureDevice) {
+    convenience init(fromDevice device: AVCaptureDevice) {
         self.init(name: device.localizedName, uid: device.uniqueID, portraitRect:NSRect(), landscapeRect:NSRect())
     }
     init(name: String, uid: String, portraitRect:NSRect, landscapeRect:NSRect) {
