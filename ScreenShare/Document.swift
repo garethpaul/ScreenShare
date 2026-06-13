@@ -91,13 +91,9 @@ class Document: NSDocument {
         self.devices = AVCaptureDevice.devices(for: .video)
             + AVCaptureDevice.devices(for: .muxed)
         
-        self.session.beginConfiguration()
-        
         if let selectedDevice = self.selectedDevice, !self.devices.contains(selectedDevice) {
             self.selectedDevice = nil
         }
-        
-        self.session.commitConfiguration()
         
     }
     
@@ -106,28 +102,47 @@ class Document: NSDocument {
             return self.input?.device
         }
         set {
-            self.session.beginConfiguration()
-            
-            if let input = self.input {
-                session.removeInput(input)
-                self.input = nil
-            }
-            
+            let replacementInput: AVCaptureDeviceInput?
             if let newDevice = newValue {
                 do {
-                    let newDeviceInput = try AVCaptureDeviceInput(device: newDevice)
-                    self.session.sessionPreset = .high
-                    self.session.addInput(newDeviceInput)
-                    self.input = newDeviceInput
+                    replacementInput = try AVCaptureDeviceInput(device: newDevice)
                 } catch let error as NSError {
                     self.displayError(error: error)
+                    return
                 }
-                
+            } else {
+                replacementInput = nil
             }
-            
-            self.session.commitConfiguration()
-            
-            self.updateAspect()
+
+            self.session.beginConfiguration()
+            defer {
+                self.session.commitConfiguration()
+                self.updateAspect()
+            }
+
+            let previousInput = self.input
+            if let previousInput = previousInput {
+                self.session.removeInput(previousInput)
+            }
+            self.input = nil
+
+            guard let replacementInput = replacementInput else {
+                return
+            }
+
+            self.session.sessionPreset = .high
+            guard self.session.canAddInput(replacementInput) else {
+                if let previousInput = previousInput,
+                    self.session.canAddInput(previousInput) {
+                    self.session.addInput(previousInput)
+                    self.input = previousInput
+                }
+                NSLog("Capture session rejected the replacement device input.")
+                return
+            }
+
+            self.session.addInput(replacementInput)
+            self.input = replacementInput
         }
     }
     

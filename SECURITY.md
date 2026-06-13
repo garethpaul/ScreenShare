@@ -41,6 +41,8 @@ Helpful reports include:
   nib or application lifecycle state cannot trigger a force-cast crash.
 - Newly discovered capture devices must create settings without a failable
   initializer or forced result unwrap; malformed archives remain fail-closed.
+- Capture device switch rollback must restore the prior working input when a
+  replacement cannot be admitted, without logging device metadata.
 
 ## Mobile Privacy Notes
 

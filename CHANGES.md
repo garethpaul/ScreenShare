@@ -1,5 +1,10 @@
 # Changes
 
+## 2026-06-13
+
+- Added capture device switch rollback so rejected replacements restore the
+  prior working input inside one session configuration transaction.
+
 ## 2026-06-12
 
 - Made live capture-device settings construction nonfailable and removed its

@@ -11,6 +11,7 @@ DOCS_PLANS = ROOT / "docs" / "plans"
 CANONICAL_PLAN = DOCS_PLANS / "2026-06-08-screenshare-baseline.md"
 DOCUMENT_PREVIEW_PLAN = DOCS_PLANS / "2026-06-09-document-preview-guard.md"
 CI_PLAN = DOCS_PLANS / "2026-06-10-ci-baseline.md"
+DEVICE_SWITCH_ROLLBACK_PLAN = DOCS_PLANS / "2026-06-13-device-switch-rollback.md"
 EXPECTED_WORKFLOW = """name: Check
 
 on:
@@ -99,6 +100,8 @@ def docs_plan_checks():
         errors.append("docs/plans/2026-06-09-document-preview-guard.md is missing")
     if not CI_PLAN.exists():
         errors.append("docs/plans/2026-06-10-ci-baseline.md is missing")
+    if not DEVICE_SWITCH_ROLLBACK_PLAN.exists():
+        errors.append("docs/plans/2026-06-13-device-switch-rollback.md is missing")
 
     plans = sorted(DOCS_PLANS.glob("*.md")) if DOCS_PLANS.exists() else []
     if not plans:
@@ -142,8 +145,11 @@ def project_checks():
             errors.append(f"Makefile is missing root-independent fragment: {fragment}")
 
     for doc_path in ("README.md", "VISION.md", "SECURITY.md", "CHANGES.md"):
-        if "GitHub Actions" not in read_text(doc_path):
+        document = re.sub(r"\s+", " ", read_text(doc_path))
+        if "GitHub Actions" not in document:
             errors.append(f"{doc_path} must document the GitHub Actions baseline")
+        if "capture device switch rollback" not in document.lower():
+            errors.append(f"{doc_path} must document capture device switch rollback")
 
     project = read_text("Screenshare.xcodeproj/project.pbxproj")
     for fragment in (
@@ -278,6 +284,19 @@ def behavior_checks():
         errors.append("AppDelegate.refreshDevices must guard the main device-list window outlet")
     if 'NSLog("Main device list window outlet is missing.")' not in app_delegate:
         errors.append("AppDelegate.refreshDevices must log a missing main window outlet")
+    refresh_devices = re.search(r"func refreshDevices\(\)\s*\{(?P<body>.*?)^    \}", document, re.DOTALL | re.MULTILINE)
+    if refresh_devices and "beginConfiguration()" in refresh_devices.group("body"):
+        errors.append("Document.refreshDevices must not nest capture session configuration")
+    if "let replacementInput: AVCaptureDeviceInput?" not in document or "replacementInput = try AVCaptureDeviceInput(device: newDevice)" not in document:
+        errors.append("Document.selectedDevice must construct the replacement input before mutating the session")
+    if "defer {\n                self.session.commitConfiguration()\n                self.updateAspect()\n            }" not in document:
+        errors.append("Document.selectedDevice must commit its single configuration transaction and refresh aspect state")
+    if "guard self.session.canAddInput(replacementInput) else" not in document:
+        errors.append("Document.selectedDevice must validate replacement input admission")
+    if "self.session.canAddInput(previousInput)" not in document or "self.session.addInput(previousInput)\n                    self.input = previousInput" not in document:
+        errors.append("Document.selectedDevice must restore the previous input when replacement admission fails")
+    if 'NSLog("Capture session rejected the replacement device input.")' not in document:
+        errors.append("Document.selectedDevice must log replacement rejection without device metadata")
 
     for swift_path in sorted((ROOT / "ScreenShare").glob("*.swift")):
         for line_number, line in enumerate(swift_path.read_text(encoding="utf-8").splitlines(), 1):

@@ -23,6 +23,7 @@ Priority:
 - Avoid logging local device names or saved window rectangles
 - Avoid ad hoc stdout logging from app Swift sources
 - Handle capture input setup failures without force-unwrapping error metadata
+- Preserve capture device switch rollback when replacement admission fails
 - Keep preview aspect updates responsive to width and height changes
 - Keep document preview and aspect setup tolerant of missing nib or capture state
 - Release repeating preview timers when document windows close
