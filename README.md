@@ -67,6 +67,8 @@ The setup commands above are derived from repository files. Legacy mobile, Pytho
   signing disabled.
 - Static behavior checks also guard local device-settings archive decoding
   against force-cast crashes.
+- Static behavior checks preserve device archive optional binding so decoded
+  settings never require a force unwrap.
 - Static behavior checks require live capture-device settings construction to
   be nonfailable and force-unwrap-free.
 - Static behavior checks also reject debug logging of device names and saved
@@ -136,6 +138,8 @@ When the required SDK or runtime is unavailable, use static checks and source re
   input error metadata guard.
 - See `docs/plans/2026-06-13-device-switch-rollback.md` for capture device
   switch rollback and single-transaction session configuration.
+- See `docs/plans/2026-06-13-device-archive-optional-binding.md` for the saved
+  settings archive boundary.
 - See `docs/plans/2026-06-09-document-preview-guard.md` for the document
   preview and aspect optional-binding guard.
 - See `docs/plans/2026-06-09-session-window-setup-guard.md` for the session

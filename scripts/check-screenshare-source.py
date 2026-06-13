@@ -12,6 +12,7 @@ CANONICAL_PLAN = DOCS_PLANS / "2026-06-08-screenshare-baseline.md"
 DOCUMENT_PREVIEW_PLAN = DOCS_PLANS / "2026-06-09-document-preview-guard.md"
 CI_PLAN = DOCS_PLANS / "2026-06-10-ci-baseline.md"
 DEVICE_SWITCH_ROLLBACK_PLAN = DOCS_PLANS / "2026-06-13-device-switch-rollback.md"
+DEVICE_ARCHIVE_BINDING_PLAN = DOCS_PLANS / "2026-06-13-device-archive-optional-binding.md"
 EXPECTED_WORKFLOW = """name: Check
 
 on:
@@ -102,6 +103,8 @@ def docs_plan_checks():
         errors.append("docs/plans/2026-06-10-ci-baseline.md is missing")
     if not DEVICE_SWITCH_ROLLBACK_PLAN.exists():
         errors.append("docs/plans/2026-06-13-device-switch-rollback.md is missing")
+    if not DEVICE_ARCHIVE_BINDING_PLAN.exists():
+        errors.append("docs/plans/2026-06-13-device-archive-optional-binding.md is missing")
 
     plans = sorted(DOCS_PLANS.glob("*.md")) if DOCS_PLANS.exists() else []
     if not plans:
@@ -150,6 +153,8 @@ def project_checks():
             errors.append(f"{doc_path} must document the GitHub Actions baseline")
         if "capture device switch rollback" not in document.lower():
             errors.append(f"{doc_path} must document capture device switch rollback")
+        if "device archive optional binding" not in document.lower():
+            errors.append(f"{doc_path} must document device archive optional binding")
 
     project = read_text("Screenshare.xcodeproj/project.pbxproj")
     for fragment in (
@@ -202,6 +207,17 @@ def behavior_checks():
         errors.append("AppDelegate.loadDeviceSettings must not clear active capture devices when settings are missing")
     if "self.deviceSettings = []" not in app_delegate:
         errors.append("AppDelegate.loadDeviceSettings must reset saved device settings when no archive exists")
+    if "loaded!" in app_delegate:
+        errors.append("AppDelegate.loadDeviceSettings must not force unwrap decoded device settings")
+    archive_binding = (
+        "if let loaded = NSKeyedUnarchiver.unarchiveObject(withFile: Device.ArchivePath) as? [Device] {\n"
+        "            self.deviceSettings = loaded\n"
+        "        } else {\n"
+        "            self.deviceSettings = []\n"
+        "        }"
+    )
+    if archive_binding not in app_delegate:
+        errors.append("AppDelegate.loadDeviceSettings must optional-bind the archive and fail closed to empty saved settings")
     if re.search(r"decodeObject(?:ForKey|\(forKey:)\s*\(?PropertyKey\.nameKey\)?\s+as!\s+String", device):
         errors.append("Device archive decoding must not force-cast saved settings")
     if "guard let name = aDecoder.decodeObject(forKey: PropertyKey.nameKey) as? String" not in device:

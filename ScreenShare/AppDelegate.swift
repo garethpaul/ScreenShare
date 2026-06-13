@@ -40,9 +40,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     }
     
     func loadDeviceSettings() {
-        let loaded = NSKeyedUnarchiver.unarchiveObject(withFile: Device.ArchivePath) as? [Device]
-        if loaded != nil {
-            self.deviceSettings = loaded!
+        if let loaded = NSKeyedUnarchiver.unarchiveObject(withFile: Device.ArchivePath) as? [Device] {
+            self.deviceSettings = loaded
         } else {
             self.deviceSettings = []
         }

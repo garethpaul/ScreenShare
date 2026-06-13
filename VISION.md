@@ -18,6 +18,7 @@ Priority:
 - Keep single-device limitations visible
 - Handle capture runtime errors without crashing on malformed notifications
 - Decode local device settings without force-cast launch crashes
+- Preserve device archive optional binding at the local settings boundary
 - Create settings for newly discovered capture devices without force unwraps
 - Keep saved device settings separate from active capture-device discovery
 - Avoid logging local device names or saved window rectangles

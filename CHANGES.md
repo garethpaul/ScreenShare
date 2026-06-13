@@ -2,6 +2,8 @@
 
 ## 2026-06-13
 
+- Replaced checked device-settings archive force unwrapping with device archive
+  optional binding and the existing empty fallback.
 - Added capture device switch rollback so rejected replacements restore the
   prior working input inside one session configuration transaction.
 
