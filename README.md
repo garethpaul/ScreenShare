@@ -140,6 +140,8 @@ When the required SDK or runtime is unavailable, use static checks and source re
   switch rollback and single-transaction session configuration.
 - See `docs/plans/2026-06-13-device-archive-optional-binding.md` for the saved
   settings archive boundary.
+- See `docs/plans/2026-06-14-make-root-override-protection.md` for the
+  caller-resistant, location-independent ScreenShare validation root.
 - See `docs/plans/2026-06-09-document-preview-guard.md` for the document
   preview and aspect optional-binding guard.
 - See `docs/plans/2026-06-09-session-window-setup-guard.md` for the session
