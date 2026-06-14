@@ -13,6 +13,7 @@ DOCUMENT_PREVIEW_PLAN = DOCS_PLANS / "2026-06-09-document-preview-guard.md"
 CI_PLAN = DOCS_PLANS / "2026-06-10-ci-baseline.md"
 DEVICE_SWITCH_ROLLBACK_PLAN = DOCS_PLANS / "2026-06-13-device-switch-rollback.md"
 DEVICE_ARCHIVE_BINDING_PLAN = DOCS_PLANS / "2026-06-13-device-archive-optional-binding.md"
+MAKE_ROOT_PLAN = DOCS_PLANS / "2026-06-14-make-root-override-protection.md"
 EXPECTED_WORKFLOW = """name: Check
 
 on:
@@ -105,6 +106,8 @@ def docs_plan_checks():
         errors.append("docs/plans/2026-06-13-device-switch-rollback.md is missing")
     if not DEVICE_ARCHIVE_BINDING_PLAN.exists():
         errors.append("docs/plans/2026-06-13-device-archive-optional-binding.md is missing")
+    if not MAKE_ROOT_PLAN.exists():
+        errors.append("docs/plans/2026-06-14-make-root-override-protection.md is missing")
 
     plans = sorted(DOCS_PLANS.glob("*.md")) if DOCS_PLANS.exists() else []
     if not plans:
@@ -137,8 +140,18 @@ def project_checks():
         errors.append("GitHub Actions workflow must match the reviewed credential-free contract and macOS build baseline")
 
     makefile = read_text("Makefile")
+    root_declaration = "override ROOT := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))"
+    root_assignments = [
+        line
+        for line in makefile.splitlines()
+        if re.match(r"^(?:override\s+)?ROOT\s*[:?+]?=", line)
+    ]
+    if root_assignments != [root_declaration]:
+        errors.append(
+            "Makefile must define exactly one protected repository-derived ROOT declaration"
+        )
     for fragment in (
-        "ROOT := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))",
+        root_declaration,
         '"$(ROOT)/build.sh"',
         '"$(ROOT)/scripts/check-screenshare-source.py"',
         '"$(ROOT)/Screenshare.xcodeproj"',
@@ -146,6 +159,22 @@ def project_checks():
     ):
         if fragment not in makefile:
             errors.append(f"Makefile is missing root-independent fragment: {fragment}")
+
+    if MAKE_ROOT_PLAN.exists():
+        root_plan = MAKE_ROOT_PLAN.read_text(encoding="utf-8")
+        for evidence in (
+            "Status: Completed",
+            "`make ROOT=/tmp check` passed",
+            "all five public Make aliases passed",
+            "Six hostile mutations were rejected",
+            "Python 3.12",
+        ):
+            if evidence not in root_plan:
+                errors.append(
+                    f"{MAKE_ROOT_PLAN.relative_to(ROOT)} must record verification evidence {evidence!r}"
+                )
+        if str(MAKE_ROOT_PLAN.relative_to(ROOT)) not in read_text("README.md"):
+            errors.append(f"README.md must reference {MAKE_ROOT_PLAN.relative_to(ROOT)}")
 
     for doc_path in ("README.md", "VISION.md", "SECURITY.md", "CHANGES.md"):
         document = re.sub(r"\s+", " ", read_text(doc_path))
