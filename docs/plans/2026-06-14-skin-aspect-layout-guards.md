@@ -1,6 +1,6 @@
 # Skin Aspect Layout Guards
 
-## Status: Planned
+## Status: Completed
 
 ## Context
 
@@ -46,6 +46,19 @@ format changes and must fail closed at AppKit lifecycle boundaries.
 - hostile window, screen, outlet, helper, documentation, and plan mutations
 - hosted unsigned macOS build on the exact pull-request head
 - generated-artifact, credential-pattern, and exact-diff audits
+
+## Verification Results
+
+- Focused project and behavior source contracts passed with one guarded window
+  and outlet binding, optional screen fallback, and nonoptional helper inputs.
+- The repository and external-directory `make check` passed; Linux truthfully
+  used the static-only boundary because `xcodebuild` is unavailable.
+- Six hostile Skin aspect-layout mutations were rejected across window binding,
+  screen fallback, outlet binding, helper handoff, documentation, and completed
+  plan status.
+- Final generated-artifact, credential-pattern, and exact-diff audits passed
+  with only the intended Skin, checker, documentation, and plan changes.
+- Hosted unsigned macOS compilation remains required on the exact pushed head.
 
 ## Risks
 

@@ -2,6 +2,8 @@
 
 ## 2026-06-14
 
+- Added Skin aspect layout guards for detached windows, missing screens, and
+  incomplete nib outlets.
 - Added Skin preview and window guards instead of force unwrapping optional
   AppKit outlets and resize-window lifecycle state.
 

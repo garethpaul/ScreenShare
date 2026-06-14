@@ -236,34 +236,41 @@ class Skin: NSView {
                 self.device.videDimensions = dimensions
                 self.loadSkinForDevice()
                 
-                if (self.window != nil) {
-                    var windowSize = self.device.getWindowSize() //self.window!.frame.size //self.device.getWindowSize()
-                    windowSize = windowSize.orientation != self.device.orientation ? windowSize.rotated() : windowSize
-                    
-                    if (    self.deviceSettings != nil
-                        &&  !ignoreSettings
-                        &&  self.deviceSettings?.hasPreviousLocation(forOrientation: self.device.orientation) == true ) {
-                            
-                            let windowRect = self.deviceSettings!.savedSettingForOrientation(forOrientation: self.device.orientation)
-                            windowSize =  windowRect.size
-                            positionWindow(windowRect: windowRect)
-                            
-                            
-                    } else {
-                        // Calculate new size to fit screen. -50 is just to give some margins for OS menubar, etc.
-                        var screenFrame = self.window!.screen!.visibleFrame
-                        screenFrame.size.height -= 50
-                        screenFrame.size.width -= 50
-                        windowSize = NSSize(fromCGSize: windowSize).scaleToFit(targetSize: screenFrame.size)
-                        
-                        // Center the window on screen
-                        centerWindow(windowSize: windowSize)
-                    }
-                    
-                    // Resize the internal view to the calculated size / rect
-                    updateViewsToWindow(windowSize: windowSize)
-                    
+                guard let window = self.window,
+                      let skinView = self.view,
+                      let deviceFrameImage = self.deviceFrameImage,
+                      let previewView = self.previewView else {
+                    NSLog("Skin aspect layout window or outlets are unavailable.")
+                    return
                 }
+
+                var windowSize = self.device.getWindowSize()
+                windowSize = windowSize.orientation != self.device.orientation ? windowSize.rotated() : windowSize
+
+                if let deviceSettings = self.deviceSettings,
+                   !ignoreSettings,
+                   deviceSettings.hasPreviousLocation(forOrientation: self.device.orientation) {
+                    let windowRect = deviceSettings.savedSettingForOrientation(forOrientation: self.device.orientation)
+                    windowSize = windowRect.size
+                    positionWindow(windowRect: windowRect, window: window)
+                } else if let screen = window.screen ?? NSScreen.main {
+                    // Leave a small margin for the menu bar and other screen chrome.
+                    var screenFrame = screen.visibleFrame
+                    screenFrame.size.height -= 50
+                    screenFrame.size.width -= 50
+                    windowSize = NSSize(fromCGSize: windowSize).scaleToFit(targetSize: screenFrame.size)
+                    centerWindow(windowSize: windowSize, window: window, screenFrame: screen.frame)
+                } else {
+                    NSLog("Skin aspect layout screen is unavailable.")
+                    window.aspectRatio = windowSize
+                }
+
+                updateViewsToWindow(
+                    windowSize: windowSize,
+                    window: window,
+                    skinView: skinView,
+                    deviceFrameImage: deviceFrameImage,
+                    previewView: previewView)
             }
             return
             
@@ -283,28 +290,29 @@ class Skin: NSView {
         
     }
     
-    func centerWindow(windowSize : NSSize) {
-        self.window!.aspectRatio = windowSize
-        self.window!.setFrame(DeviceUtils.getCenteredRect(windowSize: windowSize, screenFrame: self.window!.screen!.frame), display:true)
+    func centerWindow(windowSize: NSSize, window: NSWindow, screenFrame: NSRect) {
+        window.aspectRatio = windowSize
+        window.setFrame(DeviceUtils.getCenteredRect(windowSize: windowSize, screenFrame: screenFrame), display: true)
         // self.window?.center() does not work
     }
-    func positionWindow(windowRect : NSRect) {
-        self.window!.aspectRatio = windowRect.size
-        self.window!.setFrame(windowRect, display:true)
+    func positionWindow(windowRect: NSRect, window: NSWindow) {
+        window.aspectRatio = windowRect.size
+        window.setFrame(windowRect, display: true)
         // self.window?.center() does not work
     }
     
-    func updateViewsToWindow(windowSize : NSSize) {
+    func updateViewsToWindow(windowSize: NSSize, window: NSWindow, skinView: NSView,
+                             deviceFrameImage: NSImageView, previewView: NSView) {
         
         self.setFrameSize(windowSize)
         self.setFrameOrigin(NSPoint(x: 0,y: 0))
-        self.view.frame = self.bounds
+        skinView.frame = self.bounds
         
-        self.deviceFrameImage.image = NSImage(named: self.device.getSkinDeviceImage())
-        self.deviceFrameImage.translatesAutoresizingMaskIntoConstraints = true
-        self.deviceFrameImage.setFrameSize(self.bounds.size)
-        self.deviceFrameImage.setFrameOrigin(NSPoint(x: 0,y: 0))
-        self.deviceFrameImage.needsDisplay = true
+        deviceFrameImage.image = NSImage(named: self.device.getSkinDeviceImage())
+        deviceFrameImage.translatesAutoresizingMaskIntoConstraints = true
+        deviceFrameImage.setFrameSize(self.bounds.size)
+        deviceFrameImage.setFrameOrigin(NSPoint(x: 0,y: 0))
+        deviceFrameImage.needsDisplay = true
         
         let scale  = windowSize.width / ( self.device.orientation == .Portrait ? self.device.skinSize.width : self.device.skinSize.height )
         var size = NSSize(width: originalPreviewViewBounds.size.width * scale, height: originalPreviewViewBounds.size.height * scale)
@@ -312,19 +320,19 @@ class Skin: NSView {
             size = size.rotated()
         }
         
-        self.previewView.translatesAutoresizingMaskIntoConstraints = true
-        self.previewView.setFrameSize(size)
+        previewView.translatesAutoresizingMaskIntoConstraints = true
+        previewView.setFrameSize(size)
         
         let origin = NSPoint(
             x: windowSize.width / 2 - size.width / 2,
             y: windowSize.height / 2 - size.height / 2)
         
-        self.previewView.setFrameOrigin(origin)
+        previewView.setFrameOrigin(origin)
         
-        self.videoPreviewLayer?.frame = self.previewView.bounds
+        self.videoPreviewLayer?.frame = previewView.bounds
         
         self.needsDisplay = true
-        self.window!.invalidateShadow()
+        window.invalidateShadow()
         
         if trackingArea != nil {
             self.removeTrackingArea(trackingArea!)

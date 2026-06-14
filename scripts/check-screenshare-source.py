@@ -15,6 +15,7 @@ DEVICE_SWITCH_ROLLBACK_PLAN = DOCS_PLANS / "2026-06-13-device-switch-rollback.md
 DEVICE_ARCHIVE_BINDING_PLAN = DOCS_PLANS / "2026-06-13-device-archive-optional-binding.md"
 MAKE_ROOT_PLAN = DOCS_PLANS / "2026-06-14-make-root-override-protection.md"
 SKIN_PREVIEW_WINDOW_PLAN = DOCS_PLANS / "2026-06-14-skin-preview-window-guards.md"
+SKIN_ASPECT_LAYOUT_PLAN = DOCS_PLANS / "2026-06-14-skin-aspect-layout-guards.md"
 EXPECTED_WORKFLOW = """name: Check
 
 on:
@@ -111,6 +112,8 @@ def docs_plan_checks():
         errors.append("docs/plans/2026-06-14-make-root-override-protection.md is missing")
     if not SKIN_PREVIEW_WINDOW_PLAN.exists():
         errors.append("docs/plans/2026-06-14-skin-preview-window-guards.md is missing")
+    if not SKIN_ASPECT_LAYOUT_PLAN.exists():
+        errors.append("docs/plans/2026-06-14-skin-aspect-layout-guards.md is missing")
 
     plans = sorted(DOCS_PLANS.glob("*.md")) if DOCS_PLANS.exists() else []
     if not plans:
@@ -189,6 +192,8 @@ def project_checks():
             errors.append(f"{doc_path} must document device archive optional binding")
         if "skin preview and window guards" not in document.lower():
             errors.append(f"{doc_path} must document Skin preview and window guards")
+        if "skin aspect layout guards" not in document.lower():
+            errors.append(f"{doc_path} must document Skin aspect layout guards")
     if str(SKIN_PREVIEW_WINDOW_PLAN.relative_to(ROOT)) not in read_text("README.md"):
         errors.append(f"README.md must reference {SKIN_PREVIEW_WINDOW_PLAN.relative_to(ROOT)}")
 
@@ -329,6 +334,32 @@ def behavior_checks():
         for evidence in ("Status: Completed", "repository and external-directory `make check` passed", "hostile Skin optional-state mutations were rejected"):
             if evidence not in plan:
                 errors.append(f"{SKIN_PREVIEW_WINDOW_PLAN.relative_to(ROOT)} must record verification evidence {evidence!r}")
+    for fragment in (
+        "guard let window = self.window,",
+        "let skinView = self.view,",
+        "let deviceFrameImage = self.deviceFrameImage,",
+        "let previewView = self.previewView else",
+        "let screen = window.screen ?? NSScreen.main",
+        "var screenFrame = screen.visibleFrame",
+        "positionWindow(windowRect: windowRect, window: window)",
+        "centerWindow(windowSize: windowSize, window: window, screenFrame: screen.frame)",
+        "func centerWindow(windowSize: NSSize, window: NSWindow, screenFrame: NSRect)",
+        "func positionWindow(windowRect: NSRect, window: NSWindow)",
+        "func updateViewsToWindow(windowSize: NSSize, window: NSWindow, skinView: NSView,",
+        "window.invalidateShadow()",
+    ):
+        if fragment not in skin:
+            errors.append(f"Skin aspect layout must retain guarded state via {fragment!r}")
+    aspect_start = skin.find("func updateAspect(ignoreSettings:Bool)")
+    aspect_end = skin.find("func scaleToFit(forgetSettings:Bool)")
+    aspect_layout = skin[aspect_start:aspect_end]
+    if aspect_start < 0 or aspect_end < 0 or "self.window!" in aspect_layout or "self.deviceSettings!" in aspect_layout:
+        errors.append("Skin aspect layout must not force unwrap window or device settings state")
+    if SKIN_ASPECT_LAYOUT_PLAN.exists():
+        plan = SKIN_ASPECT_LAYOUT_PLAN.read_text(encoding="utf-8")
+        for evidence in ("Status: Completed", "repository and external-directory `make check` passed", "hostile Skin aspect-layout mutations were rejected"):
+            if evidence not in plan:
+                errors.append(f"{SKIN_ASPECT_LAYOUT_PLAN.relative_to(ROOT)} must record verification evidence {evidence!r}")
     for fragment in (
         "appDelegate?.selectedDevice = nil",
         "appDelegate?.selectedDevice = self",
