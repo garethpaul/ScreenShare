@@ -20,6 +20,8 @@ format changes and must fail closed at AppKit lifecycle boundaries.
   through layout helpers.
 - Tolerate a missing window screen without force unwrapping or crashing.
 - Guard the skin view, device frame image, and preview view before resizing.
+- Keep the resize-notification callback aligned with the guarded
+  `updateViewsToWindow` helper contract.
 - Preserve saved device positioning, scale-to-fit behavior, centering, shadow
   invalidation, and successful capture preview layout.
 - Add fail-closed source contracts and keep maintained documentation and
@@ -56,9 +58,15 @@ format changes and must fail closed at AppKit lifecycle boundaries.
 - Six hostile Skin aspect-layout mutations were rejected across window binding,
   screen fallback, outlet binding, helper handoff, documentation, and completed
   plan status.
+- The initial exact-head hosted build exposed a stale resize callback that still
+  called `updateViewsToWindow` with only the window size. The callback now binds
+  the required outlets and forwards every nonoptional helper argument.
+- Focused contracts, repository and external-directory `make check`, and six
+  isolated resize-callback mutations passed after the hosted compile fix.
 - Final generated-artifact, credential-pattern, and exact-diff audits passed
   with only the intended Skin, checker, documentation, and plan changes.
-- Hosted unsigned macOS compilation remains required on the exact pushed head.
+- Hosted unsigned macOS compilation remains required on the corrected pushed
+  head.
 
 ## Risks
 

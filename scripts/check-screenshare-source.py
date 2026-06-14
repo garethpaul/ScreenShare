@@ -329,6 +329,21 @@ def behavior_checks():
         errors.append("Skin must retain preview bounds from the guarded local outlet")
     if "guard let window = self.window else" not in skin or "[weak self, weak window]" not in skin:
         errors.append("Skin resize notifications must guard and weakly retain window lifecycle state")
+    resize_start = skin.find("func registerNotifications()")
+    resize_end = skin.find("func initWithDevice(device: AVCaptureDevice)")
+    resize_layout = skin[resize_start:resize_end]
+    for fragment in (
+        "let skinView = self.view,",
+        "let deviceFrameImage = self.deviceFrameImage,",
+        "let previewView = self.previewView else",
+        "windowSize: window.frame.size,",
+        "window: window,",
+        "skinView: skinView,",
+        "deviceFrameImage: deviceFrameImage,",
+        "previewView: previewView)",
+    ):
+        if resize_start < 0 or resize_end < 0 or fragment not in resize_layout:
+            errors.append(f"Skin resize layout must retain guarded state via {fragment!r}")
     if SKIN_PREVIEW_WINDOW_PLAN.exists():
         plan = SKIN_PREVIEW_WINDOW_PLAN.read_text(encoding="utf-8")
         for evidence in ("Status: Completed", "repository and external-directory `make check` passed", "hostile Skin optional-state mutations were rejected"):

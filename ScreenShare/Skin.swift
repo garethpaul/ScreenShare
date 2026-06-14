@@ -126,8 +126,20 @@ class Skin: NSView {
         }
         self.notifications.registerObserver(
             NSWindow.didResizeNotification, forObject: window, dispatchAsyncToMainQueue: true, block: { [weak self, weak window] _ in
-                guard let self = self, let window = window else { return }
-                self.updateViewsToWindow(windowSize: window.frame.size)
+                guard let self = self,
+                      let window = window,
+                      let skinView = self.view,
+                      let deviceFrameImage = self.deviceFrameImage,
+                      let previewView = self.previewView else {
+                    NSLog("Skin resize layout window or outlets are unavailable.")
+                    return
+                }
+                self.updateViewsToWindow(
+                    windowSize: window.frame.size,
+                    window: window,
+                    skinView: skinView,
+                    deviceFrameImage: deviceFrameImage,
+                    previewView: previewView)
         })
     }
     
