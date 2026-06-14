@@ -1,5 +1,10 @@
 # Changes
 
+## 2026-06-14
+
+- Added Skin preview and window guards instead of force unwrapping optional
+  AppKit outlets and resize-window lifecycle state.
+
 ## 2026-06-13
 
 - Replaced checked device-settings archive force unwrapping with device archive

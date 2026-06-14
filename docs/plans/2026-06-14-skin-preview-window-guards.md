@@ -1,6 +1,6 @@
 # Skin Preview And Window Guards
 
-## Status: Planned
+## Status: Completed
 
 ## Context
 
@@ -29,3 +29,17 @@ not crash the process when optional AppKit state is unavailable.
 - hostile outlet, layer, window, closure, documentation, and plan mutations
 - hosted unsigned macOS build on the exact pull-request head
 - generated-artifact, credential-pattern, and exact-diff audits
+
+## Verification Results
+
+- Focused project and behavior source contracts passed with both preview setup
+  paths guarded and resize notifications using weak lifecycle captures.
+- The repository and external-directory `make check` passed; Linux truthfully
+  used the static-only boundary because `xcodebuild` is unavailable.
+- Seven hostile Skin optional-state mutations were rejected across preview
+  outlet guarding, guarded bounds reuse, local preview-layer construction,
+  resize-window guarding, weak capture, documentation, and completed-plan
+  status.
+- Final generated-artifact, credential-pattern, and exact-diff audits passed
+  with only the intended Skin, checker, documentation, and plan changes.
+- Hosted unsigned macOS compilation remains required on the exact pushed head.

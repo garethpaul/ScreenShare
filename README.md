@@ -86,6 +86,8 @@ The setup commands above are derived from repository files. Legacy mobile, Pytho
   working input.
 - Static behavior checks also require document preview setup and aspect updates
   to optional-bind outlets, backing layers, input ports, and windows.
+- Skin preview and window guards optional-bind preview layers and resize-window
+  lifecycle state instead of force unwrapping AppKit outlets.
 - Static behavior checks also require session window setup to avoid
   force-unwrapping the main screen or content view.
 - Static behavior checks also require device refreshes to guard the main
@@ -142,6 +144,8 @@ When the required SDK or runtime is unavailable, use static checks and source re
   settings archive boundary.
 - See `docs/plans/2026-06-14-make-root-override-protection.md` for the
   caller-resistant, location-independent ScreenShare validation root.
+- See `docs/plans/2026-06-14-skin-preview-window-guards.md` for guarded Skin
+  preview-layer and resize-window lifecycle setup.
 - See `docs/plans/2026-06-09-document-preview-guard.md` for the document
   preview and aspect optional-binding guard.
 - See `docs/plans/2026-06-09-session-window-setup-guard.md` for the session

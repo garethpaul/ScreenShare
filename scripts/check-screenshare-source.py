@@ -14,6 +14,7 @@ CI_PLAN = DOCS_PLANS / "2026-06-10-ci-baseline.md"
 DEVICE_SWITCH_ROLLBACK_PLAN = DOCS_PLANS / "2026-06-13-device-switch-rollback.md"
 DEVICE_ARCHIVE_BINDING_PLAN = DOCS_PLANS / "2026-06-13-device-archive-optional-binding.md"
 MAKE_ROOT_PLAN = DOCS_PLANS / "2026-06-14-make-root-override-protection.md"
+SKIN_PREVIEW_WINDOW_PLAN = DOCS_PLANS / "2026-06-14-skin-preview-window-guards.md"
 EXPECTED_WORKFLOW = """name: Check
 
 on:
@@ -108,6 +109,8 @@ def docs_plan_checks():
         errors.append("docs/plans/2026-06-13-device-archive-optional-binding.md is missing")
     if not MAKE_ROOT_PLAN.exists():
         errors.append("docs/plans/2026-06-14-make-root-override-protection.md is missing")
+    if not SKIN_PREVIEW_WINDOW_PLAN.exists():
+        errors.append("docs/plans/2026-06-14-skin-preview-window-guards.md is missing")
 
     plans = sorted(DOCS_PLANS.glob("*.md")) if DOCS_PLANS.exists() else []
     if not plans:
@@ -184,6 +187,10 @@ def project_checks():
             errors.append(f"{doc_path} must document capture device switch rollback")
         if "device archive optional binding" not in document.lower():
             errors.append(f"{doc_path} must document device archive optional binding")
+        if "skin preview and window guards" not in document.lower():
+            errors.append(f"{doc_path} must document Skin preview and window guards")
+    if str(SKIN_PREVIEW_WINDOW_PLAN.relative_to(ROOT)) not in read_text("README.md"):
+        errors.append(f"README.md must reference {SKIN_PREVIEW_WINDOW_PLAN.relative_to(ROOT)}")
 
     project = read_text("Screenshare.xcodeproj/project.pbxproj")
     for fragment in (
@@ -307,6 +314,21 @@ def behavior_checks():
         errors.append("Skin must conditionally cast the application delegate")
     if 'NSLog("ScreenShare application delegate is unavailable.")' not in skin:
         errors.append("Skin must log unavailable application delegate state")
+    if "previewViewLayer!" in skin or "self.videoPreviewLayer!" in skin or "forObject: self.window!" in skin:
+        errors.append("Skin preview and resize setup must not force unwrap optional AppKit state")
+    if skin.count("guard let previewView = self.previewView") != 2 or skin.count("let previewViewLayer = previewView.layer") != 2:
+        errors.append("Skin must guard both preview outlets and backing layers")
+    if skin.count("let videoPreviewLayer = AVCaptureVideoPreviewLayer(session: self.session)") != 2:
+        errors.append("Skin must configure both video preview layers as local nonoptional values")
+    if "originalPreviewViewBounds = previewView.bounds" not in skin:
+        errors.append("Skin must retain preview bounds from the guarded local outlet")
+    if "guard let window = self.window else" not in skin or "[weak self, weak window]" not in skin:
+        errors.append("Skin resize notifications must guard and weakly retain window lifecycle state")
+    if SKIN_PREVIEW_WINDOW_PLAN.exists():
+        plan = SKIN_PREVIEW_WINDOW_PLAN.read_text(encoding="utf-8")
+        for evidence in ("Status: Completed", "repository and external-directory `make check` passed", "hostile Skin optional-state mutations were rejected"):
+            if evidence not in plan:
+                errors.append(f"{SKIN_PREVIEW_WINDOW_PLAN.relative_to(ROOT)} must record verification evidence {evidence!r}")
     for fragment in (
         "appDelegate?.selectedDevice = nil",
         "appDelegate?.selectedDevice = self",

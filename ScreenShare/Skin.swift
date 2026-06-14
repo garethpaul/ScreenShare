@@ -98,26 +98,36 @@ class Skin: NSView {
             self.addSubview(self.view)
             
             // Custom view set to render concurrently in order to have its own layer
-            let previewViewLayer = self.previewView.layer
-            previewViewLayer!.backgroundColor = CGColor.black
+            guard let previewView = self.previewView,
+                  let previewViewLayer = previewView.layer else {
+                NSLog("Skin preview outlet or backing layer is unavailable.")
+                return
+            }
+            previewViewLayer.backgroundColor = CGColor.black
             
             /* ADDING CONNECTION LATER            self.videoPreviewLayer = AVCaptureVideoPreviewLayer(sessionWithNoConnection: self.session) */
-            self.videoPreviewLayer = AVCaptureVideoPreviewLayer(session: self.session)
+            let videoPreviewLayer = AVCaptureVideoPreviewLayer(session: self.session)
+            self.videoPreviewLayer = videoPreviewLayer
+
+            videoPreviewLayer.frame = previewViewLayer.bounds
+            videoPreviewLayer.autoresizingMask = [.layerWidthSizable, .layerHeightSizable]
+            videoPreviewLayer.videoGravity = .resizeAspect
+
+            previewViewLayer.addSublayer(videoPreviewLayer)
             
-            self.videoPreviewLayer!.frame = previewViewLayer!.bounds
-            self.videoPreviewLayer!.autoresizingMask = [.layerWidthSizable, .layerHeightSizable]
-            self.videoPreviewLayer!.videoGravity = .resizeAspect
-            
-            previewViewLayer?.addSublayer(self.videoPreviewLayer!)
-            
-            originalPreviewViewBounds = self.previewView.bounds
+            originalPreviewViewBounds = previewView.bounds
         }
     }
     
     func registerNotifications() {
+        guard let window = self.window else {
+            NSLog("Skin notification window is unavailable.")
+            return
+        }
         self.notifications.registerObserver(
-            NSWindow.didResizeNotification, forObject: self.window!, dispatchAsyncToMainQueue: true, block: {note in
-                self.updateViewsToWindow(windowSize: self.window!.frame.size)
+            NSWindow.didResizeNotification, forObject: window, dispatchAsyncToMainQueue: true, block: { [weak self, weak window] _ in
+                guard let self = self, let window = window else { return }
+                self.updateViewsToWindow(windowSize: window.frame.size)
         })
     }
     
@@ -126,16 +136,21 @@ class Skin: NSView {
         self.session = AVCaptureSession()
         
         // Custom view set to render concurrently in order to have its own layer
-        let previewViewLayer = self.previewView.layer
-        previewViewLayer!.backgroundColor = CGColor.white
+        guard let previewView = self.previewView,
+              let previewViewLayer = previewView.layer else {
+            NSLog("Skin preview outlet or backing layer is unavailable.")
+            return
+        }
+        previewViewLayer.backgroundColor = CGColor.white
         
         /* ADDING CONNECTION LATER        self.videoPreviewLayer = AVCaptureVideoPreviewLayer(sessionWithNoConnection: self.session) */
-        self.videoPreviewLayer = AVCaptureVideoPreviewLayer(session: self.session)
-        
-        self.videoPreviewLayer!.frame = previewViewLayer!.bounds
+        let videoPreviewLayer = AVCaptureVideoPreviewLayer(session: self.session)
+        self.videoPreviewLayer = videoPreviewLayer
+
+        videoPreviewLayer.frame = previewViewLayer.bounds
         //newPreviewLayer.autoresizingMask = CAAutoresizingMask.LayerWidthSizable | CAAutoresizingMask.LayerHeightSizable
-        self.videoPreviewLayer!.videoGravity = .resize
-        previewViewLayer?.addSublayer(self.videoPreviewLayer!)
+        videoPreviewLayer.videoGravity = .resize
+        previewViewLayer.addSublayer(videoPreviewLayer)
         
         
         self.selectedDevice = device
