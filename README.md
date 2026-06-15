@@ -94,6 +94,8 @@ The setup commands above are derived from repository files. Legacy mobile, Pytho
   force-unwrapping AppKit state during teardown.
 - Static behavior checks also require session window setup to avoid
   force-unwrapping the main screen or content view.
+- Session registration guards require window attachment to succeed before a
+  capture skin is started or recorded as an active device session.
 - Static behavior checks also require device refreshes to guard the main
   device-list window before hiding or showing it.
 - Static behavior checks also require document aspect timers to be replaced and

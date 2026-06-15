@@ -32,6 +32,7 @@ Priority:
 - Keep Skin pointer and window guards around drag and settings persistence callbacks
 - Release repeating preview timers when document windows close
 - Keep session window setup tolerant of missing screen or content-view state
+- Register device sessions only after their capture skin can attach to a window
 - Keep device refreshes tolerant of missing main window outlet state
 - Keep capture skins tolerant of unavailable application delegate state
 - Maintain custom skin and screenshot context

@@ -1,6 +1,6 @@
 # Session Registration Guard
 
-## Status: Planned
+## Status: Completed
 
 ## Context
 
@@ -48,6 +48,18 @@ the session registry only after its window can host the capture view.
   mutations
 - shell syntax, workflow YAML, plist, scheme XML, generated-artifact,
   credential-pattern, and exact-diff audits
+
+## Verification Results
+
+- Focused project and behavior source-contract validation passed.
+- The repository and external-directory `make check` passed; Linux truthfully
+  used the documented static-only path because `xcodebuild` is unavailable.
+- Four hostile session-registration mutations were rejected across optional
+  return type, guard ordering, nil failure return, and conditional registry
+  state.
+- Shell syntax, workflow YAML, Info and entitlements plists, shared scheme XML,
+  generated-artifact, credential-pattern, conflict-marker, and exact-diff
+  audits passed.
 
 ## Remaining Risks
 

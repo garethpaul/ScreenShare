@@ -2,6 +2,8 @@
 
 ## 2026-06-15
 
+- Made device-session creation failable so a missing window content view cannot
+  leave a detached capture skin registered as an active session.
 - Added Skin pointer and window guards for movement and device-settings
   persistence when AppKit state is unavailable.
 

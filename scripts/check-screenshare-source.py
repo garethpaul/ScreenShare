@@ -17,6 +17,7 @@ MAKE_ROOT_PLAN = DOCS_PLANS / "2026-06-14-make-root-override-protection.md"
 SKIN_PREVIEW_WINDOW_PLAN = DOCS_PLANS / "2026-06-14-skin-preview-window-guards.md"
 SKIN_ASPECT_LAYOUT_PLAN = DOCS_PLANS / "2026-06-14-skin-aspect-layout-guards.md"
 SKIN_POINTER_WINDOW_PLAN = DOCS_PLANS / "2026-06-15-skin-pointer-window-guards.md"
+SESSION_REGISTRATION_PLAN = DOCS_PLANS / "2026-06-15-session-registration-guard.md"
 EXPECTED_WORKFLOW = """name: Check
 
 on:
@@ -117,6 +118,8 @@ def docs_plan_checks():
         errors.append("docs/plans/2026-06-14-skin-aspect-layout-guards.md is missing")
     if not SKIN_POINTER_WINDOW_PLAN.exists():
         errors.append("docs/plans/2026-06-15-skin-pointer-window-guards.md is missing")
+    if not SESSION_REGISTRATION_PLAN.exists():
+        errors.append("docs/plans/2026-06-15-session-registration-guard.md is missing")
 
     plans = sorted(DOCS_PLANS.glob("*.md")) if DOCS_PLANS.exists() else []
     if not plans:
@@ -431,6 +434,31 @@ def behavior_checks():
         errors.append("AppDelegate.startNewSession must not force unwrap the session window content view")
     if "guard let contentView = window.contentView else" not in app_delegate or "contentView.addSubview(skin)" not in app_delegate:
         errors.append("AppDelegate.startNewSession must guard the session window content view before adding the skin")
+    session_start = app_delegate.find("func startNewSession(device:AVCaptureDevice)")
+    session_end = app_delegate.find("func refreshDevices()", session_start)
+    session_setup = app_delegate[session_start:session_end]
+    for fragment in (
+        "func startNewSession(device:AVCaptureDevice) -> Skin?",
+        "guard let contentView = window.contentView else",
+        "return nil",
+        "let skin = Skin(frame: frameView)",
+        "contentView.addSubview(skin)",
+    ):
+        if session_start < 0 or session_end < 0 or fragment not in session_setup:
+            errors.append(f"AppDelegate session creation must retain failable setup via {fragment!r}")
+    if session_setup.find("guard let contentView = window.contentView else") > session_setup.find("let skin = Skin(frame: frameView)"):
+        errors.append("AppDelegate must guard the session window content view before constructing the capture skin")
+    refresh_start = app_delegate.find("func refreshDevices()")
+    refresh_setup = app_delegate[refresh_start:]
+    if "if let skin = startNewSession(device: device)" not in refresh_setup:
+        errors.append("AppDelegate must register only successfully created device sessions")
+    if "self.deviceSessions[device] = startNewSession(device: device)" in refresh_setup:
+        errors.append("AppDelegate must not register a failable device session unconditionally")
+    if SESSION_REGISTRATION_PLAN.exists():
+        plan = SESSION_REGISTRATION_PLAN.read_text(encoding="utf-8")
+        for evidence in ("Status: Completed", "repository and external-directory `make check` passed", "hostile session-registration mutations were rejected"):
+            if evidence not in plan:
+                errors.append(f"{SESSION_REGISTRATION_PLAN.relative_to(ROOT)} must record verification evidence {evidence!r}")
     if "self.window!.close()" in app_delegate or "self.window!.makeKeyAndOrderFront(NSApp)" in app_delegate:
         errors.append("AppDelegate.refreshDevices must not force unwrap the main device-list window")
     if "guard let window = self.window else" not in app_delegate:
