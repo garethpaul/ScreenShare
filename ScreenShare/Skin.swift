@@ -415,34 +415,45 @@ class Skin: NSView {
         self.window?.invalidateShadow()
     }
     override func mouseDown(with theEvent: NSEvent) {
-        initialLocation = NSEvent.mouseLocation
-        
-        initialLocation?.x -= self.window!.frame.origin.x
-        initialLocation?.y -= self.window!.frame.origin.y
-        
-        isResize = (initialLocation!.x > self.deviceFrameImage!.bounds.size.width - ResizeHandleSize)
-            && (initialLocation!.y < ResizeHandleSize)
+        guard let window = self.window,
+              let deviceFrameImage = self.deviceFrameImage else {
+            NSLog("Skin pointer window or preview outlet is unavailable.")
+            initialLocation = nil
+            isResize = false
+            return
+        }
+
+        var pointerLocation = NSEvent.mouseLocation
+        pointerLocation.x -= window.frame.origin.x
+        pointerLocation.y -= window.frame.origin.y
+        initialLocation = pointerLocation
+
+        isResize = (pointerLocation.x > deviceFrameImage.bounds.size.width - ResizeHandleSize)
+            && (pointerLocation.y < ResizeHandleSize)
         
         appDelegate?.selectedDevice = self
         
     }
     
     override func mouseDragged(with theEvent: NSEvent) {
-        
+        guard let initialLocation = initialLocation,
+              let window = self.window else {
+            NSLog("Skin drag window or pointer origin is unavailable.")
+            return
+        }
+
         if !isResize {
-            
             let curLocation = NSEvent.mouseLocation
-            
             var newOrigin = NSPoint(
-                x: curLocation.x - initialLocation!.x,
-                y: curLocation.y - initialLocation!.y)
-            
-            let screenFrame = NSScreen.main?.frame
-            if((newOrigin.y + window!.frame.size.height) > (screenFrame!.origin.y + screenFrame!.size.height)) {
-                newOrigin.y = screenFrame!.origin.y + (screenFrame!.size.height - window!.frame.size.height)
+                x: curLocation.x - initialLocation.x,
+                y: curLocation.y - initialLocation.y)
+
+            if let screenFrame = (window.screen ?? NSScreen.main)?.frame,
+               (newOrigin.y + window.frame.size.height) > (screenFrame.origin.y + screenFrame.size.height) {
+                newOrigin.y = screenFrame.origin.y + (screenFrame.size.height - window.frame.size.height)
             }
-            
-            self.window!.setFrameOrigin(newOrigin)
+
+            window.setFrameOrigin(newOrigin)
         }
         updateDeviceSettings()
         
@@ -454,12 +465,15 @@ class Skin: NSView {
     //MARK: Device Settings
     func updateDeviceSettings() {
         // Update current device size/location settings based on its current movement
-        if(self.deviceSettings != nil) {
-            if self.device.orientation == Device.DeviceOrientation.Portrait {
-                self.deviceSettings!.portraitRect = window!.frame
-            } else {
-                self.deviceSettings!.landscapeRect = window!.frame
-            }
+        guard let deviceSettings = self.deviceSettings,
+              let window = self.window else {
+            NSLog("Skin device settings window or state is unavailable.")
+            return
+        }
+        if self.device.orientation == Device.DeviceOrientation.Portrait {
+            deviceSettings.portraitRect = window.frame
+        } else {
+            deviceSettings.landscapeRect = window.frame
         }
         saveDeviceSettins()
         

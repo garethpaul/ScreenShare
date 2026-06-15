@@ -1,5 +1,10 @@
 # Changes
 
+## 2026-06-15
+
+- Added Skin pointer and window guards for movement and device-settings
+  persistence when AppKit state is unavailable.
+
 ## 2026-06-14
 
 - Added Skin aspect layout guards for detached windows, missing screens, and

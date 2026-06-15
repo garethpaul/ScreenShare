@@ -28,6 +28,8 @@ Skin preview and window guards must optional-bind AppKit outlets and lifecycle
 state before capture UI setup or resize handling.
 Skin aspect layout guards must tolerate detached windows, missing screens, and
 incomplete nib outlets during device-dimension updates.
+Skin pointer and window guards must fail closed when drag or settings callbacks
+outlive their window, outlet, pointer-origin, screen, or saved-settings state.
 
 - This repository appears to be an Apple platform application or Swift sample. The active security scope is the code and documentation on the default branch.
 - Review found authentication, token, or session-related code paths; changes in those areas should receive security-focused review before merge.

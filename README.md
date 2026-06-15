@@ -90,6 +90,8 @@ The setup commands above are derived from repository files. Legacy mobile, Pytho
   lifecycle state instead of force unwrapping AppKit outlets.
 - Skin aspect layout guards tolerate detached windows, missing screens, and
   incomplete nib outlets during device-dimension updates.
+- Skin pointer and window guards keep drag and settings callbacks from
+  force-unwrapping AppKit state during teardown.
 - Static behavior checks also require session window setup to avoid
   force-unwrapping the main screen or content view.
 - Static behavior checks also require device refreshes to guard the main

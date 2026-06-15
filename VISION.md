@@ -29,6 +29,7 @@ Priority:
 - Keep document preview and aspect setup tolerant of missing nib or capture state
 - Keep Skin preview and window guards across AppKit lifecycle gaps
 - Keep Skin aspect layout guards around window, screen, and nib outlet state
+- Keep Skin pointer and window guards around drag and settings persistence callbacks
 - Release repeating preview timers when document windows close
 - Keep session window setup tolerant of missing screen or content-view state
 - Keep device refreshes tolerant of missing main window outlet state

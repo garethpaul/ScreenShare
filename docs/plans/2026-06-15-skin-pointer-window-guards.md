@@ -1,6 +1,6 @@
 # Skin Pointer and Window Guards
 
-## Status: In Progress
+## Status: Completed
 
 ## Context
 
@@ -49,3 +49,21 @@ instead of crashing when AppKit state disappears.
   completed-plan mutations
 - shell syntax, workflow YAML, plist, scheme XML, generated-artifact,
   credential-pattern, and exact-diff audits
+
+## Verification Results
+
+- Focused project and behavior source-contract validation passed.
+- The repository and external-directory `make check` passed; Linux truthfully
+  used the documented static-only path because `xcodebuild` is unavailable.
+- Six hostile Skin pointer mutations were rejected across pointer-window,
+  pointer-origin, screen, settings, documentation, and completed-plan state.
+- Shell syntax, workflow YAML, Info and entitlements plists, shared scheme XML,
+  generated-artifact, credential-pattern, conflict-marker, and exact-diff
+  audits passed.
+
+## Remaining Risks
+
+- Connected-device capture, interactive dragging, and live resize behavior still
+  require manual validation on macOS with available capture hardware.
+- Hosted unsigned compilation proves source compatibility but does not exercise
+  AppKit teardown timing or pointer callbacks.
