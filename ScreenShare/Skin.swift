@@ -175,43 +175,55 @@ class Skin: NSView {
             return self.input?.device
         }
         set {
-            self.session.beginConfiguration()
-            
-            if let input = self.input {
-                session.removeInput(input)
-                self.input = nil
-            }
-            
+            let replacementInput: AVCaptureDeviceInput?
             if let newDevice = newValue {
-                
                 do {
-                    let newDeviceInput = try AVCaptureDeviceInput(device: newDevice)
-                    
-                    self.session.sessionPreset = .high
-                    self.session.addInput(newDeviceInput)
-                    self.input = newDeviceInput
-                    
-                    // Register for notifications in format change which imply orientation change
-                    self.notifications.registerObserver(AVCaptureInput.Port.formatDescriptionDidChangeNotification, dispatchAsyncToMainQueue: true, block: {notif in
-                        self.updateAspect()
-                    })
-                    
-                    // load existing device settings that might have been previously saved
-                    getDeviceSettings(device: newDevice)
-                    
-                    
+                    replacementInput = try AVCaptureDeviceInput(device: newDevice)
                 } catch let error as NSError {
                     self.displayError(error: error)
+                    return
                 }
-                
+            } else {
+                replacementInput = nil
             }
-            
-            self.session.commitConfiguration()
-            
-            updateAspect()
-            
-            setThisAsSelectedDevice()
-            
+
+            self.session.beginConfiguration()
+            defer {
+                self.session.commitConfiguration()
+                self.updateAspect()
+                self.setThisAsSelectedDevice()
+            }
+
+            let previousInput = self.input
+            if let previousInput = previousInput {
+                self.session.removeInput(previousInput)
+            }
+            self.input = nil
+
+            guard let replacementInput = replacementInput else {
+                return
+            }
+
+            self.session.sessionPreset = .high
+            guard self.session.canAddInput(replacementInput) else {
+                if let previousInput = previousInput,
+                    self.session.canAddInput(previousInput) {
+                    self.session.addInput(previousInput)
+                    self.input = previousInput
+                }
+                NSLog("Skin capture session rejected the replacement device input.")
+                return
+            }
+
+            self.session.addInput(replacementInput)
+            self.input = replacementInput
+
+            // Register for format changes that imply orientation changes.
+            self.notifications.registerObserver(AVCaptureInput.Port.formatDescriptionDidChangeNotification, dispatchAsyncToMainQueue: true, block: { _ in
+                self.updateAspect()
+            })
+
+            getDeviceSettings(device: replacementInput.device)
         }
     }
     

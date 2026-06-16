@@ -18,6 +18,7 @@ SKIN_PREVIEW_WINDOW_PLAN = DOCS_PLANS / "2026-06-14-skin-preview-window-guards.m
 SKIN_ASPECT_LAYOUT_PLAN = DOCS_PLANS / "2026-06-14-skin-aspect-layout-guards.md"
 SKIN_POINTER_WINDOW_PLAN = DOCS_PLANS / "2026-06-15-skin-pointer-window-guards.md"
 SESSION_REGISTRATION_PLAN = DOCS_PLANS / "2026-06-15-session-registration-guard.md"
+SKIN_DEVICE_SWITCH_PLAN = DOCS_PLANS / "2026-06-16-skin-device-switch-rollback.md"
 EXPECTED_WORKFLOW = """name: Check
 
 on:
@@ -120,6 +121,8 @@ def docs_plan_checks():
         errors.append("docs/plans/2026-06-15-skin-pointer-window-guards.md is missing")
     if not SESSION_REGISTRATION_PLAN.exists():
         errors.append("docs/plans/2026-06-15-session-registration-guard.md is missing")
+    if not SKIN_DEVICE_SWITCH_PLAN.exists():
+        errors.append("docs/plans/2026-06-16-skin-device-switch-rollback.md is missing")
 
     plans = sorted(DOCS_PLANS.glob("*.md")) if DOCS_PLANS.exists() else []
     if not plans:
@@ -194,6 +197,8 @@ def project_checks():
             errors.append(f"{doc_path} must document the GitHub Actions baseline")
         if "capture device switch rollback" not in document.lower():
             errors.append(f"{doc_path} must document capture device switch rollback")
+        if "skin capture device switch rollback preserves the prior working input" not in document.lower():
+            errors.append(f"{doc_path} must document Skin device switch rollback")
         if "device archive optional binding" not in document.lower():
             errors.append(f"{doc_path} must document device archive optional binding")
         if "skin preview and window guards" not in document.lower():
@@ -204,6 +209,8 @@ def project_checks():
             errors.append(f"{doc_path} must document Skin pointer and window guards")
     if str(SKIN_PREVIEW_WINDOW_PLAN.relative_to(ROOT)) not in read_text("README.md"):
         errors.append(f"README.md must reference {SKIN_PREVIEW_WINDOW_PLAN.relative_to(ROOT)}")
+    if "Skin capture device switch rollback preserves the prior working input" not in read_text("AGENTS.md"):
+        errors.append("AGENTS.md must document Skin device switch rollback")
 
     project = read_text("Screenshare.xcodeproj/project.pbxproj")
     for fragment in (
@@ -459,6 +466,16 @@ def behavior_checks():
         for evidence in ("Status: Completed", "repository and external-directory `make check` passed", "hostile session-registration mutations were rejected"):
             if evidence not in plan:
                 errors.append(f"{SESSION_REGISTRATION_PLAN.relative_to(ROOT)} must record verification evidence {evidence!r}")
+    if SKIN_DEVICE_SWITCH_PLAN.exists():
+        plan = SKIN_DEVICE_SWITCH_PLAN.read_text(encoding="utf-8")
+        for evidence in (
+            "Status: Completed",
+            "repository and external-directory `make check` passed",
+            "hostile Skin device-switch mutations were rejected",
+            "generated-artifact and credential-pattern audits passed",
+        ):
+            if evidence not in plan:
+                errors.append(f"{SKIN_DEVICE_SWITCH_PLAN.relative_to(ROOT)} must record verification evidence {evidence!r}")
     if "self.window!.close()" in app_delegate or "self.window!.makeKeyAndOrderFront(NSApp)" in app_delegate:
         errors.append("AppDelegate.refreshDevices must not force unwrap the main device-list window")
     if "guard let window = self.window else" not in app_delegate:
@@ -478,6 +495,36 @@ def behavior_checks():
         errors.append("Document.selectedDevice must restore the previous input when replacement admission fails")
     if 'NSLog("Capture session rejected the replacement device input.")' not in document:
         errors.append("Document.selectedDevice must log replacement rejection without device metadata")
+
+    skin_switch_start = skin.find("var selectedDevice : AVCaptureDevice?")
+    skin_switch_end = skin.find("func getVideoDimensions()", skin_switch_start)
+    skin_switch = skin[skin_switch_start:skin_switch_end]
+    for fragment in (
+        "let replacementInput: AVCaptureDeviceInput?",
+        "replacementInput = try AVCaptureDeviceInput(device: newDevice)",
+        "let previousInput = self.input",
+        "guard self.session.canAddInput(replacementInput) else",
+        "self.session.canAddInput(previousInput)",
+        "self.session.addInput(previousInput)\n                    self.input = previousInput",
+        'NSLog("Skin capture session rejected the replacement device input.")',
+        "guard let replacementInput = replacementInput else",
+        "getDeviceSettings(device: replacementInput.device)",
+    ):
+        if skin_switch_start < 0 or skin_switch_end < 0 or fragment not in skin_switch:
+            errors.append(f"Skin.selectedDevice must retain transactional replacement via {fragment!r}")
+    replacement_build = skin_switch.find("replacementInput = try AVCaptureDeviceInput(device: newDevice)")
+    configuration_start = skin_switch.find("self.session.beginConfiguration()")
+    previous_removal = skin_switch.find("self.session.removeInput(previousInput)")
+    admission_check = skin_switch.find("guard self.session.canAddInput(replacementInput) else")
+    replacement_add = skin_switch.find("self.session.addInput(replacementInput)")
+    if min(replacement_build, configuration_start, previous_removal, admission_check, replacement_add) < 0 or not (
+        replacement_build < configuration_start < previous_removal < admission_check < replacement_add
+    ):
+        errors.append("Skin.selectedDevice must prepare, configure, validate, and add replacements in order")
+    if skin_switch.count("beginConfiguration()") != 1 or skin_switch.count("commitConfiguration()") != 1:
+        errors.append("Skin.selectedDevice must keep one balanced configuration transaction")
+    if "defer {\n                self.session.commitConfiguration()\n                self.updateAspect()\n                self.setThisAsSelectedDevice()\n            }" not in skin_switch:
+        errors.append("Skin.selectedDevice must preserve post-transaction aspect and selection updates")
 
     for swift_path in sorted((ROOT / "ScreenShare").glob("*.swift")):
         for line_number, line in enumerate(swift_path.read_text(encoding="utf-8").splitlines(), 1):

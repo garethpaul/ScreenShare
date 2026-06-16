@@ -84,6 +84,8 @@ The setup commands above are derived from repository files. Legacy mobile, Pytho
 - Static behavior checks require capture device switch rollback: replacement
   inputs are prepared and validated before a failed switch restores the prior
   working input.
+- Skin capture device switch rollback preserves the prior working input when a
+  replacement cannot be constructed or admitted.
 - Static behavior checks also require document preview setup and aspect updates
   to optional-bind outlets, backing layers, input ports, and windows.
 - Skin preview and window guards optional-bind preview layers and resize-window

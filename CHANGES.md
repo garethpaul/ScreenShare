@@ -1,5 +1,10 @@
 # Changes
 
+## 2026-06-16
+
+- Skin capture device switch rollback preserves the prior working input when a
+  replacement cannot be constructed or admitted.
+
 ## 2026-06-15
 
 - Made device-session creation failable so a missing window content view cannot

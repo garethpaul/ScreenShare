@@ -25,6 +25,8 @@ Priority:
 - Avoid ad hoc stdout logging from app Swift sources
 - Handle capture input setup failures without force-unwrapping error metadata
 - Preserve capture device switch rollback when replacement admission fails
+- Skin capture device switch rollback preserves the prior working input when a
+  replacement cannot be constructed or admitted
 - Keep preview aspect updates responsive to width and height changes
 - Keep document preview and aspect setup tolerant of missing nib or capture state
 - Keep Skin preview and window guards across AppKit lifecycle gaps

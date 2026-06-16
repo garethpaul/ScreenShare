@@ -52,6 +52,8 @@
 - See `SECURITY.md` for vulnerability reporting and safe research guidance.
 - See `VISION.md` for project direction and contribution guardrails.
 - See `docs/plans/2026-06-08-screenshare-baseline.md` for the canonical mirroring privacy and runtime-error baseline.
+- Skin capture device switch rollback preserves the prior working input when a
+  replacement cannot be constructed or admitted.
 - See `docs/plans/2026-06-08-device-archive-decoding.md` for the local device-settings archive guard.
 
 ## Agent workflow

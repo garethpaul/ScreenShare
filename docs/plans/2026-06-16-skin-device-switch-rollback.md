@@ -1,6 +1,6 @@
 # Skin Device Switch Rollback
 
-Status: In Progress
+Status: Completed
 
 ## Problem
 
@@ -77,3 +77,16 @@ input when a replacement cannot be constructed or admitted.
   Linux.
 - The successor PR will be stacked on open PR #16; neither pull request may be
   merged or closed without explicit authorization.
+
+## Verification Completed
+
+- Pre-change inspection showed Skin removing its working input before
+  replacement construction and calling `addInput` without `canAddInput`.
+- repository and external-directory `make check` passed with project and
+  behavior contracts; Linux truthfully skipped unavailable `xcodebuild`.
+- hostile Skin device-switch mutations were rejected.
+- generated-artifact and credential-pattern audits passed for the intended
+  diff; the pre-existing tracked `ScreenShare/Images.xcassets/.DS_Store`
+  remained unchanged.
+- No local Xcode build, camera device, capture session, AppKit UI, credentials,
+  or deployment was exercised.

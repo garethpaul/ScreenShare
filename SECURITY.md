@@ -54,6 +54,8 @@ cannot host its capture skin.
   successful cast and falls back to an empty saved-settings list.
 - Capture device switch rollback must restore the prior working input when a
   replacement cannot be admitted, without logging device metadata.
+- Skin capture device switch rollback preserves the prior working input when a
+  replacement cannot be constructed or admitted.
 
 ## Mobile Privacy Notes
 
