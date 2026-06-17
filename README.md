@@ -86,6 +86,8 @@ The setup commands above are derived from repository files. Legacy mobile, Pytho
   working input.
 - Skin capture device switch rollback preserves the prior working input when a
   replacement cannot be constructed or admitted.
+- Initial Skin sessions reject unattached capture devices before window and
+  view attachment.
 - Static behavior checks also require document preview setup and aspect updates
   to optional-bind outlets, backing layers, input ports, and windows.
 - Skin preview and window guards optional-bind preview layers and resize-window
@@ -166,6 +168,9 @@ When the required SDK or runtime is unavailable, use static checks and source re
   macOS build gate.
 - See `docs/plans/2026-06-10-document-aspect-timer-teardown.md` for repeating
   preview timer lifecycle cleanup.
+- See `docs/plans/2026-06-17-initial-skin-device-attachment-guard.md` for
+  rejecting initial sessions that fail to attach their requested capture
+  device.
 
 ## Contributing
 

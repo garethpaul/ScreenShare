@@ -54,6 +54,8 @@
 - See `docs/plans/2026-06-08-screenshare-baseline.md` for the canonical mirroring privacy and runtime-error baseline.
 - Skin capture device switch rollback preserves the prior working input when a
   replacement cannot be constructed or admitted.
+- Initial Skin sessions reject unattached capture devices before window and
+  view attachment.
 - See `docs/plans/2026-06-08-device-archive-decoding.md` for the local device-settings archive guard.
 
 ## Agent workflow

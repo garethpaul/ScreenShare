@@ -56,6 +56,8 @@ cannot host its capture skin.
   replacement cannot be admitted, without logging device metadata.
 - Skin capture device switch rollback preserves the prior working input when a
   replacement cannot be constructed or admitted.
+- Initial Skin sessions reject unattached capture devices before window and
+  view attachment.
 
 ## Mobile Privacy Notes
 

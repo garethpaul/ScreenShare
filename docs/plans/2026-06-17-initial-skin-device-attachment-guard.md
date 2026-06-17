@@ -6,7 +6,7 @@ date: 2026-06-17
 
 # Reject Initial Skin Sessions Without a Capture Input
 
-Status: In Progress
+Status: Completed
 
 ## Context
 
@@ -61,7 +61,12 @@ session has no capture input and blocks the connected-device retry path.
 
 ## Verification
 
-- Planned: focused project and behavior source contracts.
-- Planned: hostile initial-attachment mutations.
-- Planned: repository and external-directory `make check` on Linux.
-- Planned: exact-head hosted macOS build.
+- Focused project and behavior source contracts passed.
+- Five hostile initial Skin attachment mutations were rejected: removed guard,
+  inverted device match, late guard after view attachment, removed failed-session
+  cleanup, and removed nil return.
+- The repository and external-directory `make check` passed on Linux; the
+  portable gate reported the expected unavailable `xcodebuild`.
+- Exact-diff, generated-artifact and credential-pattern audits passed.
+- The exact-head hosted macOS build remains required for Apple-framework
+  compilation evidence.

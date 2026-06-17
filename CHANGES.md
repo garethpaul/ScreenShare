@@ -1,5 +1,10 @@
 # Changes
 
+## 2026-06-17
+
+- Initial Skin sessions reject unattached capture devices before window and
+  view attachment.
+
 ## 2026-06-16
 
 - Skin capture device switch rollback preserves the prior working input when a

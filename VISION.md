@@ -27,6 +27,8 @@ Priority:
 - Preserve capture device switch rollback when replacement admission fails
 - Skin capture device switch rollback preserves the prior working input when a
   replacement cannot be constructed or admitted
+- Initial Skin sessions reject unattached capture devices before window and
+  view attachment
 - Keep preview aspect updates responsive to width and height changes
 - Keep document preview and aspect setup tolerant of missing nib or capture state
 - Keep Skin preview and window guards across AppKit lifecycle gaps

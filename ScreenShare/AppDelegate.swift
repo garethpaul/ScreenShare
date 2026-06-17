@@ -124,6 +124,10 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         
         let skin = Skin(frame: frameView)
         skin.initWithDevice(device: device)
+        guard skin.selectedDevice == device else {
+            skin.endSession()
+            return nil
+        }
         skin.ownerWindow = window
         contentView.addSubview(skin)
         

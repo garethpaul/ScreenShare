@@ -19,6 +19,7 @@ SKIN_ASPECT_LAYOUT_PLAN = DOCS_PLANS / "2026-06-14-skin-aspect-layout-guards.md"
 SKIN_POINTER_WINDOW_PLAN = DOCS_PLANS / "2026-06-15-skin-pointer-window-guards.md"
 SESSION_REGISTRATION_PLAN = DOCS_PLANS / "2026-06-15-session-registration-guard.md"
 SKIN_DEVICE_SWITCH_PLAN = DOCS_PLANS / "2026-06-16-skin-device-switch-rollback.md"
+INITIAL_SKIN_ATTACHMENT_PLAN = DOCS_PLANS / "2026-06-17-initial-skin-device-attachment-guard.md"
 EXPECTED_WORKFLOW = """name: Check
 
 on:
@@ -123,6 +124,8 @@ def docs_plan_checks():
         errors.append("docs/plans/2026-06-15-session-registration-guard.md is missing")
     if not SKIN_DEVICE_SWITCH_PLAN.exists():
         errors.append("docs/plans/2026-06-16-skin-device-switch-rollback.md is missing")
+    if not INITIAL_SKIN_ATTACHMENT_PLAN.exists():
+        errors.append("docs/plans/2026-06-17-initial-skin-device-attachment-guard.md is missing")
 
     plans = sorted(DOCS_PLANS.glob("*.md")) if DOCS_PLANS.exists() else []
     if not plans:
@@ -207,10 +210,15 @@ def project_checks():
             errors.append(f"{doc_path} must document Skin aspect layout guards")
         if "skin pointer and window guards" not in document.lower():
             errors.append(f"{doc_path} must document Skin pointer and window guards")
+        if "initial skin sessions reject unattached capture devices before window and view attachment" not in document.lower():
+            errors.append(f"{doc_path} must document initial Skin attachment rejection")
     if str(SKIN_PREVIEW_WINDOW_PLAN.relative_to(ROOT)) not in read_text("README.md"):
         errors.append(f"README.md must reference {SKIN_PREVIEW_WINDOW_PLAN.relative_to(ROOT)}")
     if "Skin capture device switch rollback preserves the prior working input" not in read_text("AGENTS.md"):
         errors.append("AGENTS.md must document Skin device switch rollback")
+    agents = re.sub(r"\s+", " ", read_text("AGENTS.md"))
+    if "Initial Skin sessions reject unattached capture devices before window and view attachment" not in agents:
+        errors.append("AGENTS.md must document initial Skin attachment rejection")
 
     project = read_text("Screenshare.xcodeproj/project.pbxproj")
     for fragment in (
@@ -455,6 +463,24 @@ def behavior_checks():
             errors.append(f"AppDelegate session creation must retain failable setup via {fragment!r}")
     if session_setup.find("guard let contentView = window.contentView else") > session_setup.find("let skin = Skin(frame: frameView)"):
         errors.append("AppDelegate must guard the session window content view before constructing the capture skin")
+    attachment_start = session_setup.find("guard skin.selectedDevice == device else")
+    owner_assignment = session_setup.find("skin.ownerWindow = window")
+    attachment_guard = session_setup[attachment_start:owner_assignment]
+    if "skin.initWithDevice(device: device)" not in session_setup:
+        errors.append("AppDelegate initial skin attachment must initialize the requested device")
+    for fragment in (
+        "guard skin.selectedDevice == device else",
+        "skin.endSession()",
+        "return nil",
+    ):
+        if attachment_start < 0 or owner_assignment < 0 or fragment not in attachment_guard:
+            errors.append(f"AppDelegate initial skin attachment must retain guard via {fragment!r}")
+    initialization = session_setup.find("skin.initWithDevice(device: device)")
+    view_attachment = session_setup.find("contentView.addSubview(skin)")
+    if min(initialization, attachment_start, owner_assignment, view_attachment) < 0 or not (
+        initialization < attachment_start < owner_assignment < view_attachment
+    ):
+        errors.append("AppDelegate must validate initial capture input before window and view attachment")
     refresh_start = app_delegate.find("func refreshDevices()")
     refresh_setup = app_delegate[refresh_start:]
     if "if let skin = startNewSession(device: device)" not in refresh_setup:
@@ -476,6 +502,18 @@ def behavior_checks():
         ):
             if evidence not in plan:
                 errors.append(f"{SKIN_DEVICE_SWITCH_PLAN.relative_to(ROOT)} must record verification evidence {evidence!r}")
+    if INITIAL_SKIN_ATTACHMENT_PLAN.exists():
+        plan = INITIAL_SKIN_ATTACHMENT_PLAN.read_text(encoding="utf-8")
+        for evidence in (
+            "Status: Completed",
+            "repository and external-directory `make check` passed",
+            "hostile initial Skin attachment mutations were rejected",
+            "generated-artifact and credential-pattern audits passed",
+        ):
+            if evidence not in plan:
+                errors.append(f"{INITIAL_SKIN_ATTACHMENT_PLAN.relative_to(ROOT)} must record verification evidence {evidence!r}")
+        if str(INITIAL_SKIN_ATTACHMENT_PLAN.relative_to(ROOT)) not in read_text("README.md"):
+            errors.append(f"README.md must reference {INITIAL_SKIN_ATTACHMENT_PLAN.relative_to(ROOT)}")
     if "self.window!.close()" in app_delegate or "self.window!.makeKeyAndOrderFront(NSApp)" in app_delegate:
         errors.append("AppDelegate.refreshDevices must not force unwrap the main device-list window")
     if "guard let window = self.window else" not in app_delegate:
