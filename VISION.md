@@ -32,8 +32,13 @@ Priority:
 - Keep preview aspect updates responsive to width and height changes
 - Keep document preview and aspect setup tolerant of missing nib or capture state
 - Keep Skin preview and window guards across AppKit lifecycle gaps
+- Initialize capture sessions before nib-backed preview setup and keep one
+  preview layer per loaded skin
 - Keep Skin aspect layout guards around window, screen, and nib outlet state
+- Reject non-finite or non-positive saved and computed window geometry
 - Keep Skin pointer and window guards around drag and settings persistence callbacks
+- Replace format observers across capture retries and device switches
+- Keep the unsigned macOS unit-test wrapper executable on current Xcode
 - Release repeating preview timers when document windows close
 - Keep session window setup tolerant of missing screen or content-view state
 - Register device sessions only after their capture skin can attach to a window

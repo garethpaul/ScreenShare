@@ -1,5 +1,17 @@
 # Changes
 
+## 2026-06-19
+
+- Initialized each Skin capture session before nib-backed preview setup and
+  removed the duplicate preview-layer construction path.
+- Replaced accumulated format-change observers when devices switch or retry.
+- Rejected non-finite and non-positive saved or computed window geometry.
+- Guarded pointer hover callbacks when the resize-handle outlet is unavailable.
+- Made the documented unsigned macOS unit-test wrapper executable on current
+  Xcode by separating the test module name and updating the XCTest measure API.
+- Added seven hostile repository-copy mutations covering the reviewed runtime
+  and Xcode contracts, and reconciled the useful run guidance from PR #7.
+
 ## 2026-06-17
 
 - Initial Skin sessions reject unattached capture devices before window and

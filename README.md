@@ -44,6 +44,7 @@ Additional scan context:
 - Git
 - macOS with Xcode for building Apple platform projects
 - Python 3 for repository source checks
+- An unlocked iPhone or iPad connected to the Mac over USB for live mirroring
 
 ### Setup
 
@@ -56,8 +57,16 @@ The setup commands above are derived from repository files. Legacy mobile, Pytho
 
 ## Running or Using the Project
 
-- Open `Screenshare.xcodeproj` in Xcode, choose the app or sample scheme, and run it on the matching simulator/device.
-- Run `./build.sh` when the required platform toolchain is installed.
+1. Open `Screenshare.xcodeproj` in Xcode.
+2. Select the `Screenshare` scheme and `My Mac` destination.
+3. Connect and unlock the iPhone or iPad that you want to mirror.
+4. Run the app. ScreenShare scans for connected iOS capture devices and opens
+   a phone or tablet frame when one is available.
+
+Run `./build.sh` for the unsigned macOS unit-test gate. If no device window
+appears, reconnect and unlock the device, confirm macOS can see it, and restart
+the app. Signing is disabled for the command-line gate, but interactive Xcode
+runs may still require a local development team depending on workstation policy.
 
 ## Testing and Verification
 
@@ -65,6 +74,9 @@ The setup commands above are derived from repository files. Legacy mobile, Pytho
   capture permission/runtime-error metadata checks. When `xcodebuild` is
   installed, the `build` target also builds the shared app scheme with code
   signing disabled.
+- `./build.sh` runs the unsigned `Screenshare` unit-test scheme on macOS.
+- `make test` runs the behavior checker plus hostile repository-copy mutations
+  for initialization, preview, observer, geometry, pointer, and Xcode contracts.
 - Static behavior checks also guard local device-settings archive decoding
   against force-cast crashes.
 - Static behavior checks preserve device archive optional binding so decoded
@@ -92,10 +104,15 @@ The setup commands above are derived from repository files. Legacy mobile, Pytho
   to optional-bind outlets, backing layers, input ports, and windows.
 - Skin preview and window guards optional-bind preview layers and resize-window
   lifecycle state instead of force unwrapping AppKit outlets.
+- Skin owns an eager capture session and constructs one preview layer per loaded
+  skin, avoiding nil-session initialization and duplicate preview rendering.
 - Skin aspect layout guards tolerate detached windows, missing screens, and
-  incomplete nib outlets during device-dimension updates.
+  incomplete nib outlets during device-dimension updates, and reject non-finite
+  or non-positive saved and computed geometry.
 - Skin pointer and window guards keep drag and settings callbacks from
-  force-unwrapping AppKit state during teardown.
+  force-unwrapping AppKit state during teardown, including hover callbacks.
+- Device changes replace the observed format port instead of accumulating
+  duplicate orientation callbacks across retries or switches.
 - Static behavior checks also require session window setup to avoid
   force-unwrapping the main screen or content view.
 - Session registration guards require window attachment to succeed before a
@@ -114,7 +131,8 @@ The setup commands above are derived from repository files. Legacy mobile, Pytho
 - The shared Xcode project uses Swift 5 language mode and targets macOS 10.13
   or newer so current Xcode releases can compile it.
 - Xcode's test action or `xcodebuild test` with the appropriate scheme and
-  destination can be used on macOS for deeper verification.
+  destination can be used on macOS for deeper verification. The unit-test
+  target uses a distinct Swift module name to avoid colliding with the app.
 
 When the required SDK or runtime is unavailable, use static checks and source review first, then verify on a machine that has the matching platform toolchain.
 
@@ -171,6 +189,8 @@ When the required SDK or runtime is unavailable, use static checks and source re
 - See `docs/plans/2026-06-17-initial-skin-device-attachment-guard.md` for
   rejecting initial sessions that fail to attach their requested capture
   device.
+- See `docs/plans/2026-06-19-screenshare-deep-review.md` for the consolidated
+  initialization, preview, geometry, pointer, test-wrapper, and PR review.
 
 ## Contributing
 

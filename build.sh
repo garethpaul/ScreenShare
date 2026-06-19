@@ -5,7 +5,8 @@ set -eu
 ci_lib() {
     xcodebuild -project Screenshare.xcodeproj \
                -scheme "Screenshare" \
-               -destination "platform=OS X" \
+               -destination "platform=macOS" \
+               CODE_SIGNING_ALLOWED=NO \
                test
 }
 ci_lib "$@"

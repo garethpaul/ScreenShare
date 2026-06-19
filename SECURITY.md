@@ -30,6 +30,11 @@ Skin aspect layout guards must tolerate detached windows, missing screens, and
 incomplete nib outlets during device-dimension updates.
 Skin pointer and window guards must fail closed when drag or settings callbacks
 outlive their window, outlet, pointer-origin, screen, or saved-settings state.
+Skin construction must initialize its capture session before loading a nib and
+must not stack duplicate preview layers. Device retries and switches must
+replace format observers rather than accumulating callbacks. Saved and computed
+window geometry must be finite with positive dimensions before AppKit receives
+it, and pointer hover callbacks must tolerate missing resize-handle outlets.
 Session registration guards must fail before capture starts when a new window
 cannot host its capture skin.
 
@@ -42,6 +47,8 @@ cannot host its capture skin.
 - GitHub Actions runs static checks on Ubuntu 24.04 and an unsigned compile on
   macOS 15; neither hosted path should connect to devices or capture, persist,
   or upload mirrored content.
+- The local unsigned unit-test wrapper uses a test-only Swift module name so the
+  test bundle cannot collide with the application module output.
 - CI actions stay pinned by commit, run with read-only repository contents
   permission, and disable checkout credential persistence.
 - Closing a document must invalidate its repeating preview timer so retired

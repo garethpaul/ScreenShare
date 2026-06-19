@@ -10,6 +10,7 @@ lint:
 
 test:
 	$(PYTHON) "$(ROOT)/scripts/check-screenshare-source.py" --mode behavior
+	$(PYTHON) "$(ROOT)/scripts/test-screenshare-contracts.py"
 
 build: lint
 	@if command -v "$(XCODEBUILD)" >/dev/null 2>&1; then \

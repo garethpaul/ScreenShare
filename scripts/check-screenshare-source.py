@@ -149,9 +149,22 @@ def project_checks():
         errors.append("build.sh must keep its /bin/sh shebang")
     if re.search(r"\bfunction\s+[A-Za-z_][A-Za-z0-9_]*\s*\(", build_script):
         errors.append("build.sh must use POSIX shell function syntax")
-    for fragment in ("xcodebuild -project Screenshare.xcodeproj", '-scheme "Screenshare"', "test"):
+    for fragment in (
+        "xcodebuild -project Screenshare.xcodeproj",
+        '-scheme "Screenshare"',
+        '-destination "platform=macOS"',
+        "CODE_SIGNING_ALLOWED=NO",
+        "test",
+    ):
         if fragment not in build_script:
             errors.append(f"build.sh is missing expected xcodebuild fragment: {fragment}")
+
+    project_file = read_text("Screenshare.xcodeproj/project.pbxproj")
+    if project_file.count("PRODUCT_MODULE_NAME = ScreenshareUnitTests;") != 2:
+        errors.append("Unit test module name must not collide with the app module")
+    unit_tests = read_text("ScreenShareTests/ScreenShareTests.swift")
+    if "measureBlock" in unit_tests or "self.measure {" not in unit_tests:
+        errors.append("Unit tests must use the current XCTest measure API")
 
     workflow = read_text(".github/workflows/check.yml")
     if workflow != EXPECTED_WORKFLOW:
@@ -242,9 +255,24 @@ def behavior_checks():
     app_delegate = read_text("ScreenShare/AppDelegate.swift")
     document = read_text("ScreenShare/Document.swift")
     device = read_text("ScreenShare/Device.swift")
+    extensions = read_text("ScreenShare/Extensions.swift")
     skin = read_text("ScreenShare/Skin.swift")
     if "AVCaptureDevice" not in app_delegate + skin:
         errors.append("app must keep AVFoundation device capture code visible")
+    if "let session = AVCaptureSession()" not in skin or "var session : AVCaptureSession!" in skin:
+        errors.append("Skin.session must be initialized before nib-backed preview setup")
+    if skin.count("let videoPreviewLayer = AVCaptureVideoPreviewLayer(session: self.session)") != 1:
+        errors.append("Skin must construct exactly one capture preview layer")
+    format_observer_start = skin.find("private func replaceFormatObserver()")
+    format_observer_end = skin.find("func getVideoDimensions()", format_observer_start)
+    format_observer = skin[format_observer_start:format_observer_end]
+    if (
+        format_observer_start < 0
+        or format_observer_end < 0
+        or "formatNotifications.deregisterAll()" not in format_observer
+        or "forObject: port" not in format_observer
+    ):
+        errors.append("Skin device changes must replace the format observer instead of accumulating callbacks")
 
     entitlements = read_plist("ScreenShare/Screenshare.entitlements")
     if entitlements.get("com.apple.security.device.camera") is not True:
@@ -288,6 +316,16 @@ def behavior_checks():
         errors.append("Device archive decoding must optional-bind saved settings fields")
     if "required convenience init?(coder aDecoder: NSCoder)" not in device:
         errors.append("Device archive decoding must remain failable for malformed saved settings")
+    if "return savedSettingForOrientation(forOrientation: forOrientation).hasUsableWindowGeometry" not in device:
+        errors.append("Device saved window geometry must reject non-finite or non-positive sizes")
+    for fragment in (
+        "var isFinitePositive: Bool",
+        "width.isFinite && height.isFinite && width > 0 && height > 0",
+        "var hasUsableWindowGeometry: Bool",
+        "origin.x.isFinite && origin.y.isFinite && size.isFinitePositive",
+    ):
+        if fragment not in extensions:
+            errors.append(f"ScreenShare geometry helpers must retain finite-positive validation via {fragment!r}")
     if "convenience init?(fromDevice device: AVCaptureDevice)" in device:
         errors.append("Live capture-device settings construction must not be failable")
     if "convenience init(fromDevice device: AVCaptureDevice)" not in device:
@@ -344,10 +382,8 @@ def behavior_checks():
         errors.append("Skin must log unavailable application delegate state")
     if "previewViewLayer!" in skin or "self.videoPreviewLayer!" in skin or "forObject: self.window!" in skin:
         errors.append("Skin preview and resize setup must not force unwrap optional AppKit state")
-    if skin.count("guard let previewView = self.previewView") != 2 or skin.count("let previewViewLayer = previewView.layer") != 2:
-        errors.append("Skin must guard both preview outlets and backing layers")
-    if skin.count("let videoPreviewLayer = AVCaptureVideoPreviewLayer(session: self.session)") != 2:
-        errors.append("Skin must configure both video preview layers as local nonoptional values")
+    if skin.count("guard let previewView = self.previewView") != 1 or skin.count("let previewViewLayer = previewView.layer") != 1:
+        errors.append("Skin preview setup must guard its outlet and backing layer")
     if "originalPreviewViewBounds = previewView.bounds" not in skin:
         errors.append("Skin must retain preview bounds from the guarded local outlet")
     if "guard let window = self.window else" not in skin or "[weak self, weak window]" not in skin:
@@ -562,7 +598,31 @@ def behavior_checks():
     if skin_switch.count("beginConfiguration()") != 1 or skin_switch.count("commitConfiguration()") != 1:
         errors.append("Skin.selectedDevice must keep one balanced configuration transaction")
     if "defer {\n                self.session.commitConfiguration()\n                self.updateAspect()\n                self.setThisAsSelectedDevice()\n            }" not in skin_switch:
-        errors.append("Skin.selectedDevice must preserve post-transaction aspect and selection updates")
+        if "defer {\n                self.session.commitConfiguration()\n                self.replaceFormatObserver()\n                self.updateAspect()\n                self.setThisAsSelectedDevice()\n            }" not in skin_switch:
+            errors.append("Skin.selectedDevice must preserve post-transaction observer, aspect, and selection updates")
+
+    for fragment in (
+        "guard windowSize.isFinitePositive && screenFrame.hasUsableWindowGeometry else",
+        "guard windowRect.hasUsableWindowGeometry else",
+        "self.device.skinSize.isFinitePositive",
+        "originalPreviewViewBounds.size.isFinitePositive",
+    ):
+        if fragment not in skin:
+            errors.append(f"Skin layout must reject unusable geometry via {fragment!r}")
+
+    mouse_entered_start = skin.find("override func mouseEntered")
+    mouse_exited_start = skin.find("override func mouseExited", mouse_entered_start)
+    mouse_down_start = skin.find("override func mouseDown", mouse_exited_start)
+    mouse_entered = skin[mouse_entered_start:mouse_exited_start]
+    mouse_exited = skin[mouse_exited_start:mouse_down_start]
+    pointer_guard = "guard let resizeHandle = self.resizeHandle else"
+    if (
+        min(mouse_entered_start, mouse_exited_start, mouse_down_start) < 0
+        or pointer_guard not in mouse_entered
+        or pointer_guard not in mouse_exited
+        or "self.resizeHandle.isHidden" in mouse_entered + mouse_exited
+    ):
+        errors.append("Skin pointer hover handlers must guard the resize handle outlet")
 
     for swift_path in sorted((ROOT / "ScreenShare").glob("*.swift")):
         for line_number, line in enumerate(swift_path.read_text(encoding="utf-8").splitlines(), 1):

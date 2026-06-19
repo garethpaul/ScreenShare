@@ -45,13 +45,7 @@ class Device: NSObject, NSCoding {
     }
     
     func hasPreviousLocation(forOrientation: DeviceOrientation) -> Bool {
-        if forOrientation == DeviceOrientation.Portrait {
-            return portraitRect.origin.x != 0 || portraitRect.origin.y != 0
-                || portraitRect.size.height != 0 || portraitRect.size.width != 0
-        } else {
-            return landscapeRect.origin.x != 0 || landscapeRect.origin.y != 0
-                || landscapeRect.size.height != 0 || landscapeRect.size.width != 0
-        }
+        return savedSettingForOrientation(forOrientation: forOrientation).hasUsableWindowGeometry
     }
     func savedSettingForOrientation(forOrientation: DeviceOrientation) -> NSRect {
         if forOrientation == DeviceOrientation.Portrait {
