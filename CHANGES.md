@@ -1,5 +1,55 @@
 # Changes
 
+## 2026-06-19
+
+- Initialized each Skin capture session before nib-backed preview setup and
+  removed the duplicate preview-layer construction path.
+- Replaced accumulated format-change observers when devices switch or retry.
+- Rejected non-finite and non-positive saved or computed window geometry.
+- Guarded pointer hover callbacks when the resize-handle outlet is unavailable.
+- Made the documented unsigned macOS unit-test wrapper executable on current
+  Xcode by separating the test module name and updating the XCTest measure API.
+- Added seven hostile repository-copy mutations covering the reviewed runtime
+  and Xcode contracts, and reconciled the useful run guidance from PR #7.
+
+## 2026-06-17
+
+- Initial Skin sessions reject unattached capture devices before window and
+  view attachment.
+
+## 2026-06-16
+
+- Skin capture device switch rollback preserves the prior working input when a
+  replacement cannot be constructed or admitted.
+
+## 2026-06-15
+
+- Made device-session creation failable so a missing window content view cannot
+  leave a detached capture skin registered as an active session.
+- Added Skin pointer and window guards for movement and device-settings
+  persistence when AppKit state is unavailable.
+
+## 2026-06-14
+
+- Added Skin aspect layout guards for detached windows, missing screens, and
+  incomplete nib outlets.
+- Added Skin preview and window guards instead of force unwrapping optional
+  AppKit outlets and resize-window lifecycle state.
+
+## 2026-06-13
+
+- Replaced checked device-settings archive force unwrapping with device archive
+  optional binding and the existing empty fallback.
+- Added capture device switch rollback so rejected replacements restore the
+  prior working input inside one session configuration transaction.
+
+## 2026-06-12
+
+- Made live capture-device settings construction nonfailable and removed its
+  forced result unwrap while preserving failable archive decoding.
+- Guarded `Skin` application-delegate lookup and made selection and settings
+  coordination tolerate unavailable delegate lifecycle state.
+
 ## 2026-06-10
 
 - Retained, replaced, and invalidated document aspect timers across preview and
@@ -21,7 +71,8 @@
 - Made Makefile verification and build targets independent of the caller's
   working directory.
 - Added a least-privilege GitHub Actions workflow that installs Python 3.12 and
-  runs the static `make check` baseline with pinned Node 24-compatible actions.
+  runs the static `make check` baseline with pinned Node 24-compatible actions
+  and disabled checkout credential persistence.
 
 ## 2026-06-09
 

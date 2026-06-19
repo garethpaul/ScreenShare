@@ -16,7 +16,7 @@ limited to portable source and privacy contracts.
   `make check`.
 - Pinned Node 24-compatible checkout and Python setup actions by verified SHA.
 - Restricted workflow permissions to read-only contents and bounded the job to
-  five minutes.
+  five minutes while disabling checkout credential persistence.
 - Extended the project checker and docs so the hosted CI path stays visible.
 
 ## Verification

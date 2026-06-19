@@ -24,6 +24,20 @@ Helpful reports include:
 
 ## Project Security Posture
 
+Skin preview and window guards must optional-bind AppKit outlets and lifecycle
+state before capture UI setup or resize handling.
+Skin aspect layout guards must tolerate detached windows, missing screens, and
+incomplete nib outlets during device-dimension updates.
+Skin pointer and window guards must fail closed when drag or settings callbacks
+outlive their window, outlet, pointer-origin, screen, or saved-settings state.
+Skin construction must initialize its capture session before loading a nib and
+must not stack duplicate preview layers. Device retries and switches must
+replace format observers rather than accumulating callbacks. Saved and computed
+window geometry must be finite with positive dimensions before AppKit receives
+it, and pointer hover callbacks must tolerate missing resize-handle outlets.
+Session registration guards must fail before capture starts when a new window
+cannot host its capture skin.
+
 - This repository appears to be an Apple platform application or Swift sample. The active security scope is the code and documentation on the default branch.
 - Review found authentication, token, or session-related code paths; changes in those areas should receive security-focused review before merge.
 - Review found network clients, sockets, web APIs, or service endpoints; changes in those areas should receive security-focused review before merge.
@@ -33,10 +47,24 @@ Helpful reports include:
 - GitHub Actions runs static checks on Ubuntu 24.04 and an unsigned compile on
   macOS 15; neither hosted path should connect to devices or capture, persist,
   or upload mirrored content.
-- CI actions stay pinned by commit and run with read-only repository contents
-  permission.
+- The local unsigned unit-test wrapper uses a test-only Swift module name so the
+  test bundle cannot collide with the application module output.
+- CI actions stay pinned by commit, run with read-only repository contents
+  permission, and disable checkout credential persistence.
 - Closing a document must invalidate its repeating preview timer so retired
   capture UI is not retained or updated after teardown.
+- Capture skins must conditionally resolve the application delegate so unusual
+  nib or application lifecycle state cannot trigger a force-cast crash.
+- Newly discovered capture devices must create settings without a failable
+  initializer or forced result unwrap; malformed archives remain fail-closed.
+- Device archive optional binding keeps decoded saved settings scoped to a
+  successful cast and falls back to an empty saved-settings list.
+- Capture device switch rollback must restore the prior working input when a
+  replacement cannot be admitted, without logging device metadata.
+- Skin capture device switch rollback preserves the prior working input when a
+  replacement cannot be constructed or admitted.
+- Initial Skin sessions reject unattached capture devices before window and
+  view attachment.
 
 ## Mobile Privacy Notes
 

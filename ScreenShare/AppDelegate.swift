@@ -40,9 +40,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     }
     
     func loadDeviceSettings() {
-        let loaded = NSKeyedUnarchiver.unarchiveObject(withFile: Device.ArchivePath) as? [Device]
-        if loaded != nil {
-            self.deviceSettings = loaded!
+        if let loaded = NSKeyedUnarchiver.unarchiveObject(withFile: Device.ArchivePath) as? [Device] {
+            self.deviceSettings = loaded
         } else {
             self.deviceSettings = []
         }
@@ -67,7 +66,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             }
         }
         
-        let newDevice = Device(fromDevice: device)!
+        let newDevice = Device(fromDevice: device)
         self.deviceSettings.append(newDevice)
         return newDevice
     }
@@ -105,7 +104,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         
     }
     
-    func startNewSession(device:AVCaptureDevice) -> Skin {
+    func startNewSession(device:AVCaptureDevice) -> Skin? {
         
         let size = DeviceUtils(deviceType: .Phone).skinSize
         let screenFrame = NSScreen.main?.frame ?? NSMakeRect(0, 0, size.width, size.height)
@@ -114,17 +113,22 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         let window = NSWindow(contentRect: frame,
             styleMask: .borderless,
             backing: .buffered, defer: false)
+
+        guard let contentView = window.contentView else {
+            NSLog("Device session window content view is missing.")
+            return nil
+        }
         
         window.isMovableByWindowBackground = true
         let frameView = NSMakeRect(0, 0,size.width, size.height)
         
         let skin = Skin(frame: frameView)
         skin.initWithDevice(device: device)
-        skin.ownerWindow = window
-        guard let contentView = window.contentView else {
-            NSLog("Device session window content view is missing.")
-            return skin
+        guard skin.selectedDevice == device else {
+            skin.endSession()
+            return nil
         }
+        skin.ownerWindow = window
         contentView.addSubview(skin)
         
         skin.registerNotifications()
@@ -168,7 +172,9 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
 
                         break;
                     } else {
-                        self.deviceSessions[device] = startNewSession(device: device)
+                        if let skin = startNewSession(device: device) {
+                            self.deviceSessions[device] = skin
+                        }
                     }
             }
         }

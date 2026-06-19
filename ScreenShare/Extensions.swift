@@ -40,7 +40,14 @@ extension NSSize {
             return self.height >= self.width ? .Portrait : .Landscape
         }
     }
+    var isFinitePositive: Bool {
+        return width.isFinite && height.isFinite && width > 0 && height > 0
+    }
     func scaleToFit(targetSize: NSSize) -> NSSize {
+
+        guard self.isFinitePositive && targetSize.isFinitePositive else {
+            return NSSize.zero
+        }
 
         if NSEqualSizes(self, targetSize) {
             return self
@@ -61,6 +68,11 @@ extension NSSize {
         
         return NSSize(width: scaledWidth, height: scaledHeight)
         
+    }
+}
+extension NSRect {
+    var hasUsableWindowGeometry: Bool {
+        return origin.x.isFinite && origin.y.isFinite && size.isFinitePositive
     }
 }
 extension NSPoint {

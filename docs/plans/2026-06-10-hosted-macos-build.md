@@ -13,7 +13,7 @@ hosted toolchain less predictable.
 
 - Fixed the portable contract job to Ubuntu 24.04.
 - Added a bounded macOS 15 job that builds the shared app scheme with code
-  signing disabled.
+  signing and checkout credential persistence disabled.
 - Updated unsupported Swift 2.3 and macOS 10.9 project settings to Swift 5 and
   macOS 10.13 so Xcode 16 can evaluate the source.
 - Migrated the first compiler-blocking Swift 2 APIs for notifications, coding,

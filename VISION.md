@@ -18,15 +18,32 @@ Priority:
 - Keep single-device limitations visible
 - Handle capture runtime errors without crashing on malformed notifications
 - Decode local device settings without force-cast launch crashes
+- Preserve device archive optional binding at the local settings boundary
+- Create settings for newly discovered capture devices without force unwraps
 - Keep saved device settings separate from active capture-device discovery
 - Avoid logging local device names or saved window rectangles
 - Avoid ad hoc stdout logging from app Swift sources
 - Handle capture input setup failures without force-unwrapping error metadata
+- Preserve capture device switch rollback when replacement admission fails
+- Skin capture device switch rollback preserves the prior working input when a
+  replacement cannot be constructed or admitted
+- Initial Skin sessions reject unattached capture devices before window and
+  view attachment
 - Keep preview aspect updates responsive to width and height changes
 - Keep document preview and aspect setup tolerant of missing nib or capture state
+- Keep Skin preview and window guards across AppKit lifecycle gaps
+- Initialize capture sessions before nib-backed preview setup and keep one
+  preview layer per loaded skin
+- Keep Skin aspect layout guards around window, screen, and nib outlet state
+- Reject non-finite or non-positive saved and computed window geometry
+- Keep Skin pointer and window guards around drag and settings persistence callbacks
+- Replace format observers across capture retries and device switches
+- Keep the unsigned macOS unit-test wrapper executable on current Xcode
 - Release repeating preview timers when document windows close
 - Keep session window setup tolerant of missing screen or content-view state
+- Register device sessions only after their capture skin can attach to a window
 - Keep device refreshes tolerant of missing main window outlet state
+- Keep capture skins tolerant of unavailable application delegate state
 - Maintain custom skin and screenshot context
 - Keep completed maintenance plans under `docs/plans`
 - Keep GitHub Actions running static checks and an unsigned macOS app build

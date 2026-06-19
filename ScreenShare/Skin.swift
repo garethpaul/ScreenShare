@@ -21,7 +21,7 @@ class Skin: NSView {
     
     @IBOutlet weak var resizeHandle: NSImageView!
     
-    var session : AVCaptureSession!
+    let session = AVCaptureSession()
     var input   : AVCaptureDeviceInput?
     var device = DeviceUtils(deviceType: .Phone)
     var deviceSettings : Device?
@@ -31,6 +31,7 @@ class Skin: NSView {
     let deviceInitializationMaxRetries = 3
     
     let notifications = NotificationManager()
+    let formatNotifications = NotificationManager()
     internal var ownerWindow : NSWindow?
     
     var videoPreviewLayer : AVCaptureVideoPreviewLayer?
@@ -42,7 +43,14 @@ class Skin: NSView {
     var trackingArea : NSTrackingArea?
     
     let ResizeHandleSize : CGFloat = 30
-    let appDelegate = NSApplication.shared.delegate as! AppDelegate
+
+    private var appDelegate: AppDelegate? {
+        guard let appDelegate = NSApplication.shared.delegate as? AppDelegate else {
+            NSLog("ScreenShare application delegate is unavailable.")
+            return nil
+        }
+        return appDelegate
+    }
     
     
     override init(frame frameRect: NSRect) {
@@ -91,46 +99,52 @@ class Skin: NSView {
             self.addSubview(self.view)
             
             // Custom view set to render concurrently in order to have its own layer
-            let previewViewLayer = self.previewView.layer
-            previewViewLayer!.backgroundColor = CGColor.black
+            guard let previewView = self.previewView,
+                  let previewViewLayer = previewView.layer else {
+                NSLog("Skin preview outlet or backing layer is unavailable.")
+                return
+            }
+            previewViewLayer.backgroundColor = CGColor.black
             
             /* ADDING CONNECTION LATER            self.videoPreviewLayer = AVCaptureVideoPreviewLayer(sessionWithNoConnection: self.session) */
-            self.videoPreviewLayer = AVCaptureVideoPreviewLayer(session: self.session)
+            let videoPreviewLayer = AVCaptureVideoPreviewLayer(session: self.session)
+            self.videoPreviewLayer = videoPreviewLayer
+
+            videoPreviewLayer.frame = previewViewLayer.bounds
+            videoPreviewLayer.autoresizingMask = [.layerWidthSizable, .layerHeightSizable]
+            videoPreviewLayer.videoGravity = .resizeAspect
+
+            previewViewLayer.addSublayer(videoPreviewLayer)
             
-            self.videoPreviewLayer!.frame = previewViewLayer!.bounds
-            self.videoPreviewLayer!.autoresizingMask = [.layerWidthSizable, .layerHeightSizable]
-            self.videoPreviewLayer!.videoGravity = .resizeAspect
-            
-            previewViewLayer?.addSublayer(self.videoPreviewLayer!)
-            
-            originalPreviewViewBounds = self.previewView.bounds
+            originalPreviewViewBounds = previewView.bounds
         }
     }
     
     func registerNotifications() {
+        guard let window = self.window else {
+            NSLog("Skin notification window is unavailable.")
+            return
+        }
         self.notifications.registerObserver(
-            NSWindow.didResizeNotification, forObject: self.window!, dispatchAsyncToMainQueue: true, block: {note in
-                self.updateViewsToWindow(windowSize: self.window!.frame.size)
+            NSWindow.didResizeNotification, forObject: window, dispatchAsyncToMainQueue: true, block: { [weak self, weak window] _ in
+                guard let self = self,
+                      let window = window,
+                      let skinView = self.view,
+                      let deviceFrameImage = self.deviceFrameImage,
+                      let previewView = self.previewView else {
+                    NSLog("Skin resize layout window or outlets are unavailable.")
+                    return
+                }
+                self.updateViewsToWindow(
+                    windowSize: window.frame.size,
+                    window: window,
+                    skinView: skinView,
+                    deviceFrameImage: deviceFrameImage,
+                    previewView: previewView)
         })
     }
     
     func initWithDevice(device: AVCaptureDevice) {
-        
-        self.session = AVCaptureSession()
-        
-        // Custom view set to render concurrently in order to have its own layer
-        let previewViewLayer = self.previewView.layer
-        previewViewLayer!.backgroundColor = CGColor.white
-        
-        /* ADDING CONNECTION LATER        self.videoPreviewLayer = AVCaptureVideoPreviewLayer(sessionWithNoConnection: self.session) */
-        self.videoPreviewLayer = AVCaptureVideoPreviewLayer(session: self.session)
-        
-        self.videoPreviewLayer!.frame = previewViewLayer!.bounds
-        //newPreviewLayer.autoresizingMask = CAAutoresizingMask.LayerWidthSizable | CAAutoresizingMask.LayerHeightSizable
-        self.videoPreviewLayer!.videoGravity = .resize
-        previewViewLayer?.addSublayer(self.videoPreviewLayer!)
-        
-        
         self.selectedDevice = device
         self.session.startRunning()
         
@@ -141,44 +155,66 @@ class Skin: NSView {
             return self.input?.device
         }
         set {
-            self.session.beginConfiguration()
-            
-            if let input = self.input {
-                session.removeInput(input)
-                self.input = nil
-            }
-            
+            let replacementInput: AVCaptureDeviceInput?
             if let newDevice = newValue {
-                
                 do {
-                    let newDeviceInput = try AVCaptureDeviceInput(device: newDevice)
-                    
-                    self.session.sessionPreset = .high
-                    self.session.addInput(newDeviceInput)
-                    self.input = newDeviceInput
-                    
-                    // Register for notifications in format change which imply orientation change
-                    self.notifications.registerObserver(AVCaptureInput.Port.formatDescriptionDidChangeNotification, dispatchAsyncToMainQueue: true, block: {notif in
-                        self.updateAspect()
-                    })
-                    
-                    // load existing device settings that might have been previously saved
-                    getDeviceSettings(device: newDevice)
-                    
-                    
+                    replacementInput = try AVCaptureDeviceInput(device: newDevice)
                 } catch let error as NSError {
                     self.displayError(error: error)
+                    return
                 }
-                
+            } else {
+                replacementInput = nil
             }
-            
-            self.session.commitConfiguration()
-            
-            updateAspect()
-            
-            setThisAsSelectedDevice()
-            
+
+            self.session.beginConfiguration()
+            defer {
+                self.session.commitConfiguration()
+                self.replaceFormatObserver()
+                self.updateAspect()
+                self.setThisAsSelectedDevice()
+            }
+
+            let previousInput = self.input
+            if let previousInput = previousInput {
+                self.session.removeInput(previousInput)
+            }
+            self.input = nil
+
+            guard let replacementInput = replacementInput else {
+                return
+            }
+
+            self.session.sessionPreset = .high
+            guard self.session.canAddInput(replacementInput) else {
+                if let previousInput = previousInput,
+                    self.session.canAddInput(previousInput) {
+                    self.session.addInput(previousInput)
+                    self.input = previousInput
+                }
+                NSLog("Skin capture session rejected the replacement device input.")
+                return
+            }
+
+            self.session.addInput(replacementInput)
+            self.input = replacementInput
+
+            getDeviceSettings(device: replacementInput.device)
         }
+    }
+
+    private func replaceFormatObserver() {
+        formatNotifications.deregisterAll()
+        guard let port = self.input?.ports.first else {
+            return
+        }
+        formatNotifications.registerObserver(
+            AVCaptureInput.Port.formatDescriptionDidChangeNotification,
+            forObject: port,
+            dispatchAsyncToMainQueue: true,
+            block: { [weak self] _ in
+                self?.updateAspect()
+        })
     }
     
     func getVideoDimensions() -> CMVideoDimensions {
@@ -214,34 +250,41 @@ class Skin: NSView {
                 self.device.videDimensions = dimensions
                 self.loadSkinForDevice()
                 
-                if (self.window != nil) {
-                    var windowSize = self.device.getWindowSize() //self.window!.frame.size //self.device.getWindowSize()
-                    windowSize = windowSize.orientation != self.device.orientation ? windowSize.rotated() : windowSize
-                    
-                    if (    self.deviceSettings != nil
-                        &&  !ignoreSettings
-                        &&  self.deviceSettings?.hasPreviousLocation(forOrientation: self.device.orientation) == true ) {
-                            
-                            let windowRect = self.deviceSettings!.savedSettingForOrientation(forOrientation: self.device.orientation)
-                            windowSize =  windowRect.size
-                            positionWindow(windowRect: windowRect)
-                            
-                            
-                    } else {
-                        // Calculate new size to fit screen. -50 is just to give some margins for OS menubar, etc.
-                        var screenFrame = self.window!.screen!.visibleFrame
-                        screenFrame.size.height -= 50
-                        screenFrame.size.width -= 50
-                        windowSize = NSSize(fromCGSize: windowSize).scaleToFit(targetSize: screenFrame.size)
-                        
-                        // Center the window on screen
-                        centerWindow(windowSize: windowSize)
-                    }
-                    
-                    // Resize the internal view to the calculated size / rect
-                    updateViewsToWindow(windowSize: windowSize)
-                    
+                guard let window = self.window,
+                      let skinView = self.view,
+                      let deviceFrameImage = self.deviceFrameImage,
+                      let previewView = self.previewView else {
+                    NSLog("Skin aspect layout window or outlets are unavailable.")
+                    return
                 }
+
+                var windowSize = self.device.getWindowSize()
+                windowSize = windowSize.orientation != self.device.orientation ? windowSize.rotated() : windowSize
+
+                if let deviceSettings = self.deviceSettings,
+                   !ignoreSettings,
+                   deviceSettings.hasPreviousLocation(forOrientation: self.device.orientation) {
+                    let windowRect = deviceSettings.savedSettingForOrientation(forOrientation: self.device.orientation)
+                    windowSize = windowRect.size
+                    positionWindow(windowRect: windowRect, window: window)
+                } else if let screen = window.screen ?? NSScreen.main {
+                    // Leave a small margin for the menu bar and other screen chrome.
+                    var screenFrame = screen.visibleFrame
+                    screenFrame.size.height -= 50
+                    screenFrame.size.width -= 50
+                    windowSize = NSSize(fromCGSize: windowSize).scaleToFit(targetSize: screenFrame.size)
+                    centerWindow(windowSize: windowSize, window: window, screenFrame: screen.frame)
+                } else {
+                    NSLog("Skin aspect layout screen is unavailable.")
+                    window.aspectRatio = windowSize
+                }
+
+                updateViewsToWindow(
+                    windowSize: windowSize,
+                    window: window,
+                    skinView: skinView,
+                    deviceFrameImage: deviceFrameImage,
+                    previewView: previewView)
             }
             return
             
@@ -261,28 +304,43 @@ class Skin: NSView {
         
     }
     
-    func centerWindow(windowSize : NSSize) {
-        self.window!.aspectRatio = windowSize
-        self.window!.setFrame(DeviceUtils.getCenteredRect(windowSize: windowSize, screenFrame: self.window!.screen!.frame), display:true)
+    func centerWindow(windowSize: NSSize, window: NSWindow, screenFrame: NSRect) {
+        guard windowSize.isFinitePositive && screenFrame.hasUsableWindowGeometry else {
+            NSLog("Skin center layout geometry is unusable.")
+            return
+        }
+        window.aspectRatio = windowSize
+        window.setFrame(DeviceUtils.getCenteredRect(windowSize: windowSize, screenFrame: screenFrame), display: true)
         // self.window?.center() does not work
     }
-    func positionWindow(windowRect : NSRect) {
-        self.window!.aspectRatio = windowRect.size
-        self.window!.setFrame(windowRect, display:true)
+    func positionWindow(windowRect: NSRect, window: NSWindow) {
+        guard windowRect.hasUsableWindowGeometry else {
+            NSLog("Skin saved window geometry is unusable.")
+            return
+        }
+        window.aspectRatio = windowRect.size
+        window.setFrame(windowRect, display: true)
         // self.window?.center() does not work
     }
     
-    func updateViewsToWindow(windowSize : NSSize) {
+    func updateViewsToWindow(windowSize: NSSize, window: NSWindow, skinView: NSView,
+                             deviceFrameImage: NSImageView, previewView: NSView) {
+        guard windowSize.isFinitePositive,
+              self.device.skinSize.isFinitePositive,
+              originalPreviewViewBounds.size.isFinitePositive else {
+            NSLog("Skin preview layout geometry is unusable.")
+            return
+        }
         
         self.setFrameSize(windowSize)
         self.setFrameOrigin(NSPoint(x: 0,y: 0))
-        self.view.frame = self.bounds
+        skinView.frame = self.bounds
         
-        self.deviceFrameImage.image = NSImage(named: self.device.getSkinDeviceImage())
-        self.deviceFrameImage.translatesAutoresizingMaskIntoConstraints = true
-        self.deviceFrameImage.setFrameSize(self.bounds.size)
-        self.deviceFrameImage.setFrameOrigin(NSPoint(x: 0,y: 0))
-        self.deviceFrameImage.needsDisplay = true
+        deviceFrameImage.image = NSImage(named: self.device.getSkinDeviceImage())
+        deviceFrameImage.translatesAutoresizingMaskIntoConstraints = true
+        deviceFrameImage.setFrameSize(self.bounds.size)
+        deviceFrameImage.setFrameOrigin(NSPoint(x: 0,y: 0))
+        deviceFrameImage.needsDisplay = true
         
         let scale  = windowSize.width / ( self.device.orientation == .Portrait ? self.device.skinSize.width : self.device.skinSize.height )
         var size = NSSize(width: originalPreviewViewBounds.size.width * scale, height: originalPreviewViewBounds.size.height * scale)
@@ -290,19 +348,19 @@ class Skin: NSView {
             size = size.rotated()
         }
         
-        self.previewView.translatesAutoresizingMaskIntoConstraints = true
-        self.previewView.setFrameSize(size)
+        previewView.translatesAutoresizingMaskIntoConstraints = true
+        previewView.setFrameSize(size)
         
         let origin = NSPoint(
             x: windowSize.width / 2 - size.width / 2,
             y: windowSize.height / 2 - size.height / 2)
         
-        self.previewView.setFrameOrigin(origin)
+        previewView.setFrameOrigin(origin)
         
-        self.videoPreviewLayer?.frame = self.previewView.bounds
+        self.videoPreviewLayer?.frame = previewView.bounds
         
         self.needsDisplay = true
-        self.window!.invalidateShadow()
+        window.invalidateShadow()
         
         if trackingArea != nil {
             self.removeTrackingArea(trackingArea!)
@@ -356,8 +414,9 @@ class Skin: NSView {
     
     
     func endSession() {
-        appDelegate.selectedDevice = nil
+        appDelegate?.selectedDevice = nil
         notifications.deregisterAll()
+        formatNotifications.deregisterAll()
         session.stopRunning()
         ownerWindow = nil
     }
@@ -366,41 +425,60 @@ class Skin: NSView {
     
     //MARK: Dragging & Resizing
     override func mouseEntered(with theEvent: NSEvent) {
-        self.resizeHandle.isHidden = false
+        guard let resizeHandle = self.resizeHandle else {
+            NSLog("Skin pointer resize handle is unavailable.")
+            return
+        }
+        resizeHandle.isHidden = false
     }
     override func mouseExited(with theEvent: NSEvent) {
-        self.resizeHandle.isHidden = true
+        guard let resizeHandle = self.resizeHandle else {
+            NSLog("Skin pointer resize handle is unavailable.")
+            return
+        }
+        resizeHandle.isHidden = true
         self.window?.invalidateShadow()
     }
     override func mouseDown(with theEvent: NSEvent) {
-        initialLocation = NSEvent.mouseLocation
+        guard let window = self.window,
+              let deviceFrameImage = self.deviceFrameImage else {
+            NSLog("Skin pointer window or preview outlet is unavailable.")
+            initialLocation = nil
+            isResize = false
+            return
+        }
+
+        var pointerLocation = NSEvent.mouseLocation
+        pointerLocation.x -= window.frame.origin.x
+        pointerLocation.y -= window.frame.origin.y
+        initialLocation = pointerLocation
+
+        isResize = (pointerLocation.x > deviceFrameImage.bounds.size.width - ResizeHandleSize)
+            && (pointerLocation.y < ResizeHandleSize)
         
-        initialLocation?.x -= self.window!.frame.origin.x
-        initialLocation?.y -= self.window!.frame.origin.y
-        
-        isResize = (initialLocation!.x > self.deviceFrameImage!.bounds.size.width - ResizeHandleSize)
-            && (initialLocation!.y < ResizeHandleSize)
-        
-        appDelegate.selectedDevice = self
+        appDelegate?.selectedDevice = self
         
     }
     
     override func mouseDragged(with theEvent: NSEvent) {
-        
+        guard let initialLocation = initialLocation,
+              let window = self.window else {
+            NSLog("Skin drag window or pointer origin is unavailable.")
+            return
+        }
+
         if !isResize {
-            
             let curLocation = NSEvent.mouseLocation
-            
             var newOrigin = NSPoint(
-                x: curLocation.x - initialLocation!.x,
-                y: curLocation.y - initialLocation!.y)
-            
-            let screenFrame = NSScreen.main?.frame
-            if((newOrigin.y + window!.frame.size.height) > (screenFrame!.origin.y + screenFrame!.size.height)) {
-                newOrigin.y = screenFrame!.origin.y + (screenFrame!.size.height - window!.frame.size.height)
+                x: curLocation.x - initialLocation.x,
+                y: curLocation.y - initialLocation.y)
+
+            if let screenFrame = (window.screen ?? NSScreen.main)?.frame,
+               (newOrigin.y + window.frame.size.height) > (screenFrame.origin.y + screenFrame.size.height) {
+                newOrigin.y = screenFrame.origin.y + (screenFrame.size.height - window.frame.size.height)
             }
-            
-            self.window!.setFrameOrigin(newOrigin)
+
+            window.setFrameOrigin(newOrigin)
         }
         updateDeviceSettings()
         
@@ -412,24 +490,27 @@ class Skin: NSView {
     //MARK: Device Settings
     func updateDeviceSettings() {
         // Update current device size/location settings based on its current movement
-        if(self.deviceSettings != nil) {
-            if self.device.orientation == Device.DeviceOrientation.Portrait {
-                self.deviceSettings!.portraitRect = window!.frame
-            } else {
-                self.deviceSettings!.landscapeRect = window!.frame
-            }
+        guard let deviceSettings = self.deviceSettings,
+              let window = self.window else {
+            NSLog("Skin device settings window or state is unavailable.")
+            return
+        }
+        if self.device.orientation == Device.DeviceOrientation.Portrait {
+            deviceSettings.portraitRect = window.frame
+        } else {
+            deviceSettings.landscapeRect = window.frame
         }
         saveDeviceSettins()
         
     }
     func getDeviceSettings(device: AVCaptureDevice) {
-        self.deviceSettings = appDelegate.findDeviceSettings(device: device)
+        self.deviceSettings = appDelegate?.findDeviceSettings(device: device)
     }
     func saveDeviceSettins() {
-        appDelegate.saveDeviceSettings()
+        appDelegate?.saveDeviceSettings()
     }
     func setThisAsSelectedDevice() {
-        appDelegate.selectedDevice = self
+        appDelegate?.selectedDevice = self
     }
     
     

@@ -556,6 +556,7 @@
 				INFOPLIST_FILE = "$(PROJECT_DIR)/ScreenShareTests/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.gpj.$(PRODUCT_NAME:rfc1034identifier)";
+				PRODUCT_MODULE_NAME = ScreenshareUnitTests;
 				PRODUCT_NAME = Screenshare;
 				SWIFT_VERSION = 5.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Screenshare.app/Contents/MacOS/Screenshare";
@@ -574,6 +575,7 @@
 				INFOPLIST_FILE = "$(PROJECT_DIR)/ScreenShareTests/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.gpj.$(PRODUCT_NAME:rfc1034identifier)";
+				PRODUCT_MODULE_NAME = ScreenshareUnitTests;
 				PRODUCT_NAME = Screenshare;
 				SWIFT_VERSION = 5.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Screenshare.app/Contents/MacOS/Screenshare";

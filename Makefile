@@ -2,7 +2,7 @@
 
 PYTHON ?= python3
 XCODEBUILD ?= xcodebuild
-ROOT := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))
+override ROOT := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))
 
 lint:
 	sh -n "$(ROOT)/build.sh"
@@ -10,6 +10,7 @@ lint:
 
 test:
 	$(PYTHON) "$(ROOT)/scripts/check-screenshare-source.py" --mode behavior
+	$(PYTHON) "$(ROOT)/scripts/test-screenshare-contracts.py"
 
 build: lint
 	@if command -v "$(XCODEBUILD)" >/dev/null 2>&1; then \
