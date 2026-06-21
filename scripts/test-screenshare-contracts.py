@@ -25,7 +25,12 @@ class ContractMutationTests(unittest.TestCase):
 
     def assert_behavior_rejects(self, repository, expected_error):
         result = subprocess.run(
-            ["python3", "scripts/check-screenshare-source.py", "--mode", "behavior"],
+            [
+                str(repository / "scripts/run-python.sh"),
+                "scripts/check-screenshare-source.py",
+                "--mode",
+                "behavior",
+            ],
             cwd=repository,
             text=True,
             capture_output=True,
@@ -107,7 +112,12 @@ class ContractMutationTests(unittest.TestCase):
             "PRODUCT_MODULE_NAME = Screenshare;",
         )
         result = subprocess.run(
-            ["python3", "scripts/check-screenshare-source.py", "--mode", "project"],
+            [
+                str(repository / "scripts/run-python.sh"),
+                "scripts/check-screenshare-source.py",
+                "--mode",
+                "project",
+            ],
             cwd=repository,
             text=True,
             capture_output=True,
@@ -125,7 +135,12 @@ class ContractMutationTests(unittest.TestCase):
             "self.measureBlock() {",
         )
         result = subprocess.run(
-            ["python3", "scripts/check-screenshare-source.py", "--mode", "project"],
+            [
+                str(repository / "scripts/run-python.sh"),
+                "scripts/check-screenshare-source.py",
+                "--mode",
+                "project",
+            ],
             cwd=repository,
             text=True,
             capture_output=True,

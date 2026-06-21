@@ -65,7 +65,7 @@ jobs:
           persist-credentials: false
 
       - name: Show Xcode version
-        run: xcodebuild -version
+        run: /usr/bin/xcodebuild -version
 
       - name: Build unsigned macOS app
         run: make build
@@ -153,7 +153,7 @@ def project_checks():
     if re.search(r"\bfunction\s+[A-Za-z_][A-Za-z0-9_]*\s*\(", build_script):
         errors.append("build.sh must use POSIX shell function syntax")
     for fragment in (
-        "xcodebuild -project Screenshare.xcodeproj",
+        "/usr/bin/xcodebuild -project Screenshare.xcodeproj",
         '-scheme "Screenshare"',
         '-destination "platform=macOS"',
         "CODE_SIGNING_ALLOWED=NO",
@@ -218,6 +218,10 @@ def project_checks():
         if fragment not in launcher:
             errors.append(f"{relative_path} must use the trusted absolute tool launcher")
 
+    mutation_tests = read_text("scripts/test-screenshare-contracts.py")
+    if 'str(repository / "scripts/run-python.sh")' not in mutation_tests:
+        errors.append("contract mutation tests must use the isolated repository Python launcher")
+
     if MAKE_ROOT_PLAN.exists():
         root_plan = MAKE_ROOT_PLAN.read_text(encoding="utf-8")
         for evidence in (
@@ -240,8 +244,8 @@ def project_checks():
         for evidence in (
             "66 executed target/authority cases",
             "MAKEFILE_LIST must not be overridden",
-            "MAKEFILES must be empty",
-            "repository Makefile path could not be resolved",
+            "3 documented GNU Make startup-boundary cases",
+            "later-startup-ran",
         ):
             if evidence not in root_test_text:
                 errors.append(f"{root_test.relative_to(ROOT)} must preserve {evidence!r}")
@@ -252,7 +256,8 @@ def project_checks():
         authority_plan = MAKE_AUTHORITY_PLAN.read_text(encoding="utf-8")
         for evidence in (
             "Status: Completed",
-            "`make root-test` passed 66 target/authority cases and four rejection cases",
+            "`make root-test` passed 66 target/authority cases, two metadata rejection",
+            "checked-in Makefile cannot make an already-started GNU Make process safe",
             "`make check` passed from the repository and through an absolute Makefile path",
         ):
             if evidence not in authority_plan:

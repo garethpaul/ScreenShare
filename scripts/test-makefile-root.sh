@@ -176,11 +176,20 @@ grep -Fq "MAKEFILE_LIST must not be overridden" "$TEMP_ROOT/command-list.out"
 if (cd "$CONTROL_DIR" && MAKEFILE_LIST=/tmp/untrusted /usr/bin/make --environment-overrides --no-print-directory --file "$MAKEFILE" check) >"$TEMP_ROOT/environment-list.out" 2>&1; then exit 1; fi
 grep -Fq "MAKEFILE_LIST must not be overridden" "$TEMP_ROOT/environment-list.out"
 PRELOADED="$TEMP_ROOT/preloaded.mk"
-printf '%s\n' 'ROOT := /tmp/preloaded' >"$PRELOADED"
+PRELOAD_MARKER="$TEMP_ROOT/preload-startup-ran"
+printf '%s\n' "\$(shell /usr/bin/touch '$PRELOAD_MARKER')" 'ROOT := /tmp/preloaded' >"$PRELOADED"
 if (cd "$CONTROL_DIR" && MAKEFILES="$PRELOADED" /usr/bin/make --no-print-directory --file "$MAKEFILE" check) >"$TEMP_ROOT/preloaded.out" 2>&1; then exit 1; fi
 grep -Fq "MAKEFILES must be empty" "$TEMP_ROOT/preloaded.out"
+[ -e "$PRELOAD_MARKER" ]
 EARLIER="$TEMP_ROOT/earlier.mk"
-printf '%s\n' '# earlier' >"$EARLIER"
+EARLIER_MARKER="$TEMP_ROOT/earlier-startup-ran"
+printf '%s\n' "\$(shell /usr/bin/touch '$EARLIER_MARKER')" >"$EARLIER"
 if (cd "$CONTROL_DIR" && /usr/bin/make --no-print-directory --file "$EARLIER" --file "$MAKEFILE" check) >"$TEMP_ROOT/multiple.out" 2>&1; then exit 1; fi
 grep -Fq "repository Makefile path could not be resolved" "$TEMP_ROOT/multiple.out"
-printf '%s\n' "Makefile root tests passed: 66 executed target/authority cases, 1 dollar-syntax checkout case, 2 MAKEFILE_LIST rejections, 1 MAKEFILES rejection, and 1 earlier-Makefile detection"
+[ -e "$EARLIER_MARKER" ]
+LATER="$TEMP_ROOT/later.mk"
+LATER_MARKER="$TEMP_ROOT/later-startup-ran"
+printf '%s\n' "\$(shell /usr/bin/touch '$LATER_MARKER')" >"$LATER"
+(cd "$CONTROL_DIR" && SCREENSHARE_COMMAND_LOG="$COMMAND_LOG" /usr/bin/make --no-print-directory --file "$MAKEFILE" --file "$LATER" lint) >"$TEMP_ROOT/later.out" 2>&1
+[ -e "$LATER_MARKER" ]
+printf '%s\n' "Makefile root tests passed: 66 executed target/authority cases, 1 dollar-syntax checkout case, 2 MAKEFILE_LIST rejections, and 3 documented GNU Make startup-boundary cases"

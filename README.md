@@ -172,8 +172,9 @@ When the required SDK or runtime is unavailable, use static checks and source re
   settings archive boundary.
 - See `docs/plans/2026-06-14-make-root-override-protection.md` for the
   caller-resistant, location-independent ScreenShare validation root.
-- See `docs/plans/2026-06-21-make-authority-isolation.md` for isolated Make
-  authority and hostile-input regression coverage.
+- See `docs/plans/2026-06-21-make-authority-isolation.md` for checked-in recipe
+  authority, hostile-input regression coverage, and the GNU Make preload and
+  additional-`-f` startup boundary.
 - See `docs/plans/2026-06-14-skin-preview-window-guards.md` for guarded Skin
   preview-layer and resize-window lifecycle setup.
 - See `docs/plans/2026-06-09-document-preview-guard.md` for the document

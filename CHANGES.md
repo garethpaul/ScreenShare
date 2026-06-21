@@ -2,9 +2,12 @@
 
 ## 2026-06-21
 
-- Isolated Make verification authority from caller-controlled preload files,
-  file lists, shells, Python commands, Xcode builders, bytecode settings, and
-  repository roots, with 66 target/authority cases and rejection coverage.
+- Isolated checked-in Make recipes from caller-controlled shells, Python
+  commands, Xcode builders, bytecode settings, and repository roots, with 66
+  target/authority cases. Documented that `MAKEFILES` and additional `-f`
+  programs execute at GNU Make startup outside an in-Makefile trust boundary.
+- Pinned the documented native unit-test script and hosted Xcode probe to
+  `/usr/bin/xcodebuild` so caller `PATH` cannot replace application validation.
 
 ## 2026-06-19
 
