@@ -14,6 +14,7 @@ CI_PLAN = DOCS_PLANS / "2026-06-10-ci-baseline.md"
 DEVICE_SWITCH_ROLLBACK_PLAN = DOCS_PLANS / "2026-06-13-device-switch-rollback.md"
 DEVICE_ARCHIVE_BINDING_PLAN = DOCS_PLANS / "2026-06-13-device-archive-optional-binding.md"
 MAKE_ROOT_PLAN = DOCS_PLANS / "2026-06-14-make-root-override-protection.md"
+MAKE_AUTHORITY_PLAN = DOCS_PLANS / "2026-06-21-make-authority-isolation.md"
 SKIN_PREVIEW_WINDOW_PLAN = DOCS_PLANS / "2026-06-14-skin-preview-window-guards.md"
 SKIN_ASPECT_LAYOUT_PLAN = DOCS_PLANS / "2026-06-14-skin-aspect-layout-guards.md"
 SKIN_POINTER_WINDOW_PLAN = DOCS_PLANS / "2026-06-15-skin-pointer-window-guards.md"
@@ -64,7 +65,7 @@ jobs:
           persist-credentials: false
 
       - name: Show Xcode version
-        run: xcodebuild -version
+        run: /usr/bin/xcodebuild -version
 
       - name: Build unsigned macOS app
         run: make build
@@ -114,6 +115,8 @@ def docs_plan_checks():
         errors.append("docs/plans/2026-06-13-device-archive-optional-binding.md is missing")
     if not MAKE_ROOT_PLAN.exists():
         errors.append("docs/plans/2026-06-14-make-root-override-protection.md is missing")
+    if not MAKE_AUTHORITY_PLAN.exists():
+        errors.append("docs/plans/2026-06-21-make-authority-isolation.md is missing")
     if not SKIN_PREVIEW_WINDOW_PLAN.exists():
         errors.append("docs/plans/2026-06-14-skin-preview-window-guards.md is missing")
     if not SKIN_ASPECT_LAYOUT_PLAN.exists():
@@ -150,7 +153,7 @@ def project_checks():
     if re.search(r"\bfunction\s+[A-Za-z_][A-Za-z0-9_]*\s*\(", build_script):
         errors.append("build.sh must use POSIX shell function syntax")
     for fragment in (
-        "xcodebuild -project Screenshare.xcodeproj",
+        "/usr/bin/xcodebuild -project Screenshare.xcodeproj",
         '-scheme "Screenshare"',
         '-destination "platform=macOS"',
         "CODE_SIGNING_ALLOWED=NO",
@@ -171,25 +174,53 @@ def project_checks():
         errors.append("GitHub Actions workflow must match the reviewed credential-free contract and macOS build baseline")
 
     makefile = read_text("Makefile")
-    root_declaration = "override ROOT := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))"
+    root_declaration = "override ROOT := $(shell path='$(subst ','\"'\"',$(MAKEFILE_LIST))'; path=$$(printf '%s' \"$$path\" | /usr/bin/sed 's/^ //'); [ -f \"$$path\" ] || exit 1; directory=$$(/usr/bin/dirname -- \"$$path\"); CDPATH= cd -- \"$$directory\" && /bin/pwd -P)"
     root_assignments = [
         line
         for line in makefile.splitlines()
         if re.match(r"^(?:override\s+)?ROOT\s*[:?+]?=", line)
     ]
     if root_assignments != [root_declaration]:
-        errors.append(
-            "Makefile must define exactly one protected repository-derived ROOT declaration"
-        )
+        errors.append("Makefile must define exactly one safe repository-derived ROOT declaration")
     for fragment in (
+        ".DEFAULT_GOAL := check",
+        "override SHELL := /bin/sh",
+        "override .SHELLFLAGS := -c",
+        "override PYTHON := $(ROOT)/scripts/run-python.sh",
+        "override XCODEBUILD := $(ROOT)/scripts/run-xcodebuild.sh",
+        "export PYTHON XCODEBUILD",
+        "override PYTHONDONTWRITEBYTECODE := 1",
+        "export PYTHONDONTWRITEBYTECODE",
+        "$(error MAKEFILES must be empty; repository verification requires this Makefile to be loaded alone)",
+        "override MAKEFILES :=",
+        "$(error MAKEFILE_LIST must not be overridden)",
         root_declaration,
-        '"$(ROOT)/build.sh"',
-        '"$(ROOT)/scripts/check-screenshare-source.py"',
-        '"$(ROOT)/Screenshare.xcodeproj"',
-        "CODE_SIGNING_ALLOWED=NO",
+        "export ROOT",
+        "$(error repository Makefile path could not be resolved)",
+        '\t/bin/sh -n "$$ROOT/build.sh"',
+        '"$$PYTHON" "$$ROOT/scripts/check-screenshare-source.py" --mode project',
+        '"$$PYTHON" "$$ROOT/scripts/test-screenshare-contracts.py"',
+        'cd "$$ROOT" && "$$XCODEBUILD" -project Screenshare.xcodeproj',
+        "CODE_SIGNING_ALLOWED=NO build",
+        "root-test:",
+        '\t/bin/sh "$$ROOT/scripts/test-makefile-root.sh"',
+        "verify: root-test lint test build",
     ):
         if fragment not in makefile:
             errors.append(f"Makefile is missing root-independent fragment: {fragment}")
+
+    expected_launchers = {
+        "scripts/run-python.sh": "exec /usr/bin/python3 -I -B -c",
+        "scripts/run-xcodebuild.sh": 'exec /usr/bin/xcodebuild "$@"',
+    }
+    for relative_path, fragment in expected_launchers.items():
+        launcher = read_text(relative_path)
+        if fragment not in launcher:
+            errors.append(f"{relative_path} must use the trusted absolute tool launcher")
+
+    mutation_tests = read_text("scripts/test-screenshare-contracts.py")
+    if 'str(repository / "scripts/run-python.sh")' not in mutation_tests:
+        errors.append("contract mutation tests must use the isolated repository Python launcher")
 
     if MAKE_ROOT_PLAN.exists():
         root_plan = MAKE_ROOT_PLAN.read_text(encoding="utf-8")
@@ -206,6 +237,35 @@ def project_checks():
                 )
         if str(MAKE_ROOT_PLAN.relative_to(ROOT)) not in read_text("README.md"):
             errors.append(f"README.md must reference {MAKE_ROOT_PLAN.relative_to(ROOT)}")
+
+    root_test = ROOT / "scripts" / "test-makefile-root.sh"
+    if root_test.exists():
+        root_test_text = root_test.read_text(encoding="utf-8")
+        for evidence in (
+            "66 executed target/authority cases",
+            "MAKEFILE_LIST must not be overridden",
+            "3 documented GNU Make startup-boundary cases",
+            "later-startup-ran",
+        ):
+            if evidence not in root_test_text:
+                errors.append(f"{root_test.relative_to(ROOT)} must preserve {evidence!r}")
+    else:
+        errors.append("scripts/test-makefile-root.sh is missing")
+
+    if MAKE_AUTHORITY_PLAN.exists():
+        authority_plan = MAKE_AUTHORITY_PLAN.read_text(encoding="utf-8")
+        for evidence in (
+            "Status: Completed",
+            "`make root-test` passed 66 target/authority cases, two metadata rejection",
+            "checked-in Makefile cannot make an already-started GNU Make process safe",
+            "`make check` passed from the repository and through an absolute Makefile path",
+        ):
+            if evidence not in authority_plan:
+                errors.append(
+                    f"{MAKE_AUTHORITY_PLAN.relative_to(ROOT)} must record verification evidence {evidence!r}"
+                )
+        if str(MAKE_AUTHORITY_PLAN.relative_to(ROOT)) not in read_text("README.md"):
+            errors.append(f"README.md must reference {MAKE_AUTHORITY_PLAN.relative_to(ROOT)}")
 
     for doc_path in ("README.md", "VISION.md", "SECURITY.md", "CHANGES.md"):
         document = re.sub(r"\s+", " ", read_text(doc_path))

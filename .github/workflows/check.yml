@@ -42,7 +42,7 @@ jobs:
           persist-credentials: false
 
       - name: Show Xcode version
-        run: xcodebuild -version
+        run: /usr/bin/xcodebuild -version
 
       - name: Build unsigned macOS app
         run: make build
