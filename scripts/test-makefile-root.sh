@@ -12,6 +12,8 @@ CHECKOUT="$TEMP_ROOT/screenshare's [gate] \"quoted\" \`touch SCREENSHARE_BACKTIC
 COMMAND_LOG="$TEMP_ROOT/commands.log"
 BAD_COMMAND_LOG="$TEMP_ROOT/bad-command.log"
 FAKE_SHELL_LOG="$TEMP_ROOT/fake-shell.log"
+PATH_SHADOW_LOG="$TEMP_ROOT/path-shadow.log"
+export SCREENSHARE_PATH_SHADOW_LOG="$PATH_SHADOW_LOG"
 mkdir "$CONTROL_DIR" "$CHECKOUT" "$CHECKOUT/scripts" "$CHECKOUT/bin" "$ATTACKER_ROOT"
 CONTROL_DIR=$(CDPATH= cd -- "$CONTROL_DIR" && /bin/pwd -P)
 CHECKOUT=$(CDPATH= cd -- "$CHECKOUT" && /bin/pwd -P)
@@ -23,9 +25,16 @@ chmod +x "$CHECKOUT/build.sh"
 for command in python3 xcodebuild; do
   cat >"$CHECKOUT/bin/$command" <<'EOF'
 #!/bin/sh
-printf '%s|%s|%s|%s\n' "$PWD" "$0" "${PYTHONDONTWRITEBYTECODE:-}" "$*" >> "$SCREENSHARE_COMMAND_LOG"
+printf '%s\n' invoked >> "$SCREENSHARE_PATH_SHADOW_LOG"
 EOF
   chmod +x "$CHECKOUT/bin/$command"
+done
+for command in run-python.sh run-xcodebuild.sh; do
+  cat >"$CHECKOUT/scripts/$command" <<'EOF'
+#!/bin/sh
+printf '%s|%s|%s|%s\n' "$PWD" "$0" "${PYTHONDONTWRITEBYTECODE:-}" "$*" >> "$SCREENSHARE_COMMAND_LOG"
+EOF
+  chmod +x "$CHECKOUT/scripts/$command"
 done
 cat >"$CHECKOUT/scripts/test-makefile-root.sh" <<'EOF'
 #!/bin/sh
@@ -72,7 +81,7 @@ run_case() {
   scenario=$1
   target=$2
   mode=$3
-  rm -f "$COMMAND_LOG" "$BAD_COMMAND_LOG" "$FAKE_SHELL_LOG"
+  rm -f "$COMMAND_LOG" "$BAD_COMMAND_LOG" "$FAKE_SHELL_LOG" "$PATH_SHADOW_LOG"
   output="$TEMP_ROOT/output"
   set +e
   case "$mode" in
@@ -118,6 +127,10 @@ run_case() {
     printf '%s\n' "$scenario $target executed caller-controlled shell" >&2
     exit 1
   fi
+  if [ -e "$PATH_SHADOW_LOG" ]; then
+    printf '%s\n' "$scenario $target executed a PATH-shadowed Python or xcodebuild" >&2
+    exit 1
+  fi
 }
 
 for target in build check lint root-test test verify; do
@@ -133,6 +146,25 @@ for target in build check lint root-test test verify; do
   run_case command-xcodebuild "$target" command-xcodebuild
   run_case environment-xcodebuild "$target" environment-xcodebuild
 done
+
+DOLLAR_CHECKOUT="$TEMP_ROOT/screenshare \$(touch SCREENSHARE_DOLLAR_MARKER)"
+mkdir "$DOLLAR_CHECKOUT" "$DOLLAR_CHECKOUT/scripts"
+DOLLAR_CHECKOUT=$(CDPATH= cd -- "$DOLLAR_CHECKOUT" && /bin/pwd -P)
+cp "$MAKEFILE" "$DOLLAR_CHECKOUT/Makefile"
+cp "$CHECKOUT/build.sh" "$DOLLAR_CHECKOUT/build.sh"
+cp "$CHECKOUT/scripts/run-python.sh" "$DOLLAR_CHECKOUT/scripts/run-python.sh"
+rm -f "$COMMAND_LOG" "$PATH_SHADOW_LOG"
+(cd "$DOLLAR_CHECKOUT" && PATH="$CHECKOUT/bin:$PATH" SCREENSHARE_COMMAND_LOG="$COMMAND_LOG" /usr/bin/make --no-print-directory lint) >"$TEMP_ROOT/dollar-path.out" 2>&1
+case "$(cat "$COMMAND_LOG")" in
+  "$DOLLAR_CHECKOUT|$DOLLAR_CHECKOUT/scripts/run-python.sh|1|"*) ;;
+  *)
+    printf '%s\n' "dollar-syntax checkout escaped repository-owned Python: $(cat "$COMMAND_LOG")" >&2
+    exit 1 ;;
+esac
+if [ -e "$DOLLAR_CHECKOUT/SCREENSHARE_DOLLAR_MARKER" ] || [ -e "$PATH_SHADOW_LOG" ]; then
+  printf '%s\n' "dollar-syntax checkout executed command syntax or a PATH-shadowed tool" >&2
+  exit 1
+fi
 
 if [ -e "$CONTROL_DIR/SCREENSHARE_BACKTICK_MARKER" ]; then
   printf '%s\n' "checkout path executed a command substitution" >&2
@@ -151,4 +183,4 @@ EARLIER="$TEMP_ROOT/earlier.mk"
 printf '%s\n' '# earlier' >"$EARLIER"
 if (cd "$CONTROL_DIR" && /usr/bin/make --no-print-directory --file "$EARLIER" --file "$MAKEFILE" check) >"$TEMP_ROOT/multiple.out" 2>&1; then exit 1; fi
 grep -Fq "repository Makefile path could not be resolved" "$TEMP_ROOT/multiple.out"
-printf '%s\n' "Makefile root tests passed: 66 executed target/authority cases, 2 MAKEFILE_LIST rejections, 1 MAKEFILES rejection, and 1 multi-Makefile rejection"
+printf '%s\n' "Makefile root tests passed: 66 executed target/authority cases, 1 dollar-syntax checkout case, 2 MAKEFILE_LIST rejections, 1 MAKEFILES rejection, and 1 earlier-Makefile detection"

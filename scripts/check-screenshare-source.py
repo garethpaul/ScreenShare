@@ -186,8 +186,9 @@ def project_checks():
         ".DEFAULT_GOAL := check",
         "override SHELL := /bin/sh",
         "override .SHELLFLAGS := -c",
-        "override PYTHON := python3",
-        "override XCODEBUILD := xcodebuild",
+        "override PYTHON := $(ROOT)/scripts/run-python.sh",
+        "override XCODEBUILD := $(ROOT)/scripts/run-xcodebuild.sh",
+        "export PYTHON XCODEBUILD",
         "override PYTHONDONTWRITEBYTECODE := 1",
         "export PYTHONDONTWRITEBYTECODE",
         "$(error MAKEFILES must be empty; repository verification requires this Makefile to be loaded alone)",
@@ -197,9 +198,9 @@ def project_checks():
         "export ROOT",
         "$(error repository Makefile path could not be resolved)",
         '\t/bin/sh -n "$$ROOT/build.sh"',
-        '$(PYTHON) "$$ROOT/scripts/check-screenshare-source.py" --mode project',
-        '$(PYTHON) "$$ROOT/scripts/test-screenshare-contracts.py"',
-        'cd "$$ROOT" && $(XCODEBUILD) -project Screenshare.xcodeproj',
+        '"$$PYTHON" "$$ROOT/scripts/check-screenshare-source.py" --mode project',
+        '"$$PYTHON" "$$ROOT/scripts/test-screenshare-contracts.py"',
+        'cd "$$ROOT" && "$$XCODEBUILD" -project Screenshare.xcodeproj',
         "CODE_SIGNING_ALLOWED=NO build",
         "root-test:",
         '\t/bin/sh "$$ROOT/scripts/test-makefile-root.sh"',
@@ -207,6 +208,15 @@ def project_checks():
     ):
         if fragment not in makefile:
             errors.append(f"Makefile is missing root-independent fragment: {fragment}")
+
+    expected_launchers = {
+        "scripts/run-python.sh": "exec /usr/bin/python3 -I -B -c",
+        "scripts/run-xcodebuild.sh": 'exec /usr/bin/xcodebuild "$@"',
+    }
+    for relative_path, fragment in expected_launchers.items():
+        launcher = read_text(relative_path)
+        if fragment not in launcher:
+            errors.append(f"{relative_path} must use the trusted absolute tool launcher")
 
     if MAKE_ROOT_PLAN.exists():
         root_plan = MAKE_ROOT_PLAN.read_text(encoding="utf-8")
