@@ -1,5 +1,11 @@
 # Changes
 
+## 2026-06-21
+
+- Isolated Make verification authority from caller-controlled preload files,
+  file lists, shells, Python commands, Xcode builders, bytecode settings, and
+  repository roots, with 66 target/authority cases and rejection coverage.
+
 ## 2026-06-19
 
 - Initialized each Skin capture session before nib-backed preview setup and
