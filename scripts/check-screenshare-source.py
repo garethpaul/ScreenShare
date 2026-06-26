@@ -21,6 +21,7 @@ SKIN_POINTER_WINDOW_PLAN = DOCS_PLANS / "2026-06-15-skin-pointer-window-guards.m
 SESSION_REGISTRATION_PLAN = DOCS_PLANS / "2026-06-15-session-registration-guard.md"
 SKIN_DEVICE_SWITCH_PLAN = DOCS_PLANS / "2026-06-16-skin-device-switch-rollback.md"
 INITIAL_SKIN_ATTACHMENT_PLAN = DOCS_PLANS / "2026-06-17-initial-skin-device-attachment-guard.md"
+DEVICE_GUIDE_PLAN = DOCS_PLANS / "2026-06-26-screenshare-device-guide.md"
 EXPECTED_WORKFLOW = """name: Check
 
 on:
@@ -103,6 +104,39 @@ def require_paths():
 
 def docs_plan_checks():
     errors = []
+    normalized_readme = " ".join(read_text("README.md").split())
+    for contract in (
+        "Supported macOS Baseline",
+        "Swift 5 with a macOS 10.13 deployment target",
+        "Camera Permission Boundary",
+        "sandbox camera entitlement",
+        "ScreenShare uses camera access to display connected iOS devices as demo capture sources.",
+        "Connected iOS Device Registration",
+        "kCMIOHardwarePropertyAllowScreenCaptureDevices",
+        "model ID is `iOS Device`",
+        "One-Device Session Limit",
+        "Connect and Disconnect Behavior",
+        "AVCaptureDevice.wasConnectedNotification",
+        "AVCaptureDevice.wasDisconnectedNotification",
+        "Local Data Boundary",
+        "Canonical Verification",
+        "/usr/bin/make check",
+        "Hosted Native Verification",
+    ):
+        if contract not in normalized_readme:
+            errors.append(f"README device guide must preserve: {contract}")
+    normalized_vision = " ".join(read_text("VISION.md").split())
+    normalized_changes = " ".join(read_text("CHANGES.md").split())
+    if "Keep macOS setup, camera permission, device registration, and connect/disconnect guidance synchronized with source" not in normalized_vision:
+        errors.append("VISION must preserve the ScreenShare device-guide boundary")
+    if "Completed three ScreenShare device-documentation priorities" not in normalized_changes:
+        errors.append("CHANGES must record the ScreenShare device-guide reconciliation")
+    if not DEVICE_GUIDE_PLAN.exists():
+        errors.append("ScreenShare device guide plan is missing")
+    else:
+        plan = DEVICE_GUIDE_PLAN.read_text(encoding="utf-8")
+        if "## Status: Completed" not in plan or "Document ScreenShare's supported macOS setup" not in plan:
+            errors.append("ScreenShare device guide plan must record completed evidence")
     if not CANONICAL_PLAN.exists():
         errors.append("docs/plans/2026-06-08-screenshare-baseline.md is missing")
     if not DOCUMENT_PREVIEW_PLAN.exists():

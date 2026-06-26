@@ -47,13 +47,12 @@ Priority:
 - Maintain custom skin and screenshot context
 - Keep completed maintenance plans under `docs/plans`
 - Keep GitHub Actions running static checks and an unsigned macOS app build
+- Keep macOS setup, camera permission, device registration, and
+  connect/disconnect guidance synchronized with source
 - Avoid recording, uploading, or storing mirrored content by default
 
 Next priorities:
 
-- Add setup notes for macOS, Xcode, and connected iOS devices
-- Document permissions and device registration behavior
-- Add manual verification notes for connect/disconnect handling
 - Continue reducing legacy force unwraps in skin/window sizing paths
 - Modernize Swift and project settings in a dedicated pass
 
