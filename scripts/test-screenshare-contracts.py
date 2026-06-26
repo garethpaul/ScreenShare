@@ -103,6 +103,55 @@ class ContractMutationTests(unittest.TestCase):
             "Skin device changes must replace the format observer instead of accumulating callbacks",
         )
 
+    def test_rejects_document_format_observer_replacement_removal(self):
+        repository = self.copy_repository()
+        self.mutate(
+            repository,
+            "ScreenShare/Document.swift",
+            "                self.replaceFormatObserver()\n",
+            "",
+        )
+        self.assert_behavior_rejects(
+            repository,
+            "Document device transactions must replace the active-port format observer",
+        )
+
+    def test_rejects_document_format_notification_registration_removal(self):
+        repository = self.copy_repository()
+        self.mutate(
+            repository,
+            "ScreenShare/Document.swift",
+            "            AVCaptureInput.Port.formatDescriptionDidChangeNotification,\n",
+            "",
+        )
+        self.assert_behavior_rejects(
+            repository,
+            "Document format observer must preserve 'AVCaptureInput.Port.formatDescriptionDidChangeNotification'",
+        )
+
+    def test_rejects_document_aspect_guidance_removal(self):
+        repository = self.copy_repository()
+        self.mutate(
+            repository,
+            "README.md",
+            "- Document aspect updates run once after session start and then only for the\n  active input port's format-change notifications; device switches replace the\n  observer and window teardown removes it.\n",
+            "",
+        )
+        result = subprocess.run(
+            [
+                str(repository / "scripts/run-python.sh"),
+                "scripts/check-screenshare-source.py",
+                "--mode",
+                "project",
+            ],
+            cwd=repository,
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+        self.assertNotEqual(0, result.returncode, result.stdout)
+        self.assertIn("README.md must document event-driven Document aspect updates", result.stderr)
+
     def test_rejects_colliding_unit_test_module_name(self):
         repository = self.copy_repository()
         self.mutate(

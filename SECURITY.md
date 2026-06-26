@@ -51,8 +51,9 @@ cannot host its capture skin.
   test bundle cannot collide with the application module output.
 - CI actions stay pinned by commit, run with read-only repository contents
   permission, and disable checkout credential persistence.
-- Closing a document must invalidate its repeating preview timer so retired
-  capture UI is not retained or updated after teardown.
+- Document aspect updates run once after session start and then only for the
+  active input port's format-change notifications; device switches replace the
+  observer and window teardown removes it so retired capture UI is not updated.
 - Capture skins must conditionally resolve the application delegate so unusual
   nib or application lifecycle state cannot trigger a force-cast crash.
 - Newly discovered capture devices must create settings without a failable

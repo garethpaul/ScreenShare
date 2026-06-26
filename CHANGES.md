@@ -1,5 +1,66 @@
 # Changes
 
+## 2026-06-26 06:52 PDT - P2 - replace document aspect polling
+
+### Summary
+
+Replaced the document preview's repeating one-second aspect timer with the
+active capture input port's format-change notification, preserving an immediate
+refresh after session start and safe observer replacement during device swaps.
+
+### Work completed
+
+- Added a dedicated document format-observer owner that follows the existing
+  Skin lifecycle precedent.
+- Document aspect updates run once after session start and then only for the
+  active input port's format-change notifications; device switches replace the
+  observer and window teardown removes it.
+- Replaced observers after successful, cleared, and rolled-back device
+  transactions and removed them during window teardown.
+- Added scoped source contracts, three hostile mutations, design evidence, and a
+  completed implementation plan.
+
+### Threads
+
+- None; current source, history, Apple AVFoundation documentation, tests, and
+  the existing Skin observer pattern were reviewed directly.
+
+### Files changed
+
+- `ScreenShare/Document.swift` — event-driven aspect updates.
+- `scripts/check-screenshare-source.py` and
+  `scripts/test-screenshare-contracts.py` — regression and mutation coverage.
+- `AGENTS.md`, `README.md`, `SECURITY.md`, and `VISION.md` — maintained behavior
+  contract.
+- `docs/plans/2026-06-26-document-format-observer-design.md` and
+  `docs/plans/2026-06-26-document-format-observer.md` — design and execution
+  evidence.
+
+### Validation
+
+- RED focused behavior gate — rejected the timer and missing observer lifecycle.
+- GREEN focused behavior gate — passed after the notification implementation.
+- Three isolated observer/guidance-removal mutations — rejected.
+- `make check` and an external absolute-Make invocation — passed 66 Make
+  target/authority cases, project and behavior checks, and 10 Python mutation
+  tests; local Xcode compilation skipped because `xcodebuild` is unavailable.
+- Hosted unsigned macOS compilation — required before merge.
+
+### Bugs / findings
+
+- P2 efficiency/lifecycle: the document woke every second indefinitely even
+  though AVFoundation exposes the exact format-change event.
+
+### Blockers
+
+- Physical-device orientation changes still require manual iPhone/iPad
+  verification; hosted compilation cannot exercise that hardware boundary.
+
+### Next action
+
+- Run complete local and hosted verification, then merge only the reviewed
+  exact head.
+
 ## 2026-06-26
 
 ### ScreenShare device setup and lifecycle guide
