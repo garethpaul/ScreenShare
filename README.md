@@ -39,21 +39,66 @@ Additional scan context:
 
 ## Getting Started
 
-### Prerequisites
+### Supported macOS Baseline
 
 - Git
-- macOS with Xcode for building Apple platform projects
+- macOS with Xcode for building the AppKit application
 - Python 3 for repository source checks
-- An unlocked iPhone or iPad connected to the Mac over USB for live mirroring
+- Swift 5 with a macOS 10.13 deployment target, as pinned in the project
+- An unlocked, trusted iPhone or iPad connected to the Mac over USB for live
+  mirroring
 
 ### Setup
 
 ```bash
 git clone https://github.com/garethpaul/ScreenShare.git
 cd ScreenShare
+open Screenshare.xcodeproj
 ```
 
-The setup commands above are derived from repository files. Legacy mobile, Python, or JavaScript samples may require older SDKs or package versions than a modern workstation uses by default.
+Select the shared `Screenshare` scheme and the `My Mac` destination. Command-line
+verification disables code signing; an interactive run may require a local
+development team under the workstation's signing policy.
+
+### Camera Permission Boundary
+
+The app sandbox includes the sandbox camera entitlement. `Info.plist` declares
+the exact usage text: `ScreenShare uses camera access to display connected iOS devices as demo capture sources.`
+macOS may therefore ask for Camera permission. Denying that permission or
+disabling it later prevents capture input from being admitted; ScreenShare does
+not need Photos, microphone, screen-recording, network, or location permission.
+
+### Connected iOS Device Registration
+
+At launch, `DeviceUtils.registerForScreenCaptureDevices()` enables CoreMediaIO
+property `kCMIOHardwarePropertyAllowScreenCaptureDevices`. The app then scans
+AVFoundation muxed and video devices and admits connected hardware whose
+model ID is `iOS Device`. Keep the iPhone or iPad unlocked, trust the Mac when
+prompted by the device, and confirm macOS can see it before troubleshooting the
+app.
+
+### One-Device Session Limit
+
+The current app supports one active mirrored device. If a second eligible
+device appears while a session is active, ScreenShare presents `Only one device
+supported` and asks the user to disconnect the other device. This is an
+intentional admission boundary, not multi-device arbitration.
+
+### Connect and Disconnect Behavior
+
+ScreenShare observes `AVCaptureDevice.wasConnectedNotification` and
+`AVCaptureDevice.wasDisconnectedNotification`, refreshes the device list on the
+main queue, creates a window only after input and window attachment succeed,
+and ends/closes a session when its device disappears. Reconnect and unlock the
+device if it does not reappear; restart the app only after macOS itself sees the
+device.
+
+### Local Data Boundary
+
+ScreenShare saves only local device identity/orientation/window geometry needed
+to restore framing. It does not record mirrored video, upload frames, enumerate
+user media, or persist a capture stream. Device names and saved rectangles are
+excluded from debug logging by static contracts.
 
 ## Running or Using the Project
 
@@ -69,6 +114,14 @@ the app. Signing is disabled for the command-line gate, but interactive Xcode
 runs may still require a local development team depending on workstation policy.
 
 ## Testing and Verification
+
+### Canonical Verification
+
+Run:
+
+```sh
+/usr/bin/make check
+```
 
 - `make check` runs shell syntax checks, static Xcode project checks, and
   capture permission/runtime-error metadata checks. When `xcodebuild` is
@@ -100,6 +153,14 @@ runs may still require a local development team depending on workstation policy.
   replacement cannot be constructed or admitted.
 - Initial Skin sessions reject unattached capture devices before window and
   view attachment.
+
+### Hosted Native Verification
+
+GitHub Actions runs the portable contract gate on Ubuntu 24.04 and builds the
+unsigned `Screenshare` scheme on `macos-15`. Hosted build success proves source
+and project compatibility; it does not prove a physical iOS device was trusted,
+connected, authorized, mirrored, disconnected, and reconnected. Use the manual
+steps above for that hardware boundary.
 - Static behavior checks also require document preview setup and aspect updates
   to optional-bind outlets, backing layers, input ports, and windows.
 - Skin preview and window guards optional-bind preview layers and resize-window

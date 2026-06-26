@@ -1,5 +1,36 @@
 # Changes
 
+## 2026-06-26
+
+### ScreenShare device setup and lifecycle guide
+
+- Completed three ScreenShare device-documentation priorities with source-backed
+  macOS/Xcode setup, camera permission, CoreMediaIO device registration,
+  single-session admission, connect/disconnect, local-data, and verification
+  guidance.
+- Added fail-closed documentation contracts and a completed implementation plan
+  so future edits cannot silently remove the operating boundaries.
+
+Validation:
+
+- Rejected 19 isolated hostile documentation mutations spanning every new
+  README contract, the maintained roadmap boundary, this history entry, and the
+  completed plan status.
+- Passed `/usr/bin/make check` from the checkout and from an unrelated working
+  directory. Each invocation passed 66 Make target/authority cases, one dollar-
+  syntax checkout case, two `MAKEFILE_LIST` rejections, three documented GNU
+  Make startup-boundary cases, project checks, behavior checks, and seven Python
+  contract tests.
+- Audited the guide against the checked-in entitlement and usage plist, Swift
+  registration/filter/session/notification/archive code, Xcode deployment
+  settings, and pinned Ubuntu/macOS workflow jobs.
+
+Blocker:
+
+- Physical-device trust, Camera authorization, live mirroring, disconnect, and
+  reconnect verification still require an unlocked iPhone or iPad and cannot be
+  demonstrated by the current Linux checkout or hosted native build alone.
+
 ## 2026-06-21
 
 - Isolated checked-in Make recipes from caller-controlled shells, Python
