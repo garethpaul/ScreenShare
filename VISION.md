@@ -39,7 +39,9 @@ Priority:
 - Keep Skin pointer and window guards around drag and settings persistence callbacks
 - Replace format observers across capture retries and device switches
 - Keep the unsigned macOS unit-test wrapper executable on current Xcode
-- Release repeating preview timers when document windows close
+- Document aspect updates run once after session start and then only for the
+  active input port's format-change notifications; device switches replace the
+  observer and window teardown removes it
 - Keep session window setup tolerant of missing screen or content-view state
 - Register device sessions only after their capture skin can attach to a window
 - Keep device refreshes tolerant of missing main window outlet state

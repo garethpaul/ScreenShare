@@ -180,8 +180,9 @@ steps above for that hardware boundary.
   capture skin is started or recorded as an active device session.
 - Static behavior checks also require device refreshes to guard the main
   device-list window before hiding or showing it.
-- Static behavior checks also require document aspect timers to be replaced and
-  invalidated when their windows close.
+- Document aspect updates run once after session start and then only for the
+  active input port's format-change notifications; device switches replace the
+  observer and window teardown removes it.
 - Static behavior checks also reject force-casting the application delegate and
   require skin selection/settings coordination to tolerate unavailable state.
 - Static project checks also require completed canonical plans under `docs/plans`.

@@ -26,7 +26,7 @@ class Document: NSDocument {
     dynamic var devices : [AVCaptureDevice] = []
     
     let notifications = NotificationManager()
-    private var aspectTimer: Timer?
+    let formatNotifications = NotificationManager()
     
     override init() {
         super.init()
@@ -72,11 +72,7 @@ class Document: NSDocument {
         previewViewLayer.addSublayer(newPreviewLayer)
         
         self.session.startRunning()
-
-        // Update Aspect will run recurrently to account for changes in orientation we cannot catch
-        // TODO: Optimize to only do this for ios devices and listening for changes to the formatDescription of the video AVCaptureInputPort associated with the device.
-        aspectTimer?.invalidate()
-        aspectTimer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(updateAspect), userInfo: nil, repeats: true)
+        self.updateAspect()
         
     }
     
@@ -117,6 +113,7 @@ class Document: NSDocument {
             self.session.beginConfiguration()
             defer {
                 self.session.commitConfiguration()
+                self.replaceFormatObserver()
                 self.updateAspect()
             }
 
@@ -144,6 +141,20 @@ class Document: NSDocument {
             self.session.addInput(replacementInput)
             self.input = replacementInput
         }
+    }
+
+    private func replaceFormatObserver() {
+        formatNotifications.deregisterAll()
+        guard let port = self.input?.ports.first else {
+            return
+        }
+        formatNotifications.registerObserver(
+            AVCaptureInput.Port.formatDescriptionDidChangeNotification,
+            forObject: port,
+            dispatchAsyncToMainQueue: true,
+            block: { [weak self] _ in
+                self?.updateAspect()
+        })
     }
     
     @objc func updateAspect() {
@@ -212,8 +223,7 @@ class Document: NSDocument {
     }
     
     func windowWillClose(_ notification: Notification) {
-        aspectTimer?.invalidate()
-        aspectTimer = nil
+        formatNotifications.deregisterAll()
         self.session.stopRunning()
         self.notifications.deregisterAll()
     }

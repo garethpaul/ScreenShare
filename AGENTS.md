@@ -56,6 +56,9 @@
   replacement cannot be constructed or admitted.
 - Initial Skin sessions reject unattached capture devices before window and
   view attachment.
+- Document aspect updates run once after session start and then only for the
+  active input port's format-change notifications; device switches replace the
+  observer and window teardown removes it.
 - See `docs/plans/2026-06-08-device-archive-decoding.md` for the local device-settings archive guard.
 
 ## Agent workflow

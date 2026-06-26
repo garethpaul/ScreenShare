@@ -319,6 +319,8 @@ def project_checks():
             errors.append(f"{doc_path} must document Skin pointer and window guards")
         if "initial skin sessions reject unattached capture devices before window and view attachment" not in document.lower():
             errors.append(f"{doc_path} must document initial Skin attachment rejection")
+        if "document aspect updates run once after session start and then only for the active input port's format-change notifications" not in document.lower():
+            errors.append(f"{doc_path} must document event-driven Document aspect updates")
     if str(SKIN_PREVIEW_WINDOW_PLAN.relative_to(ROOT)) not in read_text("README.md"):
         errors.append(f"README.md must reference {SKIN_PREVIEW_WINDOW_PLAN.relative_to(ROOT)}")
     if "Skin capture device switch rollback preserves the prior working input" not in read_text("AGENTS.md"):
@@ -326,6 +328,8 @@ def project_checks():
     agents = re.sub(r"\s+", " ", read_text("AGENTS.md"))
     if "Initial Skin sessions reject unattached capture devices before window and view attachment" not in agents:
         errors.append("AGENTS.md must document initial Skin attachment rejection")
+    if "Document aspect updates run once after session start and then only for the active input port's format-change notifications" not in agents:
+        errors.append("AGENTS.md must document event-driven Document aspect updates")
 
     project = read_text("Screenshare.xcodeproj/project.pbxproj")
     for fragment in (
@@ -456,12 +460,30 @@ def behavior_checks():
         errors.append("Document.updateAspect must optional-bind the document window")
     if "private func resetResolutionStatus()" not in document:
         errors.append("Document.updateAspect must centralize resolution fallback state")
-    if "private var aspectTimer: Timer?" not in document:
-        errors.append("Document must retain its repeating aspect timer for teardown")
-    if "aspectTimer?.invalidate()\n        aspectTimer = Timer.scheduledTimer" not in document:
-        errors.append("Document preview setup must replace any existing aspect timer")
-    if "aspectTimer?.invalidate()\n        aspectTimer = nil\n        self.session.stopRunning()" not in document:
-        errors.append("Document window teardown must invalidate and release the aspect timer")
+    if "let formatNotifications = NotificationManager()" not in document:
+        errors.append("Document must own active-port format notifications separately")
+    if "aspectTimer" in document or "Timer.scheduledTimer" in document:
+        errors.append("Document must not poll for capture format changes")
+    if "self.session.startRunning()\n        self.updateAspect()" not in document:
+        errors.append("Document must refresh aspect state immediately after session start")
+    if "self.session.commitConfiguration()\n                self.replaceFormatObserver()\n                self.updateAspect()" not in document:
+        errors.append("Document device transactions must replace the active-port format observer")
+    replace_format_start = document.find("private func replaceFormatObserver()")
+    update_aspect_start = document.find("@objc func updateAspect()", replace_format_start)
+    replace_format_observer = document[replace_format_start:update_aspect_start]
+    for fragment in (
+        "private func replaceFormatObserver()",
+        "formatNotifications.deregisterAll()",
+        "AVCaptureInput.Port.formatDescriptionDidChangeNotification",
+        "forObject: port",
+        "dispatchAsyncToMainQueue: true",
+        "block: { [weak self] _ in",
+        "self?.updateAspect()",
+    ):
+        if min(replace_format_start, update_aspect_start) < 0 or fragment not in replace_format_observer:
+            errors.append(f"Document format observer must preserve {fragment!r}")
+    if "formatNotifications.deregisterAll()\n        self.session.stopRunning()" not in document:
+        errors.append("Document window teardown must release active-port format notifications")
     if re.search(r'print\("Using (Portrait|Landscape) settings', device):
         errors.append("Device saved settings must not log device names or saved window rectangles")
     if "NSLog(self.device.skin)" in skin:
@@ -655,8 +677,8 @@ def behavior_checks():
         errors.append("Document.refreshDevices must not nest capture session configuration")
     if "let replacementInput: AVCaptureDeviceInput?" not in document or "replacementInput = try AVCaptureDeviceInput(device: newDevice)" not in document:
         errors.append("Document.selectedDevice must construct the replacement input before mutating the session")
-    if "defer {\n                self.session.commitConfiguration()\n                self.updateAspect()\n            }" not in document:
-        errors.append("Document.selectedDevice must commit its single configuration transaction and refresh aspect state")
+    if "defer {\n                self.session.commitConfiguration()\n                self.replaceFormatObserver()\n                self.updateAspect()\n            }" not in document:
+        errors.append("Document.selectedDevice must commit its transaction, replace the format observer, and refresh aspect state")
     if "guard self.session.canAddInput(replacementInput) else" not in document:
         errors.append("Document.selectedDevice must validate replacement input admission")
     if "self.session.canAddInput(previousInput)" not in document or "self.session.addInput(previousInput)\n                    self.input = previousInput" not in document:
