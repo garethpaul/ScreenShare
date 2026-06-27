@@ -1,5 +1,43 @@
 # Changes
 
+## 2026-06-27 - P1 - Select capture video ports explicitly
+
+### Summary
+
+Stopped Document and Skin aspect handling from treating the first capture input
+port as video when a muxed device can expose separate media streams.
+
+### Work completed
+
+- Added a shared `.video`-filtered `AVCaptureDeviceInput.videoPort` selector.
+- Document and Skin select the explicit video port instead of relying on
+  capture input port ordering.
+- Routed both format observers and both dimension readers through that selector.
+- Added a red-first behavior contract and a hostile unfiltered-port mutation.
+- Synchronized maintained runtime and security guidance.
+
+### Evidence
+
+- Apple AVFoundation documentation states that a capture input can provide one
+  or more streams and represents each stream with its own input port.
+- The focused gate failed before implementation on the missing selector and all
+  four `ports.first` call sites, then passed with 11 mutation tests.
+- `make check` passed 66 Make target/authority cases, project and behavior
+  checks, and all 11 mutation tests from the checkout and `/tmp`.
+- Python compilation, shell syntax, and `git diff --check` passed.
+- Native Xcode compilation is unavailable on this Linux host; hosted unsigned
+  macOS compilation remains required on the exact PR head.
+
+### Blockers
+
+- Live muxed-device ordering and format transitions still require compatible
+  trusted iPhone/iPad hardware; hosted builds validate compilation only.
+
+### Next action
+
+- Run complete local and hosted verification, review the exact head, and merge
+  only if every maintained gate remains green.
+
 ## 2026-06-26 06:52 PDT - P2 - replace document aspect polling
 
 ### Summary

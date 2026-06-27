@@ -54,6 +54,9 @@ cannot host its capture skin.
 - Document aspect updates run once after session start and then only for the
   active input port's format-change notifications; device switches replace the
   observer and window teardown removes it so retired capture UI is not updated.
+- Document and Skin select the explicit video port instead of relying on
+  capture input port ordering, so muxed audio streams cannot drive video
+  dimensions or observer ownership.
 - Capture skins must conditionally resolve the application delegate so unusual
   nib or application lifecycle state cannot trigger a force-cast crash.
 - Newly discovered capture devices must create settings without a failable

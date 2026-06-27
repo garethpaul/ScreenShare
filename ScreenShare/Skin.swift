@@ -205,7 +205,7 @@ class Skin: NSView {
 
     private func replaceFormatObserver() {
         formatNotifications.deregisterAll()
-        guard let port = self.input?.ports.first else {
+        guard let port = self.input?.videoPort else {
             return
         }
         formatNotifications.registerObserver(
@@ -221,7 +221,7 @@ class Skin: NSView {
         
         // let window = self.windowForSheet
         if( window != nil) {
-            if let port = self.input?.ports.first {
+            if let port = self.input?.videoPort {
                 
                 if let description = port.formatDescription {
                     deviceDimensionsObtained = true

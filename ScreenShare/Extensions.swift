@@ -3,6 +3,13 @@
 //
 
 import Foundation
+import AVFoundation
+
+extension AVCaptureDeviceInput {
+    var videoPort: AVCaptureInput.Port? {
+        return ports.first { $0.mediaType == .video }
+    }
+}
 
 extension Int {
     func format(_ f: String) -> String {

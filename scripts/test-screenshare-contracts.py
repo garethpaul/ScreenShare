@@ -103,6 +103,19 @@ class ContractMutationTests(unittest.TestCase):
             "Skin device changes must replace the format observer instead of accumulating callbacks",
         )
 
+    def test_rejects_unfiltered_capture_port_selection(self):
+        repository = self.copy_repository()
+        self.mutate(
+            repository,
+            "ScreenShare/Extensions.swift",
+            "ports.first { $0.mediaType == .video }",
+            "ports.first",
+        )
+        self.assert_behavior_rejects(
+            repository,
+            "capture inputs must select their video stream via 'ports.first { $0.mediaType == .video }'",
+        )
+
     def test_rejects_document_format_observer_replacement_removal(self):
         repository = self.copy_repository()
         self.mutate(

@@ -321,6 +321,8 @@ def project_checks():
             errors.append(f"{doc_path} must document initial Skin attachment rejection")
         if "document aspect updates run once after session start and then only for the active input port's format-change notifications" not in document.lower():
             errors.append(f"{doc_path} must document event-driven Document aspect updates")
+        if "document and skin select the explicit video port instead of relying on capture input port ordering" not in document.lower():
+            errors.append(f"{doc_path} must document explicit video-port selection")
     if str(SKIN_PREVIEW_WINDOW_PLAN.relative_to(ROOT)) not in read_text("README.md"):
         errors.append(f"README.md must reference {SKIN_PREVIEW_WINDOW_PLAN.relative_to(ROOT)}")
     if "Skin capture device switch rollback preserves the prior working input" not in read_text("AGENTS.md"):
@@ -330,6 +332,8 @@ def project_checks():
         errors.append("AGENTS.md must document initial Skin attachment rejection")
     if "Document aspect updates run once after session start and then only for the active input port's format-change notifications" not in agents:
         errors.append("AGENTS.md must document event-driven Document aspect updates")
+    if "Document and Skin select the explicit video port instead of relying on capture input port ordering" not in agents:
+        errors.append("AGENTS.md must document explicit video-port selection")
 
     project = read_text("Screenshare.xcodeproj/project.pbxproj")
     for fragment in (
@@ -454,8 +458,21 @@ def behavior_checks():
         errors.append("Document.updateAspect must not force unwrap the input port")
     if "let windowFrame = window!.frame" in document:
         errors.append("Document.updateAspect must not force unwrap the document window")
-    if "guard let port = self.input?.ports.first" not in document:
-        errors.append("Document.updateAspect must optional-bind the capture input port")
+    for fragment in (
+        "extension AVCaptureDeviceInput",
+        "var videoPort: AVCaptureInput.Port?",
+        "ports.first { $0.mediaType == .video }",
+    ):
+        if fragment not in extensions:
+            errors.append(f"capture inputs must select their video stream via {fragment!r}")
+    if "self.input?.ports.first" in document or "self.input?.ports.first" in skin:
+        errors.append("capture aspect handling must not rely on input-port ordering")
+    if document.count("self.input?.videoPort") < 2:
+        errors.append("Document must observe and measure the explicit video input port")
+    if skin.count("self.input?.videoPort") < 2:
+        errors.append("Skin must observe and measure the explicit video input port")
+    if "guard let port = self.input?.videoPort" not in document:
+        errors.append("Document.updateAspect must optional-bind the video capture input port")
     if "let window = self.windowForSheet" not in document:
         errors.append("Document.updateAspect must optional-bind the document window")
     if "private func resetResolutionStatus()" not in document:

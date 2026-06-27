@@ -59,6 +59,8 @@
 - Document aspect updates run once after session start and then only for the
   active input port's format-change notifications; device switches replace the
   observer and window teardown removes it.
+- Document and Skin select the explicit video port instead of relying on
+  capture input port ordering.
 - See `docs/plans/2026-06-08-device-archive-decoding.md` for the local device-settings archive guard.
 
 ## Agent workflow
