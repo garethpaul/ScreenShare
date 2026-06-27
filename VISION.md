@@ -42,6 +42,8 @@ Priority:
 - Document aspect updates run once after session start and then only for the
   active input port's format-change notifications; device switches replace the
   observer and window teardown removes it
+- Document and Skin select the explicit video port instead of relying on
+  capture input port ordering
 - Keep session window setup tolerant of missing screen or content-view state
 - Register device sessions only after their capture skin can attach to a window
 - Keep device refreshes tolerant of missing main window outlet state

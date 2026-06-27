@@ -145,7 +145,7 @@ class Document: NSDocument {
 
     private func replaceFormatObserver() {
         formatNotifications.deregisterAll()
-        guard let port = self.input?.ports.first else {
+        guard let port = self.input?.videoPort else {
             return
         }
         formatNotifications.registerObserver(
@@ -159,7 +159,7 @@ class Document: NSDocument {
     
     @objc func updateAspect() {
         
-        guard let port = self.input?.ports.first,
+        guard let port = self.input?.videoPort,
             let window = self.windowForSheet,
             let description = port.formatDescription else {
                 resetResolutionStatus()

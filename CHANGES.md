@@ -1,5 +1,63 @@
 # Changes
 
+## 2026-06-26 17:40 PDT - P1 - Select capture video ports explicitly
+
+### Summary
+
+Stopped Document and Skin aspect handling from treating the first capture input
+port as video when a muxed device can expose separate media streams.
+
+### Work completed
+
+- Added a shared `.video`-filtered `AVCaptureDeviceInput.videoPort` selector.
+- Document and Skin select the explicit video port instead of relying on
+  capture input port ordering.
+- Routed both format observers and both dimension readers through that selector.
+- Added a red-first behavior contract and a hostile unfiltered-port mutation.
+- Synchronized maintained runtime and security guidance.
+
+### Files changed
+
+- `ScreenShare/Extensions.swift` — shared filtered video-port selector.
+- `ScreenShare/Document.swift` and `ScreenShare/Skin.swift` — observer and
+  dimension lookups routed through the selector.
+- `scripts/check-screenshare-source.py` and
+  `scripts/test-screenshare-contracts.py` — source contract and hostile
+  mutation coverage.
+- `AGENTS.md`, `README.md`, `SECURITY.md`, `VISION.md`, and
+  `docs/plans/2026-06-27-explicit-video-port-selection.md` — maintained
+  behavior, security, and implementation evidence.
+
+### Validation
+
+- Apple AVFoundation documentation states that a capture input can provide one
+  or more streams and represents each stream with its own input port.
+- The focused gate failed before implementation on the missing selector and all
+  four `ports.first` call sites, then passed with 11 mutation tests.
+- `make check` passed 66 Make target/authority cases, project and behavior
+  checks, and all 11 mutation tests from the checkout and `/tmp`.
+- Python compilation, shell syntax, and `git diff --check` passed.
+- Native Xcode compilation is unavailable on this Linux host; hosted unsigned
+  macOS compilation remains required on the exact PR head.
+
+### Bugs / findings
+
+- P1 correctness: `ports.first` can resolve a non-video stream on muxed capture
+  devices, causing format observers and dimensions to follow the wrong port.
+- Manual review found no additional source defects in the focused diff.
+
+### Blockers
+
+- Live muxed-device ordering and format transitions still require compatible
+  trusted iPhone/iPad hardware; hosted builds validate compilation only.
+- `codex review --base origin/master` could not authenticate and returned HTTP
+  401, so the required review attempt was skipped after one invocation.
+
+### Next action
+
+- Run complete local and hosted verification, review the exact head, and merge
+  only if every maintained gate remains green.
+
 ## 2026-06-26 06:52 PDT - P2 - replace document aspect polling
 
 ### Summary

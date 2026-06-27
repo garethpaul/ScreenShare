@@ -183,6 +183,8 @@ steps above for that hardware boundary.
 - Document aspect updates run once after session start and then only for the
   active input port's format-change notifications; device switches replace the
   observer and window teardown removes it.
+- Document and Skin select the explicit video port instead of relying on
+  capture input port ordering when observing or measuring format changes.
 - Static behavior checks also reject force-casting the application delegate and
   require skin selection/settings coordination to tolerate unavailable state.
 - Static project checks also require completed canonical plans under `docs/plans`.
