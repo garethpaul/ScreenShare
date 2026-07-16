@@ -73,7 +73,100 @@ jobs:
 """
 
 
+# Ported verbatim from ios-app-share's check-baseline.py, the working reference in
+# this account: a real scanner handling nested /* */ blocks, string-aware and
+# escape-aware. A naive //[^\n]* regex would blank the rest of the line for
+# `let u = "https://example.com"` and fail a contract against correct source.
+#
+# Every "must contain" assertion below read Swift raw, so a commented-out call
+# satisfied its own assertion while the code was dead. Verified: block-commenting
+# formatNotifications.deregisterAll() inside replaceFormatObserver() left
+# `make check` at exit 0 -- the literal count in Skin.swift stayed at 2 while live
+# occurrences dropped to 1 -- reintroducing the accumulating-callback bug the gate
+# exists to prevent. Deleting the same call IS caught ("Skin device changes must
+# replace the format observer instead of accumulating callbacks"), so the gate was
+# live but blind.
+#
+# Note the pre-existing asymmetry this closes: the print/println scan below already
+# skips comment lines, because there a comment would cause a false POSITIVE. The
+# same awareness was absent from the "must contain" checks, where a comment causes
+# false ASSURANCE.
+def strip_swift_comments(text):
+    result = []
+    index = 0
+    block_depth = 0
+    in_string = False
+    escaped = False
+
+    while index < len(text):
+        character = text[index]
+        next_character = text[index + 1] if index + 1 < len(text) else ""
+
+        if block_depth:
+            if character == "/" and next_character == "*":
+                block_depth += 1
+                index += 2
+                continue
+            if character == "*" and next_character == "/":
+                block_depth -= 1
+                index += 2
+                continue
+            if character == "\n":
+                result.append(character)
+            index += 1
+            continue
+
+        if in_string:
+            result.append(character)
+            if escaped:
+                escaped = False
+            elif character == "\\":
+                escaped = True
+            elif character == '"':
+                in_string = False
+            index += 1
+            continue
+
+        if character == '"':
+            in_string = True
+            result.append(character)
+            index += 1
+            continue
+        if character == "/" and next_character == "/":
+            newline = text.find("\n", index + 2)
+            if newline == -1:
+                break
+            result.append("\n")
+            index = newline + 1
+            continue
+        if character == "/" and next_character == "*":
+            block_depth = 1
+            index += 2
+            continue
+
+        result.append(character)
+        index += 1
+
+    return "".join(result)
+
+
 def read_text(relative_path):
+    """Read a file, blanking Swift comments so assertions see live code only.
+
+    Non-Swift files (README, plists, project files) are returned untouched.
+    """
+    text = (ROOT / relative_path).read_text(encoding="utf-8")
+    if str(relative_path).endswith(".swift"):
+        return strip_swift_comments(text)
+    return text
+
+
+def read_text_raw(relative_path):
+    """Read a file untouched, comments included.
+
+    Only for assertions genuinely ABOUT comment text. Code assertions must use
+    read_text(), or a commented-out call satisfies its own assertion.
+    """
     return (ROOT / relative_path).read_text(encoding="utf-8")
 
 
