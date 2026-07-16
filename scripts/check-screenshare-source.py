@@ -461,10 +461,19 @@ def behavior_checks():
     format_observer_start = skin.find("private func replaceFormatObserver()")
     format_observer_end = skin.find("func getVideoDimensions()", format_observer_start)
     format_observer = skin[format_observer_start:format_observer_end]
+    # Pin the whole construct, not the bare call: asserting only that the literal appears
+    # somewhere in the method cannot tell a live deregister from a dead one. Wrapping the
+    # call in `if false { ... }` keeps the literal present and uncommented while observers
+    # accumulate again. Requiring the call to BE the first statement rejects that, using
+    # the same contiguous-literal form as archive_binding below.
+    deregister_first = (
+        "private func replaceFormatObserver() {\n"
+        "        formatNotifications.deregisterAll()\n"
+    )
     if (
         format_observer_start < 0
         or format_observer_end < 0
-        or "formatNotifications.deregisterAll()" not in format_observer
+        or deregister_first not in format_observer
         or "forObject: port" not in format_observer
     ):
         errors.append("Skin device changes must replace the format observer instead of accumulating callbacks")

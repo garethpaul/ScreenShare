@@ -103,6 +103,23 @@ class ContractMutationTests(unittest.TestCase):
             "Skin device changes must replace the format observer instead of accumulating callbacks",
         )
 
+    def test_rejects_neutered_format_observer_deregister(self):
+        # The deregister call kept present and uncommented, but never executed. Deleting
+        # the literal (above) and commenting it out are both caught by its absence from
+        # the source; this leaves the literal byte-identical, so only pinning the whole
+        # construct rejects it.
+        repository = self.copy_repository()
+        self.mutate(
+            repository,
+            "ScreenShare/Skin.swift",
+            "private func replaceFormatObserver() {\n        formatNotifications.deregisterAll()",
+            "private func replaceFormatObserver() {\n        if false {\n            formatNotifications.deregisterAll()\n        }",
+        )
+        self.assert_behavior_rejects(
+            repository,
+            "Skin device changes must replace the format observer instead of accumulating callbacks",
+        )
+
     def test_rejects_unfiltered_capture_port_selection(self):
         repository = self.copy_repository()
         self.mutate(
